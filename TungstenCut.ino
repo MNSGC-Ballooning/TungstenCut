@@ -36,9 +36,9 @@
 
 
 //~~~~~~~~~~~~~~~Pin Variables~~~~~~~~~~~~~~~
-int ledPin = 13; //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
+int ledPin = 5; //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 
-int powerLEDPin = 11; //Pin which constantly blinks steadily when payload is on
+int powerLEDPin = 6; //Pin which constantly blinks steadily when payload is on
 
 int fireBurner = 4;// Pin which opens the relay to fire. High = Fire!
 
