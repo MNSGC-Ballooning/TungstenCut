@@ -1,4 +1,10 @@
 
+<<<<<<< Updated upstream
+=======
+//Libraries
+#include <SD.h>
+#include <Adafruit_GPS.h>
+>>>>>>> Stashed changes
 #include <SoftwareSerial.h>
 
 //==============================================================
@@ -36,18 +42,24 @@
 
 
 //~~~~~~~~~~~~~~~Pin Variables~~~~~~~~~~~~~~~
-int ledPin = 5; //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
+ #define ledPin 5          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 
-int powerLEDPin = 6; //Pin which constantly blinks steadily when payload is on
+#define ledFix 5           //GPS fix
 
-int fireBurner = 4;// Pin which opens the relay to fire. High = Fire!
+<<<<<<< Updated upstream
+=======
+#define fireBurner 4       // Pin which opens the relay to fire. High = Fire!
 
+#define ledSD 6            //Pin which controls the SD LED
+
+#define chipSelect 10      //SD Card pin
+>>>>>>> Stashed changes
 
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
-int first = 1; //int used for 'if navigation'
-boolean burnAttempt = false; //stores whether burn has been attempted
-int cutNow=0; //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)
-int countThree=0; //Int used to blink 3 times during recovery mode
+int first = 1;                          //int used for 'if navigation'
+boolean burnAttempt = false;           //stores whether burn has been attempted
+int cutNow=0;                         //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)
+int countThree=0;                    //Int used to blink 3 times during recovery mode
 boolean burnSuccess=false;  //Stores whether burn was successful
 
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
@@ -56,28 +68,106 @@ unsigned long timer;                       //Used in recovery mode as the countd
 long timerLED=0;                           //This should be obvious, but it's used for LED blinky-blinky
 boolean LEDon = false;                    //^that
 
+
+//xBee Stuff
 SoftwareSerial xBee(2,3); //RX, TX
 const String xBeeID = "W1"; //xBee ID
 
 
+<<<<<<< Updated upstream
 
 
 
+=======
+//GPS Stuff
+SoftwareSerial gpsSerial(8,7);
+Adafruit_GPS GPS(&gpsSerial); //Constructor for GPS object
+int GPSstartTime;
+int days = 0;
+boolean newDay = false;
+boolean firstFix = false;
+
+
+
+//SD Stuff
+File datalogA, datalogB, eventlogA, eventlogB;
+char datafileA[13], datafileB[13], eventfileA[13], eventfileB[13];
+String filename = "WCut";
+
+>>>>>>> Stashed changes
 
 void setup() {
   // initialize pins.
   pinMode(ledPin, OUTPUT);
   pinMode(fireBurner, OUTPUT);
+<<<<<<< Updated upstream
   pinMode(powerLEDPin, OUTPUT);
+=======
+  pinMode(ledSD, OUTPUT);
 
+>>>>>>> Stashed changes
+
+//Initiate xBee Data lines
   xBee.begin(9600);
+<<<<<<< Updated upstream
   Serial.begin(9600);
+=======
+  //Serial.begin(9600);
 
 
-  digitalWrite(powerLEDPin, HIGH); //The Green/red LED should remain on the entire time the payload is still powered.
+//Initiate GPS Data lines
+  GPS.begin(9600);
+  gpsSerial.begin(9600);
+
+
+
+//GPS setup and config
+  GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
+  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
+
+
+  //initialize SD card
+  if (!SD.begin(chipSelect)) {
+    while (true) {                  //power LED will blink if no card is inserted
+      digitalWrite(ledSD, HIGH);
+      delay(500);
+      digitalWrite(ledSD, LOW);
+      delay(500);
+    }
+  }
+  openDatalog();
+  openEventlog();
+  
+  for (int i = 0; i < 100; i++) {                 //check for existing files from previous runs of program...
+    (filename + String(i / 10) + String(i % 10) + "A" + ".csv").toCharArray(datafileA, sizeof(datafileA));
+    if (!SD.exists(datafileA)) {                   //...and make sure a new file is opened each time
+      (filename + String(i / 10) + String(i % 10) + "B" + ".csv").toCharArray(datafileB, sizeof(datafileB));
+      openDatalog();
+      (filename + String(i / 10) + String(i % 10) + "A" + ".txt").toCharArray(eventfileA, sizeof(eventfileA));
+      (filename + String(i / 10) + String(i % 10) + "B" + ".txt").toCharArray(eventfileB, sizeof(eventfileB));
+      openEventlog();
+      break;
+    }
+  }
+ 
+  if (!datalogA) {                   //both power and data LEDs will blink together if card is inserted but file fails to be created
+    while (true) {
+      digitalWrite(ledSD, HIGH);
+      digitalWrite(ledPin, HIGH);
+      delay(500);
+      digitalWrite(ledSD, LOW);
+      digitalWrite(ledPin, LOW);
+      delay(500);
+    }
+  }
+
+>>>>>>> Stashed changes
+
+
+
   digitalWrite(fireBurner, LOW); //sets burner to off just in case
 
-  //####################Startup#####################
+  /*/####################Startup#####################
     for(int i=0;i<7;i++){          //Blinks blue LED 7 times separated by .3 seconds to inicate "hello"
       digitalWrite(ledPin, HIGH);
       delay(300);
@@ -91,11 +181,22 @@ void setup() {
         digitalWrite(ledPin, LOW);
         delay(200);
         }*/
-}
 
+ String Header = "Flight Time, Lat, Long, Altitude (ft), Date, Hour:Min:Sec, Fix,";
+  datalogA.println(Header);
+  datalogB.println(Header);    //set up datalog format
+  closeDatalog();
+  closeEventlog();
+
+  sendXBee("Setup Complete");
+
+<<<<<<< Updated upstream
+=======
+}
 
 void loop() {
 
+>>>>>>> Stashed changes
     xBeeCommand(); //Checks for xBee commands
 
     if(!burnAttempt){  //Blinks LED every second to convey normal flight operation (countdown)
