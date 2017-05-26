@@ -1,12 +1,8 @@
 
-<<<<<<< Updated upstream
-=======
 //Libraries
 #include <SD.h>
 #include <Adafruit_GPS.h>
->>>>>>> Stashed changes
 #include <SoftwareSerial.h>
-
 //==============================================================
 //               Code For Tungsten Cutter
 //                 Danny Toth May/June 2017 - tothx051
@@ -33,8 +29,8 @@
 //  /_____/\__,_/_/  /_/ /_/  /_____/\___/_/\__,_/\__, /   \____/\____/_/ /_/_/ /_/\__, /\__,_/_/   \__,_/\__/_/\____/_/ /_/ 
 //                                               /____/                           /____/                                     
 
-                                                           int burn_Delay = 3600; //Countdown timer in seconds!
-                                                //Default is 60m, some modules fly on 70m (4200s)
+int burn_Delay = 3600; //Countdown timer in seconds!
+//Default is 60m, some modules fly on 70m (4200s)
 
 //=============================================================================================================================================
 //=============================================================================================================================================
@@ -42,18 +38,15 @@
 
 
 //~~~~~~~~~~~~~~~Pin Variables~~~~~~~~~~~~~~~
- #define ledPin 5          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
+#define ledPin 5          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 
 #define ledFix 5           //GPS fix
 
-<<<<<<< Updated upstream
-=======
 #define fireBurner 4       // Pin which opens the relay to fire. High = Fire!
 
 #define ledSD 6            //Pin which controls the SD LED
 
 #define chipSelect 10      //SD Card pin
->>>>>>> Stashed changes
 
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 int first = 1;                          //int used for 'if navigation'
@@ -74,11 +67,6 @@ SoftwareSerial xBee(2,3); //RX, TX
 const String xBeeID = "W1"; //xBee ID
 
 
-<<<<<<< Updated upstream
-
-
-
-=======
 //GPS Stuff
 SoftwareSerial gpsSerial(8,7);
 Adafruit_GPS GPS(&gpsSerial); //Constructor for GPS object
@@ -94,24 +82,15 @@ File datalogA, datalogB, eventlogA, eventlogB;
 char datafileA[13], datafileB[13], eventfileA[13], eventfileB[13];
 String filename = "WCut";
 
->>>>>>> Stashed changes
 
 void setup() {
-  // initialize pins.
+ // initialize pins.
   pinMode(ledPin, OUTPUT);
   pinMode(fireBurner, OUTPUT);
-<<<<<<< Updated upstream
-  pinMode(powerLEDPin, OUTPUT);
-=======
   pinMode(ledSD, OUTPUT);
-
->>>>>>> Stashed changes
-
+  pinMode(10, OUTPUT);    // this needs to be be declared as output for data loggin to work
 //Initiate xBee Data lines
   xBee.begin(9600);
-<<<<<<< Updated upstream
-  Serial.begin(9600);
-=======
   //Serial.begin(9600);
 
 
@@ -127,14 +106,13 @@ void setup() {
 
 
   //initialize SD card
-  if (!SD.begin(chipSelect)) {
-    while (true) {                  //power LED will blink if no card is inserted
+  while (!SD.begin(chipSelect)) {            //power LED will blink if no card is inserted
       digitalWrite(ledSD, HIGH);
       delay(500);
       digitalWrite(ledSD, LOW);
       delay(500);
     }
-  }
+    //open up the logs
   openDatalog();
   openEventlog();
   
@@ -150,8 +128,7 @@ void setup() {
     }
   }
  
-  if (!datalogA) {                   //both power and data LEDs will blink together if card is inserted but file fails to be created
-    while (true) {
+  while (!datalogA) {                   //both power and data LEDs will blink together if card is inserted but file fails to be created
       digitalWrite(ledSD, HIGH);
       digitalWrite(ledPin, HIGH);
       delay(500);
@@ -159,9 +136,6 @@ void setup() {
       digitalWrite(ledPin, LOW);
       delay(500);
     }
-  }
-
->>>>>>> Stashed changes
 
 
 
@@ -190,26 +164,23 @@ void setup() {
 
   sendXBee("Setup Complete");
 
-<<<<<<< Updated upstream
-=======
 }
 
 void loop() {
 
->>>>>>> Stashed changes
     xBeeCommand(); //Checks for xBee commands
 
     if(!burnAttempt){  //Blinks LED every second to convey normal flight operation (countdown)
       countdownBlink();
     }
 
-    if((cutNow==0)&&(millis()>=burnDelay)){   //Check to see if timer has run out or if cut has been commanded
+    if((!cutNow)&&(millis()>=burnDelay)){   //Check to see if timer has run out or if cut has been commanded
       cutNow=1;
     }
 
     //...........................Firing Burner.......................  
    
-    if((cutNow==1)){
+    if((cutNow)){
       for(int j=0;j<5;j++){               //LED blinks rapidly before firing burner
       digitalWrite(ledPin, HIGH); 
       delay(200);
