@@ -1,3 +1,4 @@
+/*
 float checkAlt;
 int lastGPS;
 
@@ -47,4 +48,4 @@ int getLastGPS() {    //returns time in seconds between last successful fix and 
     newDay = false;
   return days * 86400 + lastGPS;
 }
-
+*/

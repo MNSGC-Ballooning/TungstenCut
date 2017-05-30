@@ -80,6 +80,7 @@ void xBeeCommand(){
    else if(Com.equals("WB")){
     //blinks the LED so you know it's connected
     testBlink();
+    logCommand(Com, "Loggy log-log");
     xBee.println("Hey you figured it out. Took you long enough");
    }
   
@@ -103,7 +104,7 @@ void xBeeCommand(){
     sendXBee(tStr);
   }
 
-  
+  /*
    else if (Com.equals("GPS")) {
     //Poll most recent GPS data
     logCommand(Com, "Request GPS data");
@@ -113,7 +114,7 @@ void xBeeCommand(){
     else message += "No Fix";
     sendXBee(message);
   }
-   
+   */
 
       
   else {

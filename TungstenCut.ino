@@ -1,7 +1,7 @@
 
 //Libraries
 #include <SD.h>
-#include <Adafruit_GPS.h>
+//#include <Adafruit_GPS.h>
 #include <SoftwareSerial.h>
 //==============================================================
 //               Code For Tungsten Cutter
@@ -42,17 +42,16 @@
 
 //#define ledFix 5           //GPS fix
 
-#define fireBurner 4       // Pin which opens the relay to fire. High = Fire!
+#define fireBurner 3       // Pin which opens the relay to fire. High = Fire!
 
 #define ledSD 6            //Pin which controls the SD LED
 
-#define chipSelect 10      //SD Card pin
+#define chipSelect 4      //SD Card pin
 
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 int first = 1;                          //int used for 'if navigation'
 boolean burnAttempt = false;           //stores whether burn has been attempted
 int cutNow=0;                         //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)
-int countThree=0;                    //Int used to blink 3 times during recovery mode
 boolean burnSuccess=false;          //Stores whether burn was successful
 
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
@@ -62,11 +61,14 @@ long timerLED=0;                           //This should be obvious, but it's us
 boolean LEDon = false;                    //^that
 
 
+
+
+
 //xBee Stuff
 SoftwareSerial xBee(2,3); //RX, TX
 const String xBeeID = "W1"; //xBee ID
 
-
+/*
 //GPS Stuff
 SoftwareSerial gpsSerial(8,7);
 Adafruit_GPS GPS(&gpsSerial); //Constructor for GPS object
@@ -74,7 +76,7 @@ int GPSstartTime;
 int days = 0;
 boolean newDay = false;
 boolean firstFix = false;
-
+*/
 
 
 //SD Stuff
@@ -82,20 +84,32 @@ File eventlog;
 String filename = "";
 
 
+
+
 void setup() {
  // initialize pins
   pinMode(ledPin, OUTPUT);
   pinMode(fireBurner, OUTPUT);
   pinMode(ledSD, OUTPUT);
-  pinMode(10, OUTPUT);    // this needs to be be declared as output for data logging to work
+  pinMode(4, OUTPUT);    // this needs to be be declared as output for data logging to work
+
+Serial.begin(9600);
+
+Serial.println("Pins Initialized");
+
+
 //Initiate xBee Data lines
   xBee.begin(9600);
   //Serial.begin(9600);
 
+Serial.println("xBee begin");
 
+/*
 //Initiate GPS Data lines
   GPS.begin(9600);
   gpsSerial.begin(9600);
+
+Serial.println("GPS begin");
 
 
 
@@ -103,25 +117,37 @@ void setup() {
   GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
   GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
 
+Serial.println("GPS config");
+*/
 
   //initialize SD card
   while (!SD.begin(chipSelect)) {            //power LED will blink if no card is inserted
+      Serial.println("No SD");
       digitalWrite(ledSD, HIGH);
       delay(500);
       digitalWrite(ledSD, LOW);
       delay(500);
     }
-    //open up the logs
- // openEventlog();
+
+Serial.println("Checking for existing file");
+
   
    for(int i=0;i<100;i++){
     if(!SD.exists("WCut" + String(i/10) + String(i%10))){
        filename = "WCut" + String(i/10) + String(i%10);
+       openEventlog();
        break;
        }
     }
+
+Serial.println("filename created: " + filename);
+
  
   while (!eventlog) {                   //both power and data LEDs will blink together if card is inserted but file fails to be created
+      
+Serial.println("file creation failed");
+
+      
       digitalWrite(ledSD, HIGH);
       digitalWrite(ledPin, HIGH);
       delay(500);
@@ -152,6 +178,9 @@ void setup() {
  String Header = "Flight Time, Lat, Long, Altitude (ft), Date, Hour:Min:Sec, Fix,";
   eventlog.println(Header);//set upeventlog format
  //eventlogB.println(Header);    
+
+Serial.println("Eventlog header added");
+
    
   closeEventlog();
 
@@ -163,17 +192,29 @@ void loop() {
 
     xBeeCommand(); //Checks for xBee commands
 
+  Serial.println("xBee command search");
+
+
+
     if(!burnAttempt){  //Blinks LED every second to convey normal flight operation (countdown)
       countdownBlink();
+      Serial.println("Countdown");
+
     }
 
     if((!cutNow)&&(millis()>=burnDelay)){   //Check to see if timer has run out or if cut has been commanded
       cutNow=1;
+      Serial.println("Cutdown initiated");
+
     }
 
     //...........................Firing Burner.......................  
    
     if((cutNow)){
+
+      Serial.println("Cutdown initiation received");
+
+      
       for(int j=0;j<5;j++){               //LED blinks rapidly before firing burner
       digitalWrite(ledPin, HIGH); 
       delay(200);
@@ -188,6 +229,8 @@ void loop() {
       
       burnAttempt=true;    //these two will happen every time for loop navigation
       
+      Serial.println("Burner fired");
+
       
       
       //Continuity check to decide burn or no burn
@@ -206,7 +249,8 @@ void loop() {
       //- - - - - - - - - - - - - - Case Successful Cut - - - - - - - - - - - - - - 
       
         recoveryBlink();
-       
+       Serial.println("Recovery");
+
 
         //More stuff can go here. 
         
