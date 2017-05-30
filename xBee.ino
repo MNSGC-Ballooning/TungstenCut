@@ -1,6 +1,6 @@
 //Takes a string to send out via xBee, and logs the transmission to the SD card with a timestamp
 void sendXBee(String out) {
-  xBee.println(xBeeID + ";" + out + "!");
+  Serial.println(xBeeID + ";" + out + "!");
   openEventlog();
   eventlog.println(flightTimeStr() + "  TX  " + out);
  // eventlogB.println(flightTimeStr() + "  TX  " + out);
@@ -17,7 +17,7 @@ void logCommand(String com, String command) {
 
 //Current method of sending an acknowledgement via RFD
 void acknowledge() {
-  xBee.println(xBeeID + "\n");
+  Serial.println(xBeeID + "\n");
 }
 
 String lastCommand = "";
@@ -28,8 +28,8 @@ void xBeeCommand(){
   boolean complete = false;                  //Stuff we don't care about
   String command = "";
   char inChar;
-  while (xBee.available() > 0) {
-    inChar = (char)xBee.read();
+  while (Serial.available() > 0) {
+    inChar = (char)Serial.read();
     if (inChar != ' ') {
       command += inChar;
       if (inChar == '!') { 
@@ -81,7 +81,7 @@ void xBeeCommand(){
     //blinks the LED so you know it's connected
     testBlink();
     logCommand(Com, "Loggy log-log");
-    xBee.println("Hey you figured it out. Took you long enough");
+    Serial.println("Hey you figured it out. Took you long enough");
    }
   
   

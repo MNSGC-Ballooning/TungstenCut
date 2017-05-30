@@ -65,7 +65,7 @@ boolean LEDon = false;                    //^that
 
 
 //xBee Stuff
-SoftwareSerial xBee(2,3); //RX, TX
+//SoftwareSerial xBee(2,3); //RX, TX
 const String xBeeID = "W1"; //xBee ID
 
 /*
@@ -91,7 +91,7 @@ void setup() {
   pinMode(ledPin, OUTPUT);
   pinMode(fireBurner, OUTPUT);
   pinMode(ledSD, OUTPUT);
-  pinMode(4, OUTPUT);    // this needs to be be declared as output for data logging to work
+  pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
 
 Serial.begin(9600);
 
@@ -99,7 +99,7 @@ Serial.println("Pins Initialized");
 
 
 //Initiate xBee Data lines
-  xBee.begin(9600);
+  //xBee.begin(9600);
   //Serial.begin(9600);
 
 Serial.println("xBee begin");
@@ -192,13 +192,13 @@ void loop() {
 
     xBeeCommand(); //Checks for xBee commands
 
-  Serial.println("xBee command search");
+  //Serial.println("xBee command search");
 
 
 
     if(!burnAttempt){  //Blinks LED every second to convey normal flight operation (countdown)
       countdownBlink();
-      Serial.println("Countdown");
+      //Serial.println("Countdown");
 
     }
 
