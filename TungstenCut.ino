@@ -55,7 +55,7 @@ int cutNow=0;                         //loop maneuvering variable (1 if cutter w
 boolean burnSuccess=false;          //Stores whether burn was successful
 
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
-unsigned long burnDelay = burn_Delay*1000;   //a burnDelay in milliseconds, which will be the primary currency from here on out.
+unsigned long burnDelay = long(burn_Delay)*1000;   //a burnDelay in milliseconds, which will be the primary currency from here on out.
 unsigned long timer;                        //Used in recovery mode as the countdown to cut reattempt
 long timerLED=0;                           //This should be obvious, but it's used for LED blinky-blinky
 boolean LEDon = false;                    //^that
@@ -198,7 +198,6 @@ void loop() {
 
     if(!burnAttempt){  //Blinks LED every second to convey normal flight operation (countdown)
       countdownBlink();
-      //Serial.println("Countdown");
 
     }
 
