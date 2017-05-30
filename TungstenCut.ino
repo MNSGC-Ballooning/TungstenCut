@@ -29,8 +29,8 @@
 //  /_____/\__,_/_/  /_/ /_/  /_____/\___/_/\__,_/\__, /   \____/\____/_/ /_/_/ /_/\__, /\__,_/_/   \__,_/\__/_/\____/_/ /_/ 
 //                                               /____/                           /____/                                     
 
-int burn_Delay = 3600; //Countdown timer in seconds!
-//Default is 60m, some modules fly on 70m (4200s)
+                                         int burn_Delay = 3600; //Countdown timer in seconds!
+                                          //Default is 60m, some modules fly on 70m (4200s)
 
 //=============================================================================================================================================
 //=============================================================================================================================================
@@ -40,7 +40,7 @@ int burn_Delay = 3600; //Countdown timer in seconds!
 //~~~~~~~~~~~~~~~Pin Variables~~~~~~~~~~~~~~~
 #define ledPin 5          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 
-#define ledFix 5           //GPS fix
+//#define ledFix 5           //GPS fix
 
 #define fireBurner 4       // Pin which opens the relay to fire. High = Fire!
 
@@ -53,11 +53,11 @@ int first = 1;                          //int used for 'if navigation'
 boolean burnAttempt = false;           //stores whether burn has been attempted
 int cutNow=0;                         //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)
 int countThree=0;                    //Int used to blink 3 times during recovery mode
-boolean burnSuccess=false;  //Stores whether burn was successful
+boolean burnSuccess=false;          //Stores whether burn was successful
 
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
-unsigned long burnDelay = burn_Delay*1000; //a burnDelay in milliseconds, which will be the primary currency from here on out.
-unsigned long timer;                       //Used in recovery mode as the countdown to cut reattempt
+unsigned long burnDelay = burn_Delay*1000;   //a burnDelay in milliseconds, which will be the primary currency from here on out.
+unsigned long timer;                        //Used in recovery mode as the countdown to cut reattempt
 long timerLED=0;                           //This should be obvious, but it's used for LED blinky-blinky
 boolean LEDon = false;                    //^that
 
@@ -78,17 +78,16 @@ boolean firstFix = false;
 
 
 //SD Stuff
-File datalogA, datalogB, eventlogA, eventlogB;
-char datafileA[13], datafileB[13], eventfileA[13], eventfileB[13];
-String filename = "WCut";
+File eventlog;
+String filename = "";
 
 
 void setup() {
- // initialize pins.
+ // initialize pins
   pinMode(ledPin, OUTPUT);
   pinMode(fireBurner, OUTPUT);
   pinMode(ledSD, OUTPUT);
-  pinMode(10, OUTPUT);    // this needs to be be declared as output for data loggin to work
+  pinMode(10, OUTPUT);    // this needs to be be declared as output for data logging to work
 //Initiate xBee Data lines
   xBee.begin(9600);
   //Serial.begin(9600);
@@ -113,22 +112,16 @@ void setup() {
       delay(500);
     }
     //open up the logs
-  openDatalog();
-  openEventlog();
+ // openEventlog();
   
-  for (int i = 0; i < 100; i++) {                 //check for existing files from previous runs of program...
-    (filename + String(i / 10) + String(i % 10) + "A" + ".csv").toCharArray(datafileA, sizeof(datafileA));
-    if (!SD.exists(datafileA)) {                   //...and make sure a new file is opened each time
-      (filename + String(i / 10) + String(i % 10) + "B" + ".csv").toCharArray(datafileB, sizeof(datafileB));
-      openDatalog();
-      (filename + String(i / 10) + String(i % 10) + "A" + ".txt").toCharArray(eventfileA, sizeof(eventfileA));
-      (filename + String(i / 10) + String(i % 10) + "B" + ".txt").toCharArray(eventfileB, sizeof(eventfileB));
-      openEventlog();
-      break;
+   for(int i=0;i<100;i++){
+    if(!SD.exists("WCut" + String(i/10) + String(i%10))){
+       filename = "WCut" + String(i/10) + String(i%10);
+       break;
+       }
     }
-  }
  
-  while (!datalogA) {                   //both power and data LEDs will blink together if card is inserted but file fails to be created
+  while (!eventlog) {                   //both power and data LEDs will blink together if card is inserted but file fails to be created
       digitalWrite(ledSD, HIGH);
       digitalWrite(ledPin, HIGH);
       delay(500);
@@ -157,9 +150,9 @@ void setup() {
         }*/
 
  String Header = "Flight Time, Lat, Long, Altitude (ft), Date, Hour:Min:Sec, Fix,";
-  datalogA.println(Header);
-  datalogB.println(Header);    //set up datalog format
-  closeDatalog();
+  eventlog.println(Header);//set upeventlog format
+ //eventlogB.println(Header);    
+   
   closeEventlog();
 
   sendXBee("Setup Complete");
@@ -209,15 +202,15 @@ void loop() {
     //...............................................................
 
 //=======================Recovery Mode============================  
-    else{
+    if(burnSuccess){
       //- - - - - - - - - - - - - - Case Successful Cut - - - - - - - - - - - - - - 
-      if(burnSuccess){
+      
         recoveryBlink();
        
 
         //More stuff can go here. 
         
-     }
+     
      //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
      //_ _ _ _ _ _ _ _ _ _ _ _ _ Case Unsuccessful Cut_ _ _ _ _ _ _ _ __ _ _ _ _ _
       /*

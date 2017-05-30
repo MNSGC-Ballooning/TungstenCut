@@ -14,7 +14,7 @@ void updateSensors() {
       firstFix = true;
     }
     if (getGPStime() > lastGPS) {
-      openDatalog();
+      openEventlog();
       String data = "";
       data += (flightTimeStr() + "," + String(GPS.latitudeDegrees) + "," + String(GPS.longitudeDegrees) + ",");
       data += (String(GPS.altitude * 3.28048) + ",");    //convert meters to feet for datalogging
@@ -27,9 +27,9 @@ void updateSensors() {
       else
         data += ("No fix,");
       
-      datalogA.println(data);
-      datalogB.println(data);
-      closeDatalog();
+      eventlog.println(data);
+     // eventlogB.println(data);
+      closeEventlog();
     }
   }
 }
