@@ -38,11 +38,11 @@
      -------------------------------------------------------------------------------------------------------------------------
      Component                    | Pins used             | Notes
 
-     Xbee serial                  | D0-1                  | IMPORTANT- is hardware serial, cannot upload with Xbee plugged in
+     xBee serial                  | D0-1                  | IMPORTANT- is hardware serial (controls xBee and hard serial line), cannot upload with xBee plugged in
      Fireburner                   | D2                    | 
-     Data LED (BLUE)              | D3                    |  "action" LED, tells us what the payload is doing
+     Data LED (BLUE)              | D3                    |  "action" LED (Blue), tells us what the payload is doing
      SD                           | D4, D11-13            |  11-13 not not have wires but they are used!
-     SD LED (RED)                 | D5                    | only on when the file is openn in SD card
+     SD LED (RED)                 | D5                    | "SD" LED (Red). Only on when the file is open in SD card
      GPS serial                   | 8,9 (Rx, Tx)          | serial for GPS
      -------------------------------------------------------------------------------------------------------------------------
 */
@@ -60,13 +60,13 @@
 int first = 1;                          //int used for 'if navigation'
 boolean burnAttempt = false;           //stores whether burn has been attempted
 int cutNow=0;                         //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)
-boolean burnSuccess=false;          //Stores whether burn was successful
+boolean burnSuccess=false;           //Stores whether burn was successful
 
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
 unsigned long burnDelay = long(burn_Delay)*1000;   //a burnDelay in milliseconds, which will be the primary currency from here on out.
-unsigned long timer;                        //Used in recovery mode as the countdown to cut reattempt
-long timerLED=0;                           //This should be obvious, but it's used for LED blinky-blinky
-boolean LEDon = false;                    //^that
+unsigned long timer;                              //Used in recovery mode as the countdown to cut reattempt
+long timerLED=0;                                 //This should be obvious, but it's used for LED blinky-blinky
+boolean LEDon = false;                          //^that
 
 
 //xBee Stuff
@@ -231,8 +231,8 @@ void loop() {
     //=======================Recovery Mode============================  
     if(burnSuccess){
       //- - - - - - - - - - - - - - Case Successful Cut - - - - - - - - - - - - - -
-        recoveryBlink();
-       Serial.println("Recovery");
+       recoveryBlink();
+      
         //More stuff can go here. 
      //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
      //_ _ _ _ _ _ _ _ _ _ _ _ _ Case Unsuccessful Cut_ _ _ _ _ _ _ _ __ _ _ _ _ _
