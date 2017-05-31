@@ -106,7 +106,7 @@ void xBeeCommand(){
     sendXBee(tStr);
   }
 
-  /*
+  
    else if (Com.equals("GPS")) {
     //Poll most recent GPS data
     logCommand(Com, "Request GPS data");
@@ -116,7 +116,7 @@ void xBeeCommand(){
     else message += "No Fix";
     sendXBee(message);
   }
-   */
+   
 
       
   else {

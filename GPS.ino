@@ -29,7 +29,7 @@ void updateGPS() {
         data += ("No fix,");
       
       eventlog.println(data);
-     // eventlogB.println(data);
+     
       closeEventlog();
     }
   }
@@ -48,4 +48,4 @@ int getLastGPS() {    //returns time in seconds between last successful fix and 
     newDay = false;
   return days * 86400 + lastGPS;
 }
-*/
+
