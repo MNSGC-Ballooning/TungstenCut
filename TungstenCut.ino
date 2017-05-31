@@ -192,7 +192,7 @@ void setup() {
 
   Serial.println("GPS header added");
   
- String eventLogHeader = "Time since turned on, sent/recieved from mega, command";
+ String eventLogHeader = "Time, Sent/Received, Command";
   eventLog.println(eventLogHeader);
   
   Serial.println("Eventlog header added");
@@ -220,8 +220,8 @@ void loop() {
     //...........................Firing Burner.......................  
    
     if((cutNow)){
-        flamingGuillotine();
-        contiCheck();
+        flamingGuillotine();        //Cutdown Function. The name was relevant to whatever conversation we were having at the time...
+        contiCheck();               //Temporary Continuity check. Currently returns positive-cut every time.
     }
     //...............................................................
     //=======================Recovery Mode============================  

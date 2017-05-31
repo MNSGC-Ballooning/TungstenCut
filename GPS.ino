@@ -17,7 +17,7 @@ void updateGPS() {
     if (getGPStime() > lastGPS) {
       openGPSlog();
       String data = "";
-      data += (flightTimeStr() + "," + String(GPS.latitudeDegrees) + "," + String(GPS.longitudeDegrees) + ",");
+      data += (flightTimeStr() + "," + String(GPS.latitudeDegrees, 4) + "," + String(GPS.longitudeDegrees, 4) + ",");
       data += (String(GPS.altitude * 3.28048) + ",");    //convert meters to feet for datalogging
       data += (String(GPS.month) + "/" + String(GPS.day) + "/" + String(GPS.year) + ",");
       data += (String(GPS.hour) + ":" + String(GPS.minute) + ":" + String(GPS.seconds) + ",");
@@ -28,7 +28,7 @@ void updateGPS() {
       else
         data += ("No fix,");
       
-      eventLog.println(data);
+      GPSlog.println(data);
      
       closeGPSlog();
     }
