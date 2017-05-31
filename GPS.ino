@@ -5,9 +5,8 @@ int lastGPS;
 //function to handle both retrieval of data from GPS module and sensors, as well as recording it on the SD card
 void updateGPS() {
   
-  while (gpsSerial.available() > 0) {
+  while (Serial1.available() > 0) {
     GPS.read();
-    Serial.println("I am reading");
   }
   if (GPS.newNMEAreceived()) {
     GPS.parse(GPS.lastNMEA());

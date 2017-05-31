@@ -74,8 +74,7 @@ const String xBeeID = "W1"; //xBee ID
 
 
 //GPS Stuff
-SoftwareSerial gpsSerial(8,9);
-Adafruit_GPS GPS(&gpsSerial); //Constructor for GPS object
+Adafruit_GPS GPS(&Serial1); //Constructor for GPS object
 int GPSstartTime;
 int days = 0;
 boolean newDay = false;
@@ -106,7 +105,6 @@ void setup() {
 
 //Initiate GPS Data lines
   GPS.begin(9600);
-  
   Serial.println("GPS begin");
 
   
@@ -209,7 +207,6 @@ void loop() {
 
     xBeeCommand(); //Checks for xBee commands
 
-    updateGPS();
     if(!burnAttempt){  //Blinks LED every second to convey normal flight operation (countdown)
       countdownBlink();
       updateGPS();
