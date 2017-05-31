@@ -21,10 +21,12 @@ void flamingGuillotine(){
       digitalWrite(ledPin, LOW);
       delay(200);
       }
-        for(int l=0;l<3;l++){               //The actual burner activation.  It will attempt burn 3 times.
+        
+        for(int u=0;u<3;u++){               //The actual burner activation.  It will attempt burn 3 times.
           digitalWrite(fireBurner, HIGH);
-          delay(800+l*200);                 //Each burn is longer than the last.
+          delay(800+u*200);                 //Each burn is longer than the last.
           digitalWrite(fireBurner, LOW);
+          delay(200);
         }
       
       burnAttempt=true;    //these two will happen every time for loop navigation
