@@ -69,9 +69,6 @@ long timerLED=0;                           //This should be obvious, but it's us
 boolean LEDon = false;                    //^that
 
 
-
-
-
 //xBee Stuff
 const String xBeeID = "W1"; //xBee ID
 
@@ -85,13 +82,11 @@ boolean newDay = false;
 boolean firstFix = false;
 
 
-
 //SD Stuff
 File eventlog;
 File GPSlog;
 String Ename = "";
 String GPSname = "";
-
 
 
 void setup() {
@@ -100,8 +95,6 @@ void setup() {
   pinMode(fireBurner, OUTPUT);
   pinMode(ledSD, OUTPUT);
   pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
-
-
 
   Serial.println("Pins Initialized");
 
@@ -118,12 +111,11 @@ void setup() {
   Serial.println("GPS begin");
 
 
-
 //GPS setup and config
   GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
   GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
 
-Serial.println("GPS config");
+  Serial.println("GPS config");
 
 
   //initialize SD card
@@ -137,7 +129,7 @@ Serial.println("GPS config");
 
   Serial.println("Checking for existing file");
 
-  
+  //Check for existing event logs and creates a new one
    for(int i=0;i<100;i++){
     if(!SD.exists("Elog" + String(i/10) + String(i%10))){
        Ename = "Elog" + String(i/10) + String(i%10);
@@ -145,7 +137,11 @@ Serial.println("GPS config");
        break;
        }
     }
+    
     Serial.println("event log created: " + Ename);
+   
+   
+   //Same but for GPS
    for(int i=0;i<100;i++){
     if(!SD.exists("GPS" + String(i/10) + String(i%10))){
        GPSname = "GPS" + String(i/10) + String(i%10);
@@ -154,13 +150,12 @@ Serial.println("GPS config");
        }
     }
 
-Serial.println("GPS log created: " + GPSname);
+  Serial.println("GPS log created: " + GPSname);
 
  
   while (!eventlog) {                   //both power and data LEDs will blink together if card is inserted but file fails to be created
-      
-Serial.println("file creation failed");
 
+  Serial.println("Eventlog file creation failed");
       
       digitalWrite(ledSD, HIGH);
       digitalWrite(ledPin, HIGH);
@@ -169,8 +164,6 @@ Serial.println("file creation failed");
       digitalWrite(ledPin, LOW);
       delay(500);
     }
-
-
 
   digitalWrite(fireBurner, LOW); //sets burner to off just in case
 
@@ -192,10 +185,8 @@ Serial.println("file creation failed");
  String Header = "Flight Time, Lat, Long, Altitude (ft), Date, Hour:Min:Sec, Fix,";
   eventlog.println(Header);//set upeventlog format
     
-
   Serial.println("Eventlog header added");
 
-   
   closeEventlog();
 
   sendXBee("Setup Complete");
@@ -206,7 +197,6 @@ void loop() {
 
     xBeeCommand(); //Checks for xBee commands
 
- 
     if(!burnAttempt){  //Blinks LED every second to convey normal flight operation (countdown)
       countdownBlink();
       updateGPS();
@@ -217,17 +207,14 @@ void loop() {
       Serial.println("Cutdown initiated");
 
     }
-
     //...........................Firing Burner.......................  
    
     if((cutNow)){
-
         flamingGuillotine();
         contiCheck();
     }
     //...............................................................
-
-//=======================Recovery Mode============================  
+    //=======================Recovery Mode============================  
     if(burnSuccess){
       //- - - - - - - - - - - - - - Case Successful Cut - - - - - - - - - - - - - -
         recoveryBlink();
@@ -236,7 +223,7 @@ void loop() {
      //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
      //_ _ _ _ _ _ _ _ _ _ _ _ _ Case Unsuccessful Cut_ _ _ _ _ _ _ _ __ _ _ _ _ _
       /*
-      if(!burnSuccess){
+      if(!burnSuccess){                                                              //To be uncommented when continuity check is implemented.
         for(int i=0;i<3;i++){         //blinks LED 3 times long to indicate retry
           digitalWrite(ledPin, HIGH);
           delay(1000);
