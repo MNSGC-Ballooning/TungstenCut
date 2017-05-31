@@ -21,7 +21,7 @@ void closeEventlog() {
 }
 void openGPSlog() {
   if (!GPSlogOpen) {
-    GPSlog = SD.open(Ename, FILE_WRITE);;
+    GPSlog = SD.open(GPSname, FILE_WRITE);;
     GPSlogOpen = true;
     digitalWrite(ledSD, HIGH);
   }
