@@ -1,7 +1,7 @@
 
 //Libraries
 #include <SD.h>
-//#include <Adafruit_GPS.h>
+#include <Adafruit_GPS.h>
 #include <SoftwareSerial.h>
 //==============================================================
 //               Code For Tungsten Cutter
@@ -35,18 +35,32 @@
 //=============================================================================================================================================
 //=============================================================================================================================================
 
+/*  Mega ADK pin connections:
+     -------------------------------------------------------------------------------------------------------------------------
+     Component                    | Pins used             | Notes
 
+     Xbee serial                  | D0-1                  | IMPORTANT- is hardware serial, cannot upload with Xbee plugged in
+     Fireburner                   | D2                    | 
+     Data LED (BLUE)              | D3                    |  "action" LED, tells us what the payload is doing
+     SD                           | D4, D11-13            |  11-13 not not have wires but they are used!
+     SD LED (RED)                 | D5                    | only on when the file is openn in SD card
+     GPS serial                   | 8,9 (Rx, Tx)          | serial for GPS
+     Arrow Actuator               | D2-3, D15 (A1)        | Set D3 high to exend, D2 high to retract. D15/A1 is feedback
+     -------------------------------------------------------------------------------------------------------------------------
+*/
 
 //~~~~~~~~~~~~~~~Pin Variables~~~~~~~~~~~~~~~
-#define ledPin 5          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
+#define ledPin 3          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 
-//#define ledFix 5           //GPS fix
+#define fireBurner 2       // Pin which opens the relay to fire. High = Fire!
 
-#define fireBurner 3       // Pin which opens the relay to fire. High = Fire!
-
-#define ledSD 6            //Pin which controls the SD LED
+#define ledSD 5            //Pin which controls the SD LED
 
 #define chipSelect 4      //SD Card pin
+
+/*
+ * pins 8,9 are Rx and Tx for the GPS
+ */
 
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 int first = 1;                          //int used for 'if navigation'
@@ -65,18 +79,17 @@ boolean LEDon = false;                    //^that
 
 
 //xBee Stuff
-//SoftwareSerial xBee(2,3); //RX, TX
 const String xBeeID = "W1"; //xBee ID
 
-/*
+
 //GPS Stuff
-SoftwareSerial gpsSerial(8,7);
+SoftwareSerial gpsSerial(8,9);
 Adafruit_GPS GPS(&gpsSerial); //Constructor for GPS object
 int GPSstartTime;
 int days = 0;
 boolean newDay = false;
 boolean firstFix = false;
-*/
+
 
 
 //SD Stuff
@@ -93,9 +106,9 @@ void setup() {
   pinMode(ledSD, OUTPUT);
   pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
 
-Serial.begin(9600);
+  Serial.begin(9600);
 
-Serial.println("Pins Initialized");
+  Serial.println("Pins Initialized");
 
 
 //Initiate xBee Data lines
@@ -104,12 +117,12 @@ Serial.println("Pins Initialized");
 
 Serial.println("xBee begin");
 
-/*
+
 //Initiate GPS Data lines
   GPS.begin(9600);
   gpsSerial.begin(9600);
 
-Serial.println("GPS begin");
+  Serial.println("GPS begin");
 
 
 
@@ -118,7 +131,7 @@ Serial.println("GPS begin");
   GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
 
 Serial.println("GPS config");
-*/
+
 
   //initialize SD card
   while (!SD.begin(chipSelect)) {            //power LED will blink if no card is inserted
@@ -129,7 +142,7 @@ Serial.println("GPS config");
       delay(500);
     }
 
-Serial.println("Checking for existing file");
+  Serial.println("Checking for existing file");
 
   
    for(int i=0;i<100;i++){
