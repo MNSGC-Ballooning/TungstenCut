@@ -53,26 +53,28 @@ void xBeeCommand(){
   
   if ((Com.substring(0,2)).equals("WA")) {
     //Add time in minutes to failsafe
-    int addedTime = (Com.substring(2, Com.length())).toInt();
+    unsigned long addedTime = atol((Com.substring(2, Com.length())).c_str());
+    sendXBee("added Time: "+ String(addedTime)+ " Minutes");
     logCommand(Com, "Added time to failsafe");
     burnDelay += (addedTime*60*1000);  //Converts minutes to milliseconds
-    int timeLeft = int(burnDelay/1000);
-    String timeLeftStr = (String(timeLeft / 60) + ":");
+    int timeLeft = int((burnDelay-millis())/1000);
+    String timeLeftStr = (String(timeLeft/60) + ":");
     timeLeft %= 60;
     timeLeftStr += (String(timeLeft / 10) + String(timeLeft % 10));
-    sendXBee(timeLeftStr);
+    sendXBee("Time until cutdown: " + timeLeftStr);
   }
 
  else if ((Com.substring(0,2)).equals("WR")) {
     //Remove time in minutes to failsafe
-    int remTime = (Com.substring(2, Com.length())).toInt();
+    unsigned long remTime = atol((Com.substring(2, Com.length())).c_str());
+    sendXBee("Time removed: "+ String(remTime)+ " Minutes");
     logCommand(Com, "Removed time from failsafe");
-    burnDelay -= int(remTime*60*1000);  //Converts minutes to milliseconds
-    int timeLeft = (burnDelay/1000);
-    String timeLeftStr = (String(timeLeft / 60) + ":");
+    burnDelay -= (remTime*60*1000);  //Converts minutes to milliseconds
+    int timeLeft = int((burnDelay-millis())/1000);
+    String timeLeftStr = (String(timeLeft/60) + ":");
     timeLeft %= 60;
     timeLeftStr += (String(timeLeft / 10) + String(timeLeft % 10));
-    sendXBee(timeLeftStr);
+    sendXBee("Time until cutdown: " + timeLeftStr);
   }
 
 
