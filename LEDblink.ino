@@ -28,6 +28,7 @@ void recoveryBlink(){
        digitalWrite(ledPin, HIGH);
        LEDon=true;                 //turn LED on and remember
        timerLED=millis();          //Reset timer
+       
       }
   if(LEDon&&(millis()-timerLED>=150)){ //If it's been .1s
        

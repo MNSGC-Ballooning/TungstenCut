@@ -230,8 +230,8 @@ void loop() {
     //=======================Recovery Mode============================  
     if(burnSuccess){
       //- - - - - - - - - - - - - - Case Successful Cut - - - - - - - - - - - - - -
-        recoveryBlink();
-       Serial.println("Recovery");
+       recoveryBlink();
+      
         //More stuff can go here. 
      //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
      //_ _ _ _ _ _ _ _ _ _ _ _ _ Case Unsuccessful Cut_ _ _ _ _ _ _ _ __ _ _ _ _ _
