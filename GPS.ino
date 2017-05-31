@@ -28,7 +28,7 @@ void updateGPS() {
       else
         data += ("No fix,");
       
-      eventlog.println(data);
+      eventLog.println(data);
      
       closeEventlog();
     }

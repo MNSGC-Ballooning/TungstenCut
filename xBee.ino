@@ -2,7 +2,7 @@
 void sendXBee(String out) {
   Serial.println(xBeeID + ";" + out + "!");
   openEventlog();
-  eventlog.println(flightTimeStr() + "  TX  " + out);
+  eventLog.println(flightTimeStr() + "  TX  " + out);
  // eventlogB.println(flightTimeStr() + "  TX  " + out);
   closeEventlog();  
   }
@@ -10,7 +10,7 @@ void sendXBee(String out) {
 //Takes the string of the xBee command as well as a description and logs to the SD card with a timestamp
 void logCommand(String com, String command) {
   openEventlog();
-  eventlog.println(flightTimeStr() + "  RX  " + com + "  " + command);
+  eventLog.println(flightTimeStr() + "  RX  " + com + "  " + command);
  // eventlogB.println(flightTimeStr() + "  RX  " + com + "  " + command);
   closeEventlog();
 }
