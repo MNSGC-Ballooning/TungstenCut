@@ -209,7 +209,8 @@ void loop() {
 
     xBeeCommand(); //Checks for xBee commands
 
-    updateGPS();
+    
+    
     if(!burnAttempt){  //Blinks LED every second to convey normal flight operation (countdown)
       countdownBlink();
       updateGPS();
