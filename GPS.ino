@@ -7,6 +7,7 @@ void updateGPS() {
   
   while (gpsSerial.available() > 0) {
     GPS.read();
+    Serial.println("I am reading");
   }
   if (GPS.newNMEAreceived()) {
     GPS.parse(GPS.lastNMEA());
@@ -15,7 +16,7 @@ void updateGPS() {
       firstFix = true;
     }
     if (getGPStime() > lastGPS) {
-      openEventlog();
+      openGPSlog();
       String data = "";
       data += (flightTimeStr() + "," + String(GPS.latitudeDegrees) + "," + String(GPS.longitudeDegrees) + ",");
       data += (String(GPS.altitude * 3.28048) + ",");    //convert meters to feet for datalogging
@@ -30,7 +31,7 @@ void updateGPS() {
       
       eventLog.println(data);
      
-      closeEventlog();
+      closeGPSlog();
     }
   }
 }

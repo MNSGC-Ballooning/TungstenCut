@@ -106,7 +106,6 @@ void setup() {
 
 //Initiate GPS Data lines
   GPS.begin(9600);
-  gpsSerial.begin(9600);
   
   Serial.println("GPS begin");
 
