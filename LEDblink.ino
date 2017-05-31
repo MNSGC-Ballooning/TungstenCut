@@ -4,7 +4,7 @@
 ///\/\/\/\/\/\/\/\/\/\/\/\/\Countdown Blink/\/\/\/\/\/\/\/\/\/\/\/\/\
 //"Chirps" the LED once per second during normal flight countdown (e.g. before cutting/recovery)
 void countdownBlink(){
-  if(!LEDon&&(millis()-timerLED >=1000)){    //if it's been 1 second 
+  if(!LEDon&&(millis()-timerLED >=850)){    //if it's been 1 second 
         
        digitalWrite(ledPin, HIGH);
        LEDon=true;                 //turn LED on and remember
