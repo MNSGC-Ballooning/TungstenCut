@@ -1,9 +1,9 @@
-/*
+
 float checkAlt;
 int lastGPS;
 
 //function to handle both retrieval of data from GPS module and sensors, as well as recording it on the SD card
-void updateSensors() {
+void updateGPS() {
   
   while (gpsSerial.available() > 0) {
     GPS.read();
@@ -29,7 +29,7 @@ void updateSensors() {
         data += ("No fix,");
       
       eventlog.println(data);
-     // eventlogB.println(data);
+     
       closeEventlog();
     }
   }
@@ -48,4 +48,4 @@ int getLastGPS() {    //returns time in seconds between last successful fix and 
     newDay = false;
   return days * 86400 + lastGPS;
 }
-*/
+
