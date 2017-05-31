@@ -45,7 +45,6 @@
      SD                           | D4, D11-13            |  11-13 not not have wires but they are used!
      SD LED (RED)                 | D5                    | only on when the file is openn in SD card
      GPS serial                   | 8,9 (Rx, Tx)          | serial for GPS
-     Arrow Actuator               | D2-3, D15 (A1)        | Set D3 high to exend, D2 high to retract. D15/A1 is feedback
      -------------------------------------------------------------------------------------------------------------------------
 */
 
@@ -57,10 +56,6 @@
 #define ledSD 5            //Pin which controls the SD LED
 
 #define chipSelect 4      //SD Card pin
-
-/*
- * pins 8,9 are Rx and Tx for the GPS
- */
 
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 int first = 1;                          //int used for 'if navigation'
@@ -94,8 +89,9 @@ boolean firstFix = false;
 
 //SD Stuff
 File eventlog;
-String filename = "";
-
+File GPSlog;
+String Ename = "";
+String GPSname = "";
 
 
 
@@ -112,9 +108,6 @@ void setup() {
 
 
 //Initiate xBee Data lines
-  //xBee.begin(9600);
-  //Serial.begin(9600);
-
 Serial.println("xBee begin");
 
 
@@ -146,14 +139,22 @@ Serial.println("GPS config");
 
   
    for(int i=0;i<100;i++){
-    if(!SD.exists("WCut" + String(i/10) + String(i%10))){
-       filename = "WCut" + String(i/10) + String(i%10);
+    if(!SD.exists("Elog" + String(i/10) + String(i%10))){
+       Ename = "Elog" + String(i/10) + String(i%10);
+       openEventlog();
+       break;
+       }
+    }
+    Serial.println("event log created: " + Ename);
+   for(int i=0;i<100;i++){
+    if(!SD.exists("GPS" + String(i/10) + String(i%10))){
+       GPSname = "GPS" + String(i/10) + String(i%10);
        openEventlog();
        break;
        }
     }
 
-Serial.println("filename created: " + filename);
+Serial.println("GPS log created: " + GPSname);
 
  
   while (!eventlog) {                   //both power and data LEDs will blink together if card is inserted but file fails to be created
