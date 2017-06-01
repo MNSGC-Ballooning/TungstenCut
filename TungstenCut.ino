@@ -67,9 +67,13 @@ unsigned long burnDelay = long(burn_Delay)*1000;   //a burnDelay in milliseconds
 unsigned long timer;                              //Used in recovery mode as the countdown to cut reattempt
 long timerLED=0;                                 //This should be obvious, but it's used for LED blinky-blinky
 boolean LEDon = false;                          //^that
-unsigned long testBlinkTime = 0;
-int ontimes = 0;
-boolean testblink = false;
+unsigned long testBlinkTime = 0;                 //blinking time for test blinking
+unsigned long burnBlinkTime = 0;                 //blinking time for burn blinking
+int ontimes = 0;                   //integer used to determine number of times to blink              
+boolean testblink = false;         //tell whether testing blinking is occuring
+boolean burnblink = false;         //tells whether burning blinking is happening
+boolean burning = false;           //tells whether or not tungsten wire relay is closed
+boolean burncurrent = false;       //tels whether or not a burn is currently being attempted
 
 //xBee Stuff
 const String xBeeID = "W1"; //xBee ID
@@ -129,8 +133,8 @@ void setup() {
 
   //Check for existing event logs and creates a new one
    for(int i=0;i<100;i++){
-    if(!SD.exists("Elog" + String(i/10) + String(i%10) + ".csv")){
-       Ename = "Elog" + String(i/10) + String(i%10)+ ".csv";
+    if(!SD.exists("Elog" + String(i/10) + String(i%10))){
+       Ename = "Elog" + String(i/10) + String(i%10);
        openEventlog();
        break;
        }

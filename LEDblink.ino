@@ -4,7 +4,7 @@
 ///\/\/\/\/\/\/\/\/\/\/\/\/\Countdown Blink/\/\/\/\/\/\/\/\/\/\/\/\/\
 //"Chirps" the LED once per second during normal flight countdown (e.g. before cutting/recovery)
 void countdownBlink(){
-  if(!testblink){
+  if(!testblink&&!burnblink){
     if(!LEDon&&(millis()-timerLED >=850)){    //if it's been 1 second 
         
         digitalWrite(ledPin, HIGH);
@@ -25,7 +25,7 @@ void countdownBlink(){
 ///\/\/\/\/\/\/\/\/\/\/\/\/\Recovery Blink/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 //Similar to countdown blink, but slower  
 void recoveryBlink(){
-  if(!testblink){
+  if(!testblink&&!burnblink){
     if(!LEDon&&(millis()-timerLED >=2000)){    //if it's been 2 second 
         
         digitalWrite(ledPin, HIGH);
@@ -47,7 +47,7 @@ void recoveryBlink(){
 ///\/\/\/\/\/\/\/\/\/\/\/\/\Retry Cut Blink/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 //Similar to countdown blink, but slower  
 void retryBlink(){
-  if(!testblink){
+  if(!testblink&&!burnblink){
     if(!LEDon&&(millis()-timerLED >=300)){    //if it's been off for .3 second 
         
         digitalWrite(ledPin, HIGH);
@@ -83,5 +83,24 @@ void testBlink(){
     ontimes = 0;
   }
   }
+
+void burnBlink(){
+  if(ontimes<5){
+    if((millis()-burnBlinkTime>=200)&&!LEDon){
+     digitalWrite(ledPin, HIGH);
+     LEDon=true;                 //turn LED on and remember
+     ontimes++;
+     burnBlinkTime= millis();
+    }
+    if((millis()-burnBlinkTime>=200)&&LEDon){
+      digitalWrite(ledPin, LOW);
+      LEDon = false;
+      burnBlinkTime = millis();
+    }
+  }
+  else{
+    burnblink = false;
+  }
+}
   
 
