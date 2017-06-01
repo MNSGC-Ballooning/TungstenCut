@@ -4,17 +4,19 @@
 ///\/\/\/\/\/\/\/\/\/\/\/\/\Countdown Blink/\/\/\/\/\/\/\/\/\/\/\/\/\
 //"Chirps" the LED once per second during normal flight countdown (e.g. before cutting/recovery)
 void countdownBlink(){
-  if(!LEDon&&(millis()-timerLED >=850)){    //if it's been 1 second 
+  if(!testblink){
+    if(!LEDon&&(millis()-timerLED >=850)){    //if it's been 1 second 
         
-       digitalWrite(ledPin, HIGH);
-       LEDon=true;                 //turn LED on and remember
-       timerLED=millis();          //Reset timer
-      }
-  if(LEDon&&(millis()-timerLED>=150)){ //If it's been .1s
+        digitalWrite(ledPin, HIGH);
+        LEDon=true;                 //turn LED on and remember
+        timerLED=millis();          //Reset timer
+        }
+    if(LEDon&&(millis()-timerLED>=150)){ //If it's been .1s
        
-      digitalWrite(ledPin, LOW); //turn off LED and remember
-      LEDon=false;
-      timerLED=millis(); //reset timer
+        digitalWrite(ledPin, LOW); //turn off LED and remember
+        LEDon=false;
+        timerLED=millis(); //reset timer
+    }
   }
 }
 //\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
@@ -23,18 +25,20 @@ void countdownBlink(){
 ///\/\/\/\/\/\/\/\/\/\/\/\/\Recovery Blink/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 //Similar to countdown blink, but slower  
 void recoveryBlink(){
-  if(!LEDon&&(millis()-timerLED >=2000)){    //if it's been 2 second 
+  if(!testblink){
+    if(!LEDon&&(millis()-timerLED >=2000)){    //if it's been 2 second 
         
-       digitalWrite(ledPin, HIGH);
-       LEDon=true;                 //turn LED on and remember
-       timerLED=millis();          //Reset timer
+        digitalWrite(ledPin, HIGH);
+        LEDon=true;                 //turn LED on and remember
+        timerLED=millis();          //Reset timer
        
-      }
-  if(LEDon&&(millis()-timerLED>=150)){ //If it's been .1s
+        }
+    if(LEDon&&(millis()-timerLED>=150)){ //If it's been .1s
        
-      digitalWrite(ledPin, LOW); //turn off LED and remember
-      LEDon=false;
-      timerLED=millis(); //reset timer
+        digitalWrite(ledPin, LOW); //turn off LED and remember
+        LEDon=false;
+        timerLED=millis(); //reset timer
+    }
   }
 }
 //\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/   
@@ -43,27 +47,41 @@ void recoveryBlink(){
 ///\/\/\/\/\/\/\/\/\/\/\/\/\Retry Cut Blink/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 //Similar to countdown blink, but slower  
 void retryBlink(){
-  if(!LEDon&&(millis()-timerLED >=300)){    //if it's been off for .3 second 
+  if(!testblink){
+    if(!LEDon&&(millis()-timerLED >=300)){    //if it's been off for .3 second 
         
-       digitalWrite(ledPin, HIGH);
-       LEDon=true;                 //turn LED on and remember
-       timerLED=millis();          //Reset timer
-      }
-  if(LEDon&&(millis()-timerLED>=1000)){ //If it's been on for 1s
+        digitalWrite(ledPin, HIGH);
+        LEDon=true;                 //turn LED on and remember
+        timerLED=millis();          //Reset timer
+        }
+    if(LEDon&&(millis()-timerLED>=1000)){ //If it's been on for 1s
        
-      digitalWrite(ledPin, LOW); //turn off LED and remember
-      LEDon=false;
-      timerLED=millis(); //reset timer
+        digitalWrite(ledPin, LOW); //turn off LED and remember
+        LEDon=false;
+        timerLED=millis(); //reset timer
+    }
   }
 }
 //\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/ 
 
 void testBlink(){
-  for(int i=0;i<4;i++){
-    digitalWrite(ledPin, HIGH);
-    delay(1000);
-    digitalWrite(ledPin, LOW);
-    delay(1000);
+  if(ontimes<10){
+    if((millis()-testBlinkTime>=300)&&!LEDon){
+     digitalWrite(ledPin, HIGH);
+     LEDon=true;                 //turn LED on and remember
+     ontimes++;
+     testBlinkTime= millis();
+    }
+    if((millis()-testBlinkTime>=150)&&LEDon){
+      digitalWrite(ledPin, LOW);
+      LEDon = false;
+      testBlinkTime = millis();
+    }
   }
-}
+  else{
+    testblink = false;
+    ontimes = 0;
+  }
+  }
+  
 

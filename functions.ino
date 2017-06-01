@@ -12,8 +12,7 @@ void initiateCutdown(){
 
 void flamingGuillotine(){       
   //Cutdown. Blinks, burns etc.
-      Serial.println("Cutdown initiation received");
-      logAction("Cutdown Initiation Received");
+      sendXBee("Cutdown initiation received");
       
       for(int j=0;j<5;j++){               //LED blinks rapidly before firing burner
       digitalWrite(ledPin, HIGH); 
@@ -31,8 +30,7 @@ void flamingGuillotine(){
       
       burnAttempt=true;    //these two will happen every time for loop navigation
       
-      Serial.println("Burner fired");
-      logAction("Burner Fired");
+      sendXBee("Burner fired");
 }
 
 void contiCheck(){
@@ -43,5 +41,45 @@ void contiCheck(){
       cutNow=0;
       logAction("Burner Spent");
       //logAction("Burner not spent, re-attempting burn");
+}
+void autopilot(){
+   if(testblink){
+    testBlink();
+   }
+   if(!burnAttempt){  //Blinks LED every second to convey normal flight operation (countdown)
+      countdownBlink();
+    }
+
+    if((!cutNow)&&(millis()>=burnDelay)){   //Check to see if timer has run out or if cut has been commanded
+      cutNow=1;
+    }
+    //...........................Firing Burner.......................  
+   
+    if((cutNow)){
+        flamingGuillotine();        //Cutdown Function. The name was relevant to whatever conversation we were having at the time...
+        contiCheck();               //Temporary Continuity check. Currently returns positive-cut every time.
+    }
+    //...............................................................
+    //=======================Recovery Mode============================  
+    if(burnSuccess){
+      //- - - - - - - - - - - - - - Case Successful Cut - - - - - - - - - - - - - -
+       recoveryBlink();
+        //More stuff can go here. 
+     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+     //_ _ _ _ _ _ _ _ _ _ _ _ _ Case Unsuccessful Cut_ _ _ _ _ _ _ _ __ _ _ _ _ _
+      /*
+      if(!burnSuccess){                                                              //To be uncommented when continuity check is implemented.
+        for(int i=0;i<3;i++){         //blinks LED 3 times long to indicate retry
+          digitalWrite(ledPin, HIGH);
+          delay(1000);
+          digitalWrite(ledPin, LOW);
+          delay(300);
+        }
+        cutNow=1; //orders another cutdown
+      }
+      */
+
+      
+  }
 }
 

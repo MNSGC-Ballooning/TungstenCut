@@ -24,15 +24,16 @@ ________________________________________________________________________________
   / . \| |_) |  __/  __/ | |___| (_) | | | | | | | | | | | (_| | | | | (_| \__ \_|
  /_/ \_\____/ \___|\___|  \_____\___/|_| |_| |_|_| |_| |_|\__,_|_| |_|\__,_|___(_)
 ----------------------------------------------------------------------------------
+XBee ID: "W1"
 
 xBee Command Protocol: xBeeID + "?" + command + "!"
 
 List of xBee Commands:
 
 Command:        Example:        Function:
-WA__            W1?WA15!        Adds specified amount of minutes to failsafe timer
-                                Then returns remaining timer
-WR__            W1?WR13!        Removes """"""""""""""""""""""""""""
+WA__            W1?WA15!        adds time in minutes to failsafe timer, returns new timer
+
+WR__            W1?WR13!        removes time from failsafe in minutes, returns remaining timer
 
 WB              W1?WB!          Blinks the "Action LED". Does nothing else.
 

@@ -67,7 +67,9 @@ unsigned long burnDelay = long(burn_Delay)*1000;   //a burnDelay in milliseconds
 unsigned long timer;                              //Used in recovery mode as the countdown to cut reattempt
 long timerLED=0;                                 //This should be obvious, but it's used for LED blinky-blinky
 boolean LEDon = false;                          //^that
-
+unsigned long testBlinkTime = 0;
+int ontimes = 0;
+boolean testblink = false;
 
 //xBee Stuff
 const String xBeeID = "W1"; //xBee ID
@@ -76,9 +78,9 @@ const String xBeeID = "W1"; //xBee ID
 //GPS Stuff
 Adafruit_GPS GPS(&Serial1); //Constructor for GPS object
 int GPSstartTime;
-int days = 0;
 boolean newDay = false;
 boolean firstFix = false;
+int days = 0;
 
 
 //SD Stuff
@@ -127,8 +129,8 @@ void setup() {
 
   //Check for existing event logs and creates a new one
    for(int i=0;i<100;i++){
-    if(!SD.exists("Elog" + String(i/10) + String(i%10))){
-       Ename = "Elog" + String(i/10) + String(i%10);
+    if(!SD.exists("Elog" + String(i/10) + String(i%10) + ".csv")){
+       Ename = "Elog" + String(i/10) + String(i%10)+ ".csv";
        openEventlog();
        break;
        }
@@ -138,8 +140,8 @@ void setup() {
      
    //Same but for GPS
    for(int i=0;i<100;i++){
-    if(!SD.exists("GPS" + String(i/10) + String(i%10))){
-       GPSname = "GPS" + String(i/10) + String(i%10);
+    if(!SD.exists("GPS" + String(i/10) + String(i%10) + ".csv")){
+       GPSname = "GPS" + String(i/10) + String(i%10) + ".csv";
        openGPSlog();
        break;
        }
@@ -175,7 +177,7 @@ void setup() {
   /*/####################Startup#####################
     for(int i=0;i<7;i++){          //Blinks blue LED 7 times separated by .3 seconds to inicate "hello"
       digitalWrite(ledPin, HIGH);
-      delay(300);
+      delay(300);l
       digitalWrite(ledPin, LOW);
       delay(300);
       }
@@ -206,44 +208,6 @@ void setup() {
 void loop() {
 
     xBeeCommand(); //Checks for xBee commands
-
-    if(!burnAttempt){  //Blinks LED every second to convey normal flight operation (countdown)
-      countdownBlink();
-      updateGPS();
-    }
-
-    if((!cutNow)&&(millis()>=burnDelay)){   //Check to see if timer has run out or if cut has been commanded
-      cutNow=1;
-      Serial.println("Cutdown initiated");
-
-    }
-    //...........................Firing Burner.......................  
-   
-    if((cutNow)){
-        flamingGuillotine();        //Cutdown Function. The name was relevant to whatever conversation we were having at the time...
-        contiCheck();               //Temporary Continuity check. Currently returns positive-cut every time.
-    }
-    //...............................................................
-    //=======================Recovery Mode============================  
-    if(burnSuccess){
-      //- - - - - - - - - - - - - - Case Successful Cut - - - - - - - - - - - - - -
-       recoveryBlink();
-      
-        //More stuff can go here. 
-     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-     //_ _ _ _ _ _ _ _ _ _ _ _ _ Case Unsuccessful Cut_ _ _ _ _ _ _ _ __ _ _ _ _ _
-      /*
-      if(!burnSuccess){                                                              //To be uncommented when continuity check is implemented.
-        for(int i=0;i<3;i++){         //blinks LED 3 times long to indicate retry
-          digitalWrite(ledPin, HIGH);
-          delay(1000);
-          digitalWrite(ledPin, LOW);
-          delay(300);
-        }
-        cutNow=1; //orders another cutdown
-      }
-      */
-
-      
-  }
+    updateGPS();
+    autopilot();
 }

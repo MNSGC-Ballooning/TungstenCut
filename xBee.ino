@@ -81,9 +81,10 @@ void xBeeCommand(){
 
    else if(Com.equals("WB")){
     //blinks the LED so you know it's connected
-    testBlink();
+    testBlinkTime = millis();
+    testblink=true;
     logCommand(Com, "Loggy log-log");
-    Serial.println("Hey you figured it out. Took you long enough");
+    sendXBee("Hey you figured it out. Took you long enough");
    }
   
   
@@ -115,8 +116,8 @@ void xBeeCommand(){
    else if (Com.equals("GPS")) {
     //Poll most recent GPS data
     logCommand(Com, "Request GPS data");
-    String message = String(GPS.hour) + ":" + String(GPS.minute) + ":" + String(GPS.seconds) + ",";
-    message += String(GPS.latitudeDegrees) + "," + String(GPS.longitudeDegrees) + "," + String(GPS.altitude * 3.28048) + ",";
+    String message = "Time: " + String(GPS.hour - 5) + ":" + String(GPS.minute) + ":" + String(GPS.seconds)+ ",";    //GPS hour minus 5 to correct for UTC in Central time daylight savings time
+    message += "latitude: " + String(GPS.latitudeDegrees) + "," + "logitude: " + String(GPS.longitudeDegrees) + "," + "altitude: " + String(GPS.altitude * 3.28048) + ",";
     if (GPS.fix) message += "Fix";
     else message += "No Fix";
     sendXBee(message);
