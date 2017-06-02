@@ -81,7 +81,7 @@ void testBlink(){
   else{
     testblink = false;
     ontimes = 0;
-    logAction("testing blink");
+    logAction("testing blink completed");
   }
   }
 
@@ -101,7 +101,6 @@ void burnBlink(){
   }
   else{
     burnblink = false;
-    logAction("burning blinking");
   }
 }
   

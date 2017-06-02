@@ -75,7 +75,7 @@ boolean burnblink = false;         //tells whether burning blinking is happening
 boolean burning = false;           //tells whether or not tungsten wire relay is closed
 boolean burncurrent = false;       //tels whether or not a burn is currently being attempted
 int altDelay = 5;                  // tine between checking for a burst in seconds
-
+boolean delayBurn = false;         //tells whether or not the timer burn has occured
 //xBee Stuff
 const String xBeeID = "W1"; //xBee ID
 

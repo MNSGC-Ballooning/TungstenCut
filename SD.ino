@@ -44,3 +44,15 @@ void logAction(String event) {
  // eventlogB.println(flightTimeStr() + "  AC  " + event);
   closeEventlog();
 }
+
+void GPSaction(String action){
+    if(GPS.fix){
+      logAction(action + ", " + flightTimeStr() + "," + String(GPS.latitudeDegrees, 4) + "," + String(GPS.longitudeDegrees, 4) + ", Altitude: " + String(GPS.altitude * 3.28048) + "ft. FIX");  
+      sendXBee(action + ", " + String(GPS.altitude * 3.28048) + "ft. Watch your heads!");
+    }
+    else{
+      logAction(action + ", " + flightTimeStr() + "," + String(GPS.latitudeDegrees, 4) + "," + String(GPS.longitudeDegrees, 4) + ", Altitude: " + String(GPS.altitude * 3.28048) + "ft. NO FIX");
+      sendXBee(action + ", " + "altitude unknown" + " Watch your heads!");
+    }
+  }
+

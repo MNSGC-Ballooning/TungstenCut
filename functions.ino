@@ -42,7 +42,7 @@ void contiCheck(){
       //For now, let's assume every burn works every time
       burnSuccess=burnAttempt;                    
       cutNow=false;
-      if(burnSuccess){
+      if(burnSuccess&&!burncurrent){
         logAction("Burner Spent");
       }
       //logAction("Burner not spent, re-attempting burn");
@@ -81,8 +81,10 @@ void autopilot(){
       countdownBlink();
     }
 
-    if((!cutNow)&&(millis()>=burnDelay)){   //Check to see if timer has run out or if cut has been commanded
+    if((!cutNow)&&(millis()>=burnDelay)&&!delayBurn){   //Check to see if timer has run out or if cut has been commanded and if it is not currenlty in a delayed burn
       cutNow=true;
+      delayBurn=true;
+      GPSaction("timed cutdown attempt");
     }
     //...........................Firing Burner.......................  
     //for now, conticcheck disables Cutnow, so burncurrent lets us know if we are attempting a burn
