@@ -59,7 +59,7 @@ void checkBurst(){
       altDelay++;
       }
     else if(newData&&altDelay==5&&(getLastGPS()-checkTime)<2000){
-      if(checkAlt-(GPS.altitude*3.28048)>50){                                   // a five second difference greater than 50 feet(not absolute value, so it still rises)
+      if(checkAlt-(GPS.altitude*3.28048)>100){                                   // a five second difference greater than 100 feet(not absolute value, so it still rises)
         sendXBee("burst detected");
         logAction("burst detected");
        bursted = true;
