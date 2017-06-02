@@ -116,7 +116,7 @@ void xBeeCommand(){
    else if (Com.equals("GPS")) {
     //Poll most recent GPS data
     logCommand(Com, "Request GPS data");
-    String message = "Time: " + String(GPS.hour - 5) + ":" + String(GPS.minute) + ":" + String(GPS.seconds)+ ",";    //GPS hour minus 5 to correct for UTC in Central time daylight savings time
+    String message = "Time: " + String(GPS.hour) + ":" + String(GPS.minute) + ":" + String(GPS.seconds)+ ",";   
     message += "latitude: " + String(GPS.latitudeDegrees) + "," + "logitude: " + String(GPS.longitudeDegrees) + "," + "altitude: " + String(GPS.altitude * 3.28048) + ",";
     if (GPS.fix) message += "Fix";
     else message += "No Fix";

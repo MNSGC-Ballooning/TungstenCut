@@ -59,7 +59,7 @@
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 int first = 1;                          //int used for 'if navigation'
 boolean burnAttempt = false;           //stores whether burn has been attempted
-int cutNow=0;                         //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)
+boolean cutNow=false;                         //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)
 boolean burnSuccess=false;           //Stores whether burn was successful
 
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
@@ -74,6 +74,7 @@ boolean testblink = false;         //tell whether testing blinking is occuring
 boolean burnblink = false;         //tells whether burning blinking is happening
 boolean burning = false;           //tells whether or not tungsten wire relay is closed
 boolean burncurrent = false;       //tels whether or not a burn is currently being attempted
+int altDelay = 5;                  // tine between checking for a burst in seconds
 
 //xBee Stuff
 const String xBeeID = "W1"; //xBee ID
@@ -84,9 +85,11 @@ Adafruit_GPS GPS(&Serial1); //Constructor for GPS object
 int GPSstartTime;
 boolean newDay = false;
 boolean firstFix = false;
-int days = 0;
-
-
+int days = 0;          //used to store previous altitude values to check for burst
+boolean bursted = false;
+boolean checkingburst = false;
+boolean newData = false;
+int checkTime;   
 //SD Stuff
   File eventLog;
   File GPSlog;
@@ -212,6 +215,6 @@ void setup() {
 void loop() {
 
     xBeeCommand(); //Checks for xBee commands
-    updateGPS();
-    autopilot();
+    updateGPS();   //updates the GPS
+    autopilot();   //autopilot function that checks status and runs actions
 }

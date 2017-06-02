@@ -32,6 +32,7 @@ void flamingGuillotine(){
         sendXBee("Burner fired");
         ontimes = 0;
         burncurrent = false;
+        logAction("firing burner attempted");
       }
 }
 
@@ -40,23 +41,48 @@ void contiCheck(){
       //Continuity check will decide whether to set burnSuccess to true or to order another cutNow=1
       //For now, let's assume every burn works every time
       burnSuccess=burnAttempt;                    
-      cutNow=0;
+      cutNow=false;
       if(burnSuccess){
         logAction("Burner Spent");
       }
       //logAction("Burner not spent, re-attempting burn");
 }
+void checkBurst(){
+  if(!bursted){
+    if(GPS.fix&&!checkingburst){
+      checkAlt = (GPS.altitude*3.28048);
+      checkingburst= true;
+      checkTime= getLastGPS();
+    }
+    else if(newData&&altDelay<5&&(getLastGPS()-checkTime)<2000){                //is there good new data, is it part of the 5 seccond period, and is this good new data coming in with 2 seconds of the other data
+      checkTime = getLastGPS();
+      altDelay++;
+      }
+    else if(newData&&altDelay==5&&(getLastGPS()-checkTime)<2000){
+      if(checkAlt-(GPS.altitude*3.28048)>50){                                   // a five second difference greater than 50 feet(not absolute value, so it still rises)
+        sendXBee("burst detected");
+        logAction("burst detected");
+       bursted = true;
+      }
+      }
+    else if(!GPS.fix){                   //if no fix reset the whole process
+      checkingburst = false;
+      altDelay = 0;
+    }
+   }
+}
 void autopilot(){
    if(testblink){
     testBlink();
    }
-    
+
+   checkBurst();
    if(!burnAttempt){  //Blinks LED every second to convey normal flight operation (countdown)
       countdownBlink();
     }
 
     if((!cutNow)&&(millis()>=burnDelay)){   //Check to see if timer has run out or if cut has been commanded
-      cutNow=1;
+      cutNow=true;
     }
     //...........................Firing Burner.......................  
     //for now, conticcheck disables Cutnow, so burncurrent lets us know if we are attempting a burn
@@ -81,7 +107,7 @@ void autopilot(){
           digitalWrite(ledPin, LOW);
           delay(300);
         }
-        cutNow=1; //orders another cutdown
+        cutNow=true; //orders another cutdown
       }
       */
 
