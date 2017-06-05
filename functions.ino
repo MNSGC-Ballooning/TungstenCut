@@ -13,8 +13,8 @@ void initiateCutdown(){
 void flamingGuillotine(){       
   //Cutdown. Blinks, burns etc.
       burnBlink();                    // blink the LED before the burn
-      if(ontimes>=5&&ontimes<8){      // we will run the burner 3 times (ontimes gets to 5 through burnBlink)
-        if(((millis()-burnBlinkTime)>=(800+long((ontimes-4)*200)))&&burning){      //for increasingly long times, turn on the burner
+      if(current->getOnTimes()>=5&&current->getOnTimes()<8){      // we will run the burner 3 times (ontimes gets to 5 through burnBlink)
+        if(((millis()-burnBlinkTime)>=(800+long((current->getOnTimes-4)*200)))&&burning){      //for increasingly long times, turn on the burner
           digitalWrite(fireBurner, LOW);
           burning = false;                //the burning circuit is open
           ontimes++;                      //counting how many times we have run

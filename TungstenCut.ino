@@ -65,20 +65,36 @@ boolean burnSuccess=false;           //Stores whether burn was successful
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
 unsigned long burnDelay = long(burn_Delay)*1000;   //a burnDelay in milliseconds, which will be the primary currency from here on out.
 unsigned long timer;                              //Used in recovery mode as the countdown to cut reattempt
-long timerLED=0;                                 //This should be obvious, but it's used for LED blinky-blinky
-boolean LEDon = false;                          //^that
-unsigned long testBlinkTime = 0;                 //blinking time for test blinking
-unsigned long burnBlinkTime = 0;                 //blinking time for burn blinking
-int ontimes = 0;                   //integer used to determine number of times to blink              
-boolean testblink = false;         //tell whether testing blinking is occuring
-boolean burnblink = false;         //tells whether burning blinking is happening
+boolean LEDon = false;                          //^that             
+boolean revovery = false;         //tells whether revovery mode is on 
 boolean burning = false;           //tells whether or not tungsten wire relay is closed
 boolean burncurrent = false;       //tels whether or not a burn is currently being attempted
 int altDelay = 5;                  // tine between checking for a burst in seconds
 boolean delayBurn = false;         //tells whether or not the timer burn has occured
 //xBee Stuff
 const String xBeeID = "W1"; //xBee ID
+//blinnking variables
+boolean burnBlink = false;         //tells whether burning blinking is happening
+boolean testBlink = false;         //tells whether testblink is happening
+boolean LEDon = false; 
 
+class Blink{
+  private:
+    String nam;
+    int ondelay;
+    int offdelay;
+    int ontimes;
+    unsigned long Time;
+  public:
+    friend void blinkMode();
+    void BLINK();
+    Blink();
+    Blink(int on, int off, int times);
+    int getOnTimes();
+};
+  Blink recoveryBlink = Blink(150,2000,-1);
+  Blink countdownBlink = Blink(150,850,-1);
+  Blink* currentBlink = &recoveryBlink;
 
 //GPS Stuff
 Adafruit_GPS GPS(&Serial1); //Constructor for GPS object

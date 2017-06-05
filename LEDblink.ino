@@ -3,105 +3,71 @@
 
 ///\/\/\/\/\/\/\/\/\/\/\/\/\Countdown Blink/\/\/\/\/\/\/\/\/\/\/\/\/\
 //"Chirps" the LED once per second during normal flight countdown (e.g. before cutting/recovery)
-void countdownBlink(){
-  if(!testblink&&!burnblink){
-    if(!LEDon&&(millis()-timerLED >=850)){    //if it's been 1 second 
-        
-        digitalWrite(ledPin, HIGH);
-        LEDon=true;                 //turn LED on and remember
-        timerLED=millis();          //Reset timer
-        }
-    if(LEDon&&(millis()-timerLED>=150)){ //If it's been .1s
-       
-        digitalWrite(ledPin, LOW); //turn off LED and remember
-        LEDon=false;
-        timerLED=millis(); //reset timer
+Blink::Blink(){
+  ondelay = 0;
+  offdelay = 0;
+  ontimes = 0;
+  Time = 0;
+  
+}
+Blink::Blink(int on, int off, int times){
+  ondelay = on;
+  offdelay = off;
+  ontimes = times;
+  Time= 0;
+  
+}
+void Blink::BLINK(){
+  if((millis()-Time>=offdelay)&&!LEDon){
+    switchLED();
+    Time= millis();
+    Serial.println(String(millis()));
+    if(ontimes>0){
+      ontimes--;
     }
   }
-}
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-
-
-///\/\/\/\/\/\/\/\/\/\/\/\/\Recovery Blink/\/\/\/\/\/\/\/\/\/\/\/\/\/\
-//Similar to countdown blink, but slower  
-void recoveryBlink(){
-  if(!testblink&&!burnblink){
-    if(!LEDon&&(millis()-timerLED >=2000)){    //if it's been 2 second 
-        
-        digitalWrite(ledPin, HIGH);
-        LEDon=true;                 //turn LED on and remember
-        timerLED=millis();          //Reset timer
-       
-        }
-    if(LEDon&&(millis()-timerLED>=150)){ //If it's been .1s
-       
-        digitalWrite(ledPin, LOW); //turn off LED and remember
-        LEDon=false;
-        timerLED=millis(); //reset timer
-    }
+  if((millis()-Time>=ondelay)&&LEDon){
+    switchLED();
+    Time = millis(); 
+    Serial.println(String(millis()));
   }
 }
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/   
-
-
-///\/\/\/\/\/\/\/\/\/\/\/\/\Retry Cut Blink/\/\/\/\/\/\/\/\/\/\/\/\/\/\
-//Similar to countdown blink, but slower  
-void retryBlink(){
-  if(!testblink&&!burnblink){
-    if(!LEDon&&(millis()-timerLED >=300)){    //if it's been off for .3 second 
-        
-        digitalWrite(ledPin, HIGH);
-        LEDon=true;                 //turn LED on and remember
-        timerLED=millis();          //Reset timer
-        }
-    if(LEDon&&(millis()-timerLED>=1000)){ //If it's been on for 1s
-       
-        digitalWrite(ledPin, LOW); //turn off LED and remember
-        LEDon=false;
-        timerLED=millis(); //reset timer
-    }
-  }
+int Blink::getOnTimes(){
+  return ontimes;
 }
-//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/ 
 
-void testBlink(){
-  if(ontimes<10){
-    if((millis()-testBlinkTime>=300)&&!LEDon){
-     digitalWrite(ledPin, HIGH);
-     LEDon=true;                 //turn LED on and remember
-     ontimes++;
-     testBlinkTime= millis();
-    }
-    if((millis()-testBlinkTime>=150)&&LEDon){
-      digitalWrite(ledPin, LOW);
-      LEDon = false;
-      testBlinkTime = millis();
-    }
+void switchLED(){
+  if(LEDon){
+    LEDon = false;
+    digitalWrite(ledPin, LOW);
   }
   else{
-    testblink = false;
-    ontimes = 0;
-    logAction("testing blink completed");
-  }
-  }
-
-void burnBlink(){
-  if(ontimes<5){
-    if((millis()-burnBlinkTime>=200)&&!LEDon){
-     digitalWrite(ledPin, HIGH);
-     LEDon=true;                 //turn LED on and remember
-     ontimes++;
-     burnBlinkTime= millis();
-    }
-    if((millis()-burnBlinkTime>=200)&&LEDon){
-      digitalWrite(ledPin, LOW);
-      LEDon = false;
-      burnBlinkTime = millis();
-    }
-  }
-  else{
-    burnblink = false;
+    LEDon= true;
+    digitalWrite(ledPin, HIGH);
   }
 }
+
+void blinkMode(){
+  if(currentBlink->ontimes==0){
+    delete currentBlink;
+    if(recovery){
+      currentBlink = &recoveryBlink;
+    }
+    else{
+      currentBlink = &countdownBlink;
+    }
+   }
+   if(burnBlink){
+    burnBlink = false;
+    currentBlink = new Blink(200,200,5);                //sets to burning blinking
+   }
+   if(testBlink){
+    testBlink = false;                                  //sets to testing blinking
+    currentBlink = new Blink(150,300,10);
+   }
+   
+
+}
+
   
 
