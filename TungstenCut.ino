@@ -77,14 +77,19 @@ const String xBeeID = "W1"; //xBee ID
 boolean burnBlink = false;         //tells whether burning blinking is happening
 boolean testBlink = false;         //tells whether testblink is happening
 boolean LEDon = false; 
-
-class Blink{
+class action{
   private:
+    unsigned long Time;
     String nam;
+  public:
+    action();
+    action(unsigned long Time);
+}
+class Blink::public action{
+  private:
     int ondelay;
     int offdelay;
     int ontimes;
-    unsigned long Time;
   public:
     friend void blinkMode();
     void BLINK();
@@ -92,6 +97,14 @@ class Blink{
     Blink(int on, int off, int times);
     int getOnTimes();
 };
+class burn::public action{
+  private:
+    int ondelay;
+    int offddelay;
+    int ontimes;
+  public:
+    void Burn();
+}
   Blink recoveryBlink = Blink(150,2000,-1);
   Blink countdownBlink = Blink(150,850,-1);
   Blink* currentBlink = &recoveryBlink;
