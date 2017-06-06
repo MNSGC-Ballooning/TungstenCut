@@ -43,7 +43,7 @@
      Data LED (BLUE)              | D3                    |  "action" LED (Blue), tells us what the payload is doing
      SD                           | D4, D11-13            |  11-13 not not have wires but they are used!
      SD LED (RED)                 | D5                    | "SD" LED (Red). Only on when the file is open in SD card
-     GPS serial                   | 8,9 (Rx, Tx)          | serial for GPS
+     GPS serial                   | serial 1              | serial for GPS
      -------------------------------------------------------------------------------------------------------------------------
 */
 
