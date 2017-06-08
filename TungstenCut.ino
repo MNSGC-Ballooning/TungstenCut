@@ -62,15 +62,20 @@ int first = 1;                          //int used for 'if navigation'
 boolean burnAttempt = false;           //stores whether burn has been attempted
 int cutNow=0;                         //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)
 boolean burnSuccess=false;           //Stores whether burn was successful
+boolean gatePass;                   //Stores whether or not altitude gate has been passed
+unsigned long prevAlt;                      //Used in altitude cutdown decision
+
 
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
 unsigned long burnDelay = long(burn_Delay)*1000;   //a burnDelay in milliseconds, which will be the primary currency from here on out.
-unsigned long timer;                              //Used in recovery mode as the countdown to cut reattempt
+unsigned long timer;   //Used in recovery mode as the countdown to cut reattempt
 long timerLED=0;                                 //This should be obvious, but it's used for LED blinky-blinky
 boolean LEDon = false;                          //^that
 unsigned long testBlinkTime = 0;
 int ontimes = 0;
-boolean testblink = false;            
+boolean testblink = false;
+boolean altCheck;   
+unsigned long altTimer=0;
 
 //xBee Stuff
 const String xBeeID = "W1"; //xBee ID
