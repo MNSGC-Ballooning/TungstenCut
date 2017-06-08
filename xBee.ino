@@ -122,7 +122,14 @@ void xBeeCommand(){
     else message += "No Fix";
     sendXBee(message);
   }
-   
+
+ else if ((Com.substring(0,2)).equals("WU")) {
+    //Set Cutdown Altitude
+    long newAlt = atol((Com.substring(2, Com.length())).c_str());
+    sendXBee("New Cutdown Altitude: "+ String(newAlt)+ " Feet");
+    logCommand(Com, "New Cutdown Altitude: "+ String(newAlt)+ " Feet");
+    cutAlt = (newAlt);                                              //sets new cutdown Altitude
+  }
 
       
   else {

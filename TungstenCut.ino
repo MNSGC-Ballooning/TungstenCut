@@ -28,8 +28,9 @@
 //  /_____/\__,_/_/  /_/ /_/  /_____/\___/_/\__,_/\__, /   \____/\____/_/ /_/_/ /_/\__, /\__,_/_/   \__,_/\__/_/\____/_/ /_/ 
 //                                               /____/                           /____/                                     
 
-                                         int burn_Delay = 3600; //Countdown timer in seconds!
-                                          //Default is 60m, some modules fly on 70m (4200s)
+                             int burn_Delay = 3600; //Countdown timer in seconds! Changeable via xBee.
+
+                             long cutAlt = 100000; //Default cutdown altitude in feet! Changeable via xBee.
 
 //=============================================================================================================================================
 //=============================================================================================================================================
@@ -69,7 +70,7 @@ long timerLED=0;                                 //This should be obvious, but i
 boolean LEDon = false;                          //^that
 unsigned long testBlinkTime = 0;
 int ontimes = 0;
-boolean testblink = false;
+boolean testblink = false;            
 
 //xBee Stuff
 const String xBeeID = "W1"; //xBee ID

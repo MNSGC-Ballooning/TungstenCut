@@ -48,6 +48,7 @@ void autopilot(){
    }
    if(!burnAttempt){  //Blinks LED every second to convey normal flight operation (countdown)
       countdownBlink();
+      altTheSingleLadies();
     }
 
     if((!cutNow)&&(millis()>=burnDelay)){   //Check to see if timer has run out or if cut has been commanded
@@ -78,8 +79,10 @@ void autopilot(){
         cutNow=1; //orders another cutdown
       }
       */
+    }   
+}
 
-      
-  }
+void altTheSingleLadies(){          //function which makes decisions based on altitude
+  //To be written
 }
 
