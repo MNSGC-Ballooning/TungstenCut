@@ -81,8 +81,7 @@ void xBeeCommand(){
 
    else if(Com.equals("WB")){
     //blinks the LED so you know it's connected
-    testBlinkTime = millis();
-    testblink=true;
+    testBlink();
     logCommand(Com, "Loggy log-log");
     sendXBee("Hey you figured it out. Took you long enough");
    }
@@ -91,7 +90,7 @@ void xBeeCommand(){
 
   else if (Com.equals("WX")) {
     //Burns the Tungsten, enters "recovery mode" after cutdown confirmed
-    initiateCutdown();
+    runBurn();
     if(GPS.fix){
       logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.latitudeDegrees, 4) + "," + String(GPS.longitudeDegrees, 4) + ", Altitude: " + String(GPS.altitude * 3.28048) + "ft. FIX");  
       sendXBee("Starting Cut at Altitude " + String(GPS.altitude * 3.28048) + "ft. Watch your heads!");

@@ -58,35 +58,30 @@
 
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 int first = 1;                          //int used for 'if navigation'
-boolean burnAttempt = false;           //stores whether burn has been attempted
-boolean cutNow=false;                         //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)
-boolean burnSuccess=false;           //Stores whether burn was successful
-
+//boolean burnAttempt = false;           //stores whether burn has been attempted
+boolean burnerON = false;                                       //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)
+//boolean burnSuccess=false;              //Stores whether burn was successful
+boolean recovery = false;
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
 unsigned long burnDelay = long(burn_Delay)*1000;   //a burnDelay in milliseconds, which will be the primary currency from here on out.
 unsigned long timer;                              //Used in recovery mode as the countdown to cut reattempt
 boolean LEDon = false;                          //^that             
 boolean revovery = false;         //tells whether revovery mode is on 
-boolean burning = false;           //tells whether or not tungsten wire relay is closed
-boolean burncurrent = false;       //tels whether or not a burn is currently being attempted
 int altDelay = 5;                  // tine between checking for a burst in seconds
 boolean delayBurn = false;         //tells whether or not the timer burn has occured
 //xBee Stuff
 const String xBeeID = "W1"; //xBee ID
 //blinnking variables
-boolean burnBlink = false;         //tells whether burning blinking is happening
-boolean testBlink = false;         //tells whether testblink is happening
-boolean LEDon = false; 
+
 class action{
-  private:
+  protected:
     unsigned long Time;
     String nam;
-  public:
-    action();
-    action(unsigned long Time);
-}
-class Blink::public action{
-  private:
+   public:
+    String getName();
+};
+class Blink:public action{
+  protected:
     int ondelay;
     int offdelay;
     int ontimes;
@@ -94,20 +89,30 @@ class Blink::public action{
     friend void blinkMode();
     void BLINK();
     Blink();
-    Blink(int on, int off, int times);
+    Blink(int on, int off, int times, String NAM, unsigned long tim);
     int getOnTimes();
 };
-class burn::public action{
+class burnAction:public action{
   private:
     int ondelay;
-    int offddelay;
+    int offdelay;
     int ontimes;
+    int stagger;
   public:
     void Burn();
-}
-  Blink recoveryBlink = Blink(150,2000,-1);
-  Blink countdownBlink = Blink(150,850,-1);
-  Blink* currentBlink = &recoveryBlink;
+    burnAction(int on, int off, int ont, int stag, unsigned long tim);
+    int getOnTimes();
+};
+
+void testBlink();
+void runBurn();
+void burnMode();
+  
+Blink recoveryBlink = Blink(150,2000,-1, "recoveryBlink",0);
+Blink countdownBlink = Blink(150,850,-1, "countdownBlink",0);
+Blink* currentBlink = &countdownBlink;
+burnAction idleBurn = burnAction(0,0,-1, 200,0);
+burnAction* currentBurn = &idleBurn;
 
 //GPS Stuff
 Adafruit_GPS GPS(&Serial1); //Constructor for GPS object

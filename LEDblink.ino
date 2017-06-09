@@ -1,8 +1,10 @@
 //This file houses functions which control various LED blinking patterns
 //The only reason it's in its own file is to cut down on scrolling in the main TungstenCut
 
-///\/\/\/\/\/\/\/\/\/\/\/\/\Countdown Blink/\/\/\/\/\/\/\/\/\/\/\/\/\
-//"Chirps" the LED once per second during normal flight countdown (e.g. before cutting/recovery)
+String action::getName(){
+  return nam;
+}
+
 Blink::Blink(){
   ondelay = 0;
   offdelay = 0;
@@ -10,11 +12,12 @@ Blink::Blink(){
   Time = 0;
   
 }
-Blink::Blink(int on, int off, int times){
+Blink::Blink(int on, int off, int times, String NAM, unsigned long tim){
   ondelay = on;
   offdelay = off;
   ontimes = times;
-  Time= 0;
+  Time= tim;
+  nam = NAM;
   
 }
 void Blink::BLINK(){
@@ -48,7 +51,7 @@ void switchLED(){
 }
 
 void blinkMode(){
-  if(currentBlink->ontimes==0){
+  if(currentBlink->getOnTimes()==0){
     delete currentBlink;
     if(recovery){
       currentBlink = &recoveryBlink;
@@ -56,18 +59,13 @@ void blinkMode(){
     else{
       currentBlink = &countdownBlink;
     }
-   }
-   if(burnBlink){
-    burnBlink = false;
-    currentBlink = new Blink(200,200,5);                //sets to burning blinking
-   }
-   if(testBlink){
-    testBlink = false;                                  //sets to testing blinking
-    currentBlink = new Blink(150,300,10);
-   }
-   
-
 }
+  currentBlink -> BLINK();
+}
+
+void testBlink(){
+  currentBlink = new Blink(400,400,10, "testBlink", millis());
+};
 
   
 
