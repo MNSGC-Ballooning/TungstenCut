@@ -104,9 +104,7 @@ class burnAction:public action{
     int getOnTimes();
 };
 
-void testBlink();
-void runBurn();
-void burnMode();
+
   
 Blink recoveryBlink = Blink(150,2000,-1, "recoveryBlink",0);
 Blink countdownBlink = Blink(150,850,-1, "countdownBlink",0);

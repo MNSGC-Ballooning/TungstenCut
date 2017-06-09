@@ -1,6 +1,6 @@
 
 float checkAlt;
-int lastGPS = -10000;  //for testing purposes
+unsigned long lastGPS = -1000000;  //for testing purposes
 
 //function to handle both retrieval of data from GPS module and sensors, as well as recording it on the SD card
 void updateGPS() {

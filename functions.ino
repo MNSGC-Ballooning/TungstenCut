@@ -89,13 +89,11 @@ void burnAction::Burn(){
     digitalWrite(fireBurner, HIGH);
     Time= millis();
     burnerON = true;
-    Serial.println(String(millis()));
   }
   if(millis()-Time>=(ondelay+stagger*(3-ontimes))&&burnerON){
     digitalWrite(fireBurner, LOW);
     burnerON = false;
     Time = millis(); 
-    Serial.println(String(millis()));
     ontimes--;
   }
 }

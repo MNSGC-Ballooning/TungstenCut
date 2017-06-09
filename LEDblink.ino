@@ -24,7 +24,6 @@ void Blink::BLINK(){
   if((millis()-Time>=offdelay)&&!LEDon){
     switchLED();
     Time= millis();
-    Serial.println(String(millis()));
     if(ontimes>0){
       ontimes--;
     }
@@ -32,7 +31,6 @@ void Blink::BLINK(){
   if((millis()-Time>=ondelay)&&LEDon){
     switchLED();
     Time = millis(); 
-    Serial.println(String(millis()));
   }
 }
 int Blink::getOnTimes(){
