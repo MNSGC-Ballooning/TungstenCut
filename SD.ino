@@ -13,7 +13,6 @@ void openEventlog() {
 void closeEventlog() {
   if (eventlogOpen) {
     eventLog.close();
-    // eventlogB.close();
     eventlogOpen = false;
     if (!eventlogOpen)
       digitalWrite(ledSD, LOW);
@@ -30,7 +29,6 @@ void openGPSlog() {
 void closeGPSlog() {
   if (GPSlogOpen) {
     GPSlog.close();
-    // eventlogB.close();
     GPSlogOpen = false;
     if (!GPSlogOpen)
       digitalWrite(ledSD, LOW);
@@ -41,7 +39,6 @@ void closeGPSlog() {
 void logAction(String event) {
   openEventlog();
   eventLog.println(flightTimeStr() + "  AC  " + event);
- // eventlogB.println(flightTimeStr() + "  AC  " + event);
   closeEventlog();
 }
 

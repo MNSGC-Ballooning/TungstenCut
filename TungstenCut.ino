@@ -135,26 +135,20 @@ void setup() {
   pinMode(fireBurner, OUTPUT);
   pinMode(ledSD, OUTPUT);
   pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
-
-  Serial.println("Pins Initialized");
-
+  sendXBee("Pins Initialized");
   
-//Initiate xBee Data lines
+// initiate xbee
   Serial.begin(9600);
+  sendXBee("xBee begin");
   
-  Serial.println("xBee begin");
-
-
 //Initiate GPS Data lines
   GPS.begin(9600);
-  Serial.println("GPS begin");
-
-  
+  sendXBee("GPS begin");
+ 
 //GPS setup and config
   GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
   GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
-  
-  Serial.println("GPS config");
+  sendXBee("GPS configured");
 
   //initialize SD card
   while (!SD.begin(chipSelect)) {            //power LED will blink if no card is inserted
@@ -163,10 +157,8 @@ void setup() {
       delay(500);
       digitalWrite(ledSD, LOW);
       delay(500);
-    }
-
-  Serial.println("Checking for existing file");
-
+  }
+  sendXBee("Checking for existing file");
   //Check for existing event logs and creates a new one
    for(int i=0;i<100;i++){
     if(!SD.exists("Elog" + String(i/10) + String(i%10))){
@@ -176,7 +168,7 @@ void setup() {
        }
     }
     
-    Serial.println("event log created: " + Ename);
+   sendXBee("event log created: " + Ename);
      
    //Same but for GPS
    for(int i=0;i<100;i++){
@@ -187,23 +179,19 @@ void setup() {
        }
     }
 
-  Serial.println("GPS log created: " + GPSname);
+  sendXBee("GPS log created: " + GPSname);
 
   while (!eventLog) {                   //both power and data LEDs will blink together if card is inserted but file fails to be created                 /
-
-      Serial.println("Eventlog file creation failed");
-      
+      sendXBee("Eventlog file creation failed");
       digitalWrite(ledSD, HIGH);
       digitalWrite(ledPin, HIGH);
       delay(500);
       digitalWrite(ledSD, LOW);
       digitalWrite(ledPin, LOW);
       delay(500);
-    } 
+  } 
   while(!GPSlog){
-    
-      Serial.println("GPS file creation failed");
-    
+      sendXBee("GPS file creation failed");
       digitalWrite(ledSD, HIGH);
       digitalWrite(ledPin, HIGH);
       delay(1500);
@@ -211,18 +199,14 @@ void setup() {
       digitalWrite(ledPin, LOW);
       delay(1500);
   }
-
   digitalWrite(fireBurner, LOW); //sets burner to off just in case
-
- String GPSHeader = "Flight Time, Lat, Long, Altitude (ft), Date, Hour:Min:Sec, Fix,";
+  String GPSHeader = "Flight Time, Lat, Long, Altitude (ft), Date, Hour:Min:Sec, Fix,";
   GPSlog.println(GPSHeader);//set up GPS log format
-
-  Serial.println("GPS header added");
+  sendXBee("GPS header added");
   
- String eventLogHeader = "Time, Sent/Received, Command";
+  String eventLogHeader = "Time, Sent/Received, Command";
   eventLog.println(eventLogHeader);
-  
-  Serial.println("Eventlog header added");
+  sendXBee("Eventlog header added");
 
   closeEventlog();
   closeGPSlog();

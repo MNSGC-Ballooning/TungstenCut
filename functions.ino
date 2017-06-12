@@ -20,14 +20,14 @@ void checkBurst(){
     else if(newData&&altDelay<5&&(getLastGPS()-checkTime)<2000){                //is there good new data, is it part of the 5 seccond period, and is this good new data coming in with 2 seconds of the other data
       checkTime = getLastGPS();
       altDelay++;
-      }
+     }
     else if(newData&&altDelay==5&&(getLastGPS()-checkTime)<2000){
       if(checkAlt-(GPS.altitude*3.28048)>100){                                   // a five second difference greater than 100 feet(not absolute value, so it still rises)
         sendXBee("burst detected");
         logAction("burst detected");
-       bursted = true;
+        bursted = true;
       }
-      }
+    }
     else if(!GPS.fix){                   //if no fix reset the whole process
       checkingburst = false;
       altDelay = 0;
@@ -124,4 +124,4 @@ void burnMode(){
     currentBurn = &idleBurn;
   }
   currentBurn->Burn();
-}
+} 
