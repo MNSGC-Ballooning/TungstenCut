@@ -110,7 +110,7 @@ void altTheSingleLadies(){          //function which makes decisions based on al
           timerLED=millis(); //reset timer 
       }
 
-     else if(GPS.altitude * 3.28048>=cutAlt&&gatePass){
+     else if((GPS.altitude * 3.28048>=cutAlt)&&gatePass){
       sendXBee("Activating GPS Altitude Triggered Cutdown");
       logAction("Activating GPS Altitude Triggered Cutdown");
       //cutNow=1;
