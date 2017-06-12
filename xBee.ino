@@ -81,8 +81,7 @@ void xBeeCommand(){
 
    else if(Com.equals("WB")){
     //blinks the LED so you know it's connected
-    testBlinkTime = millis();
-    testblink=true;
+    testBlink();
     logCommand(Com, "Loggy log-log");
     sendXBee("Hey you figured it out. Took you long enough");
    }
@@ -91,14 +90,15 @@ void xBeeCommand(){
 
   else if (Com.equals("WX")) {
     //Burns the Tungsten, enters "recovery mode" after cutdown confirmed
-    initiateCutdown();
+    runBurn();
     if(GPS.fix){
       logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.latitudeDegrees, 4) + "," + String(GPS.longitudeDegrees, 4) + ", Altitude: " + String(GPS.altitude * 3.28048) + "ft. FIX");  
+      sendXBee("Starting Cut at Altitude " + String(GPS.altitude * 3.28048) + "ft. Watch your heads!");
     }
     else{
-            logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.latitudeDegrees, 4) + "," + String(GPS.longitudeDegrees, 4) + ", Altitude: " + String(GPS.altitude * 3.28048) + "ft. NO FIX");
+      logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.latitudeDegrees, 4) + "," + String(GPS.longitudeDegrees, 4) + ", Altitude: " + String(GPS.altitude * 3.28048) + "ft. NO FIX");
+      sendXBee("Starting Cut at unknown altitude, Watch your heads!");
     }
-    sendXBee("Starting Cut at Altitude " + String(GPS.altitude * 3.28048) + "ft. Watch your heads!");
   }
   
  
@@ -116,7 +116,7 @@ void xBeeCommand(){
    else if (Com.equals("GPS")) {
     //Poll most recent GPS data
     logCommand(Com, "Request GPS data");
-    String message = "Time: " + String(GPS.hour - 5) + ":" + String(GPS.minute) + ":" + String(GPS.seconds)+ ",";    //GPS hour minus 5 to correct for UTC in Central time daylight savings time
+    String message = "Time: " + String(GPS.hour) + ":" + String(GPS.minute) + ":" + String(GPS.seconds)+ ",";   
     message += "latitude: " + String(GPS.latitudeDegrees) + "," + "logitude: " + String(GPS.longitudeDegrees) + "," + "altitude: " + String(GPS.altitude * 3.28048) + ",";
     if (GPS.fix) message += "Fix";
     else message += "No Fix";

@@ -5,44 +5,39 @@ void addTime(int addition){
 void removeTime(int subtraction){
   burnDelay -=(subtraction*1000);
 }
-
-void initiateCutdown(){
-  cutNow=1;
+void runBurn(){
+  currentBlink= new Blink(200,500,5, "burnBlink", millis());
 }
 
-void flamingGuillotine(){       
-  //Cutdown. Blinks, burns etc.
-      sendXBee("Cutdown initiation received");
-      
-      for(int j=0;j<5;j++){               //LED blinks rapidly before firing burner
-      digitalWrite(ledPin, HIGH); 
-      delay(200);
-      digitalWrite(ledPin, LOW);
-      delay(200);
+void checkBurst(){
+  if(!bursted){
+    if(GPS.fix&&!checkingburst){
+      checkAlt = (GPS.altitude*3.28048);
+      checkingburst= true;
+      checkTime= getLastGPS();
+    }
+    else if(newData&&altDelay<5&&(getLastGPS()-checkTime)<2000){                //is there good new data, is it part of the 5 seccond period, and is this good new data coming in with 2 seconds of the other data
+      checkTime = getLastGPS();
+      altDelay++;
       }
-        
-        for(int u=0;u<3;u++){               //The actual burner activation.  It will attempt burn 3 times.
-          digitalWrite(fireBurner, HIGH);
-          delay(800+u*200);                 //Each burn is longer than the last.
-          digitalWrite(fireBurner, LOW);
-          delay(200);
-        }
-      
-      burnAttempt=true;    //these two will happen every time for loop navigation
-      
-      sendXBee("Burner fired");
+    else if(newData&&altDelay==5&&(getLastGPS()-checkTime)<2000){
+      if(checkAlt-(GPS.altitude*3.28048)>100){                                   // a five second difference greater than 100 feet(not absolute value, so it still rises)
+        sendXBee("burst detected");
+        logAction("burst detected");
+       bursted = true;
+      }
+      }
+    else if(!GPS.fix){                   //if no fix reset the whole process
+      checkingburst = false;
+      altDelay = 0;
+    }
+   }
+}
+void contiCheck(){
 }
 
-void contiCheck(){
-      //Continuity check to decide burn or no burn
-      //Continuity check will decide whether to set burnSuccess to true or to order another cutNow=1
-      //For now, let's assume every burn works every time
-      burnSuccess=1;
-      cutNow=0;
-      logAction("Burner Spent");
-      //logAction("Burner not spent, re-attempting burn");
-}
 void autopilot(){
+<<<<<<< HEAD
    if(testblink){
     testBlink();
    }
@@ -50,11 +45,20 @@ void autopilot(){
       countdownBlink();
       altTheSingleLadies();
     }
+=======
+   checkBurst();
+   blinkMode();
+   burnMode();
+>>>>>>> classsBlink
 
-    if((!cutNow)&&(millis()>=burnDelay)){   //Check to see if timer has run out or if cut has been commanded
-      cutNow=1;
+    if((millis()>=burnDelay)&&!delayBurn){   //Check to see if timer has run out or if cut has been commanded and if it is not currenlty in a delayed burn
+      runBurn();
+      delayBurn=true;
+      GPSaction("timed cutdown attempt");
     }
+    contiCheck();
     //...........................Firing Burner.......................  
+<<<<<<< HEAD
    
     if((cutNow)){
         flamingGuillotine();        //Cutdown Function. The name was relevant to whatever conversation we were having at the time...
@@ -116,6 +120,45 @@ void altTheSingleLadies(){          //function which makes decisions based on al
      }
       
     }
+=======
+    //for now, conticcheck disables Cutnow, so burncurrent lets us know if we are attempting a burn
+
+}
+void burnAction::Burn(){
+  if(ontimes>0){
+   if((millis()-Time>=offdelay)&&!burnerON){
+    digitalWrite(fireBurner, HIGH);
+    Time= millis();
+    burnerON = true;
+  }
+  if(millis()-Time>=(ondelay+stagger*(3-ontimes))&&burnerON){
+    digitalWrite(fireBurner, LOW);
+    burnerON = false;
+    Time = millis(); 
+    ontimes--;
+>>>>>>> classsBlink
   }
 }
-
+}
+int burnAction::getOnTimes(){
+  return ontimes;
+}
+burnAction::burnAction(int on, int off, int ont, int stag, unsigned long tim){
+  ondelay = on;
+  offdelay = off;
+  ontimes = ont;
+  stagger = stag;
+  Time = tim;
+}
+void burnMode(){
+  if(currentBlink->getName()=="burnBlink"&&currentBlink->getOnTimes()==0)
+  {
+    currentBurn = new burnAction(500,200,3,1000, millis());
+  }
+  if(currentBurn->getOnTimes()==0){
+    digitalWrite(fireBurner, LOW);
+    delete currentBurn;
+    currentBurn = &idleBurn;
+  }
+  currentBurn->Burn();
+}

@@ -59,36 +59,79 @@
 
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 int first = 1;                          //int used for 'if navigation'
-boolean burnAttempt = false;           //stores whether burn has been attempted
-int cutNow=0;                         //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)
-boolean burnSuccess=false;           //Stores whether burn was successful
 boolean gatePass;                   //Stores whether or not altitude gate has been passed
 unsigned long prevAlt;                      //Used in altitude cutdown decision
 
-
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
 unsigned long burnDelay = long(burn_Delay)*1000;   //a burnDelay in milliseconds, which will be the primary currency from here on out.
-unsigned long timer;   //Used in recovery mode as the countdown to cut reattempt
-long timerLED=0;                                 //This should be obvious, but it's used for LED blinky-blinky
-boolean LEDon = false;                          //^that
-unsigned long testBlinkTime = 0;
-int ontimes = 0;
-boolean testblink = false;
+unsigned long timer;   //Used in recovery mode as the countdown to cut reattempt      
+boolean LEDon = false;                          
 boolean altCheck;   
 unsigned long altTimer=0;
-
+                                          //stores whether burn has been attempted
+boolean burnerON = false;                                       //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)              //Stores whether burn was successful
+boolean recovery = false;
+//~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
+unsigned long burnDelay = long(burn_Delay)*1000;   //a burnDelay in milliseconds, which will be the primary currency from here on out.
+unsigned long timer;                              //Used in recovery mode as the countdown to cut reattempt
+boolean LEDon = false;                          //^that             
+boolean revovery = false;         //tells whether revovery mode is on 
+int altDelay = 5;                  // tine between checking for a burst in seconds
+boolean delayBurn = false;         //tells whether or not the timer burn has occured
+>>>>>>> classsBlink
 //xBee Stuff
 const String xBeeID = "W1"; //xBee ID
+//blinnking variables
 
+class action{
+  protected:
+    unsigned long Time;
+    String nam;
+   public:
+    String getName();
+};
+class Blink:public action{
+  protected:
+    int ondelay;
+    int offdelay;
+    int ontimes;
+  public:
+    friend void blinkMode();
+    void BLINK();
+    Blink();
+    Blink(int on, int off, int times, String NAM, unsigned long tim);
+    int getOnTimes();
+};
+class burnAction:public action{
+  private:
+    int ondelay;
+    int offdelay;
+    int ontimes;
+    int stagger;
+  public:
+    void Burn();
+    burnAction(int on, int off, int ont, int stag, unsigned long tim);
+    int getOnTimes();
+};
+
+
+  
+Blink recoveryBlink = Blink(150,2000,-1, "recoveryBlink",0);
+Blink countdownBlink = Blink(150,850,-1, "countdownBlink",0);
+Blink* currentBlink = &countdownBlink;
+burnAction idleBurn = burnAction(0,0,-1, 200,0);
+burnAction* currentBurn = &idleBurn;
 
 //GPS Stuff
 Adafruit_GPS GPS(&Serial1); //Constructor for GPS object
 int GPSstartTime;
 boolean newDay = false;
 boolean firstFix = false;
-int days = 0;
-
-
+int days = 0;          //used to store previous altitude values to check for burst
+boolean bursted = false;
+boolean checkingburst = false;
+boolean newData = false;
+int checkTime;   
 //SD Stuff
   File eventLog;
   File GPSlog;
@@ -135,8 +178,8 @@ void setup() {
 
   //Check for existing event logs and creates a new one
    for(int i=0;i<100;i++){
-    if(!SD.exists("Elog" + String(i/10) + String(i%10) + ".csv")){
-       Ename = "Elog" + String(i/10) + String(i%10)+ ".csv";
+    if(!SD.exists("Elog" + String(i/10) + String(i%10))){
+       Ename = "Elog" + String(i/10) + String(i%10);
        openEventlog();
        break;
        }
@@ -214,6 +257,6 @@ void setup() {
 void loop() {
 
     xBeeCommand(); //Checks for xBee commands
-    updateGPS();
-    autopilot();
+    updateGPS();   //updates the GPS
+    autopilot();   //autopilot function that checks status and runs actions
 }
