@@ -107,13 +107,12 @@ void altTheSingleLadies(){          //function which makes decisions based on al
             gatePass=false; //Should stop if GPS hits are more than 200ft apart. 
           }
           altCheck=false;
-          timerLED=millis(); //reset timer 
       }
 
      else if(GPS.altitude * 3.28048>=cutAlt&&gatePass){
       sendXBee("Activating GPS Altitude Triggered Cutdown");
       logAction("Activating GPS Altitude Triggered Cutdown");
-      //cutNow=1;
+      //runburn();
      }
       
     }
