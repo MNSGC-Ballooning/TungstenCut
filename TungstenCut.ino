@@ -5,9 +5,9 @@
 #include <SoftwareSerial.h>
 //==============================================================
 //               Code For Tungsten Cutter
-//                 Danny Toth May/June 2017 - tothx051
+//                 Danny Toth May/June 2017 - tothx051 and Simon Peterson- pet00291
 //==============================================================
- 
+   
 //Version Description: Working xBee with limited commands (add/sub time, request time/cutdown). SD logging with poor formatting.
 
 // Use: When payload is powered (i.e. batteries plugged in and switch in "on" position), it will be in flight mode.
@@ -57,18 +57,18 @@
 
 #define chipSelect 4      //SD Card pin
 
-//~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~                 //int used for 'if navigation'
-boolean gatePass;                   //Stores whether or not altitude gate has been passed
-unsigned long prevAlt;                      //Used in altitude cutdown decision
-
-//~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~                        
+//~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~ 
+//variables for the altitude cutting command                
+boolean gatePass;                   
+unsigned long prevAlt;   
 boolean altCheck;   
-unsigned long altTimer=0;                                          //stores whether burn has been attempted
-boolean burnerON = false;                                       //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)    
-unsigned long burnDelay = long(burn_Delay)*1000;                        //Used in recovery mode as the countdown to c                         //^that             
-boolean recovery = false;         //tells whether revovery mode is on 
-int altDelay = 5;                  // time between checking for a burst in seconds
-boolean delayBurn = false;         //tells whether or not the timer burn has occured
+unsigned long altTimer=0;                  
+//~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~                                                                  
+boolean burnerON = false;                                       
+unsigned long burnDelay = long(burn_Delay)*1000;                             
+boolean recovery = false;         
+int altDelay = 5;                
+boolean delayBurn = false;        
 //xBee Stuff
 const String xBeeID = "W1"; //xBee ID
 //blinnking variables
@@ -216,7 +216,7 @@ void setup() {
 
 void loop() {
 
-    xBeeCommand(); //Checks for xBee commands
-    updateGPS();   //updates the GPS
-    autopilot();   //autopilot function that checks status and runs actions
+   xBeeCommand(); //Checks for xBee commands
+   updateGPS();   //updates the GPS
+   autopilot();   //autopilot function that checks status and runs actions
 }

@@ -114,10 +114,12 @@ burnAction::burnAction(int on, int off, int ont, int stag, unsigned long tim){
   Time = tim;
 }
 void burnMode(){
+  //if we are done with the burnblinking we will start the burn
   if(currentBlink->getName()=="burnBlink"&&currentBlink->getOnTimes()==0)
   {
     currentBurn = new burnAction(500,200,3,1000, millis());
   }
+  //if done with the burn go back to idling
   if(currentBurn->getOnTimes()==0){
     digitalWrite(fireBurner, LOW);
     delete currentBurn;
