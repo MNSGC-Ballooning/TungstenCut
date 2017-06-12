@@ -57,31 +57,22 @@
 
 #define chipSelect 4      //SD Card pin
 
-//~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
-int first = 1;                          //int used for 'if navigation'
+//~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~                 //int used for 'if navigation'
 boolean gatePass;                   //Stores whether or not altitude gate has been passed
 unsigned long prevAlt;                      //Used in altitude cutdown decision
 
-//~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
-unsigned long burnDelay = long(burn_Delay)*1000;   //a burnDelay in milliseconds, which will be the primary currency from here on out.
-unsigned long timer;   //Used in recovery mode as the countdown to cut reattempt      
-boolean LEDon = false;                          
+//~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~                        
 boolean altCheck;   
-unsigned long altTimer=0;
-                                          //stores whether burn has been attempted
-boolean burnerON = false;                                       //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)              //Stores whether burn was successful
-boolean recovery = false;
-//~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
-unsigned long burnDelay = long(burn_Delay)*1000;   //a burnDelay in milliseconds, which will be the primary currency from here on out.
-unsigned long timer;                              //Used in recovery mode as the countdown to cut reattempt
-boolean LEDon = false;                          //^that             
-boolean revovery = false;         //tells whether revovery mode is on 
-int altDelay = 5;                  // tine between checking for a burst in seconds
+unsigned long altTimer=0;                                          //stores whether burn has been attempted
+boolean burnerON = false;                                       //loop maneuvering variable (1 if cutter will cut, 0 if timer countdown)    
+unsigned long burnDelay = long(burn_Delay)*1000;                        //Used in recovery mode as the countdown to c                         //^that             
+boolean recovery = false;         //tells whether revovery mode is on 
+int altDelay = 5;                  // time between checking for a burst in seconds
 boolean delayBurn = false;         //tells whether or not the timer burn has occured
->>>>>>> classsBlink
 //xBee Stuff
 const String xBeeID = "W1"; //xBee ID
 //blinnking variables
+boolean LEDon = false;  
 
 class action{
   protected:
@@ -116,8 +107,8 @@ class burnAction:public action{
 
 
   
-Blink recoveryBlink = Blink(150,2000,-1, "recoveryBlink",0);
-Blink countdownBlink = Blink(150,850,-1, "countdownBlink",0);
+Blink recoveryBlink = Blink(200,2000,-1, "recoveryBlink",0);
+Blink countdownBlink = Blink(200,850,-1, "countdownBlink",0);
 Blink* currentBlink = &countdownBlink;
 burnAction idleBurn = burnAction(0,0,-1, 200,0);
 burnAction* currentBurn = &idleBurn;
@@ -222,21 +213,6 @@ void setup() {
   }
 
   digitalWrite(fireBurner, LOW); //sets burner to off just in case
-
-  /*/####################Startup#####################
-    for(int i=0;i<7;i++){          //Blinks blue LED 7 times separated by .3 seconds to inicate "hello"
-      digitalWrite(ledPin, HIGH);
-      delay(300);l
-      digitalWrite(ledPin, LOW);
-      delay(300);
-      }
-    delay(2000);
-      /*for(int i=0;i<(burnDelay-(burnDelay%30000))/30000;i++){    //Blinks blue LED once for every 5 minutes of burn delay
-        digitalWrite(ledPin, HIGH);
-        delay(100);
-        digitalWrite(ledPin, LOW);
-        delay(200);
-        }*/
 
  String GPSHeader = "Flight Time, Lat, Long, Altitude (ft), Date, Hour:Min:Sec, Fix,";
   GPSlog.println(GPSHeader);//set up GPS log format

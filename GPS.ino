@@ -1,6 +1,6 @@
 
 float checkAlt;
-unsigned long lastGPS = -1000000;  //for testing purposes
+long lastGPS = -1000000;  //for testing purposes
 
 //function to handle both retrieval of data from GPS module and sensors, as well as recording it on the SD card
 void updateGPS() {
@@ -25,7 +25,7 @@ void updateGPS() {
       data += (String(GPS.hour) + ":" + String(GPS.minute) + ":" + String(GPS.seconds) + ",");   
       if (GPS.fix) {
         data += "fix,";
-        lastGPS = GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
+        lastGPS = long(GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds);
       }
       else
         data += ("No fix,");

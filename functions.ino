@@ -7,6 +7,7 @@ void removeTime(int subtraction){
 }
 void runBurn(){
   currentBlink= new Blink(200,500,5, "burnBlink", millis());
+  recovery = true;
 }
 
 void checkBurst(){
@@ -37,72 +38,36 @@ void contiCheck(){
 }
 
 void autopilot(){
-<<<<<<< HEAD
-   if(testblink){
-    testBlink();
-   }
-   if(!burnAttempt){  //Blinks LED every second to convey normal flight operation (countdown)
-      countdownBlink();
-      altTheSingleLadies();
-    }
-=======
+
    checkBurst();
    blinkMode();
    burnMode();
->>>>>>> classsBlink
-
-    if((millis()>=burnDelay)&&!delayBurn){   //Check to see if timer has run out or if cut has been commanded and if it is not currenlty in a delayed burn
-      runBurn();
-      delayBurn=true;
-      GPSaction("timed cutdown attempt");
-    }
-    contiCheck();
-    //...........................Firing Burner.......................  
-<<<<<<< HEAD
-   
-    if((cutNow)){
-        flamingGuillotine();        //Cutdown Function. The name was relevant to whatever conversation we were having at the time...
-        contiCheck();               //Temporary Continuity check. Currently returns positive-cut every time.
-    }
-    //...............................................................
-    //=======================Recovery Mode============================  
-    if(burnSuccess){
-      //- - - - - - - - - - - - - - Case Successful Cut - - - - - - - - - - - - - -
-       recoveryBlink();
-        //More stuff can go here. 
-     //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-     //_ _ _ _ _ _ _ _ _ _ _ _ _ Case Unsuccessful Cut_ _ _ _ _ _ _ _ __ _ _ _ _ _
-      /*
-      if(!burnSuccess){                                                              //To be uncommented when continuity check is implemented.
-        for(int i=0;i<3;i++){         //blinks LED 3 times long to indicate retry
-          digitalWrite(ledPin, HIGH);
-          delay(1000);
-          digitalWrite(ledPin, LOW);
-          delay(300);
-        }
-        cutNow=1; //orders another cutdown
-      }
-      */
-    }   
+   altTheSingleLadies();
+   if((millis()>=burnDelay)&&!delayBurn){   //Check to see if timer has run out or if cut has been commanded and if it is not currenlty in a delayed burn
+     runBurn();
+     delayBurn=true;
+     GPSaction("timed cutdown attempt");
+   }
+   contiCheck();
 }
 
 void altTheSingleLadies(){          //function which makes decisions based on altitude
   if(GPS.fix){
     
-    if((GPS.altitude * 3.28048>= (cutAlt-3000))&&gatePass==false){
+    if((GPS.altitude * 3.28048>= (cutAlt-3000))&&!gatePass){
       gatePass=true;
       prevAlt=GPS.altitude * 3.28048;
       sendXBee("Within 3000ft of Cutdown Altitude");
       logAction("Within 3000ft of Cutdown Altitude");
     }
-    else if((GPS.altitude * 3.28048>= (cutAlt-3000))&&gatePass==true){
+    else if((GPS.altitude * 3.28048>= (cutAlt-3000))&&gatePass){
         
         if(!altCheck&&(millis()-altTimer >=1000)){    //if it's been 1 second 
           altTimer=millis();          //Reset timer
           altCheck=true;             //Do nothing in particular
           prevAlt=GPS.altitude * 3.28048;
           }
-        if(altCheck&&(millis()-timerLED>=1000)){ //If it's been 1 second again...
+        if(altCheck&&(millis()-altTimer>=1000)){ //If it's been 1 second again...
           sendXBee("Verifying proximity to Cutdown Altitude");
           logAction("Verifying proximity to Cutdown Altitude");
           if((GPS.altitude * 3.28048)-prevAlt>= 200){
@@ -112,17 +77,16 @@ void altTheSingleLadies(){          //function which makes decisions based on al
           }
           altCheck=false;
       }
-
-     else if((GPS.altitude * 3.28048>=cutAlt)&&gatePass){
+    }
+     else if(GPS.altitude * 3.28048>=cutAlt&&gatePass){
       sendXBee("Activating GPS Altitude Triggered Cutdown");
       logAction("Activating GPS Altitude Triggered Cutdown");
       //runburn();
-     }
+     
       
     }
-=======
-    //for now, conticcheck disables Cutnow, so burncurrent lets us know if we are attempting a burn
 
+    }   
 }
 void burnAction::Burn(){
   if(ontimes>0){
@@ -136,7 +100,6 @@ void burnAction::Burn(){
     burnerON = false;
     Time = millis(); 
     ontimes--;
->>>>>>> classsBlink
   }
 }
 }

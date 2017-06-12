@@ -30,7 +30,7 @@ void Blink::BLINK(){
   }
   if((millis()-Time>=ondelay)&&LEDon){
     switchLED();
-    Time = millis(); 
+    Time = millis();
   }
 }
 int Blink::getOnTimes(){
@@ -57,12 +57,13 @@ void blinkMode(){
     else{
       currentBlink = &countdownBlink;
     }
-}
+  }
   currentBlink -> BLINK();
+  
 }
 
 void testBlink(){
-  currentBlink = new Blink(400,400,10, "testBlink", millis());
+  currentBlink = new Blink(100,300,7, "testBlink", millis());
 };
 
   
