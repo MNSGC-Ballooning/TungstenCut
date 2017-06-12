@@ -9,41 +9,6 @@ void runBurn(){
   currentBlink= new Blink(200,500,5, "burnBlink", millis());
 }
 
-/*void flamingGuillotine(){       
-  //Cutdown. Blinks, burns etc.
-      if(current->getOnTimes()>=5&&current->getOnTimes()<8){      // we will run the burner 3 times (ontimes gets to 5 through burnBlink)
-        if(((millis()-burnBlinkTime)>=(800+long((current->getOnTimes-4)*200)))&&burning){      //for increasingly long times, turn on the burner
-          digitalWrite(fireBurner, LOW);
-          burning = false;                //the burning circuit is open
-          ontimes++;                      //counting how many times we have run
-          burnBlinkTime = millis();
-        }
-        if(((millis()-burnBlinkTime)>=200)&&!burning){
-          digitalWrite(fireBurner, HIGH);
-          burning = true;
-          burnBlinkTime= millis();
-        }
-        }
-      else if(ontimes>=8){         //once we have finished attempting to burn 3 times
-        burnAttempt=true;         //these two will happen every time for loop navigation
-        burning = false;
-        sendXBee("Burner fired");
-        ontimes = 0;
-        burncurrent = false;
-        logAction("firing burner attempted");
-      }
-}*/
-
-void contiCheck(){
-      //Continuity check to decide burn or no burn
-      //Continuity check will decide whether to set burnSuccess to true or to order another cutNow=1
-      //For now, let's assume every burn works every time
-      /*burnSuccess=burnAttempt;                    
-      if(burnSuccess&&!burncurrent){
-        logAction("Burner Spent");
-      }
-      //logAction("Burner not spent, re-attempting burn");*/
-}
 void checkBurst(){
   if(!bursted){
     if(GPS.fix&&!checkingburst){
@@ -68,6 +33,9 @@ void checkBurst(){
     }
    }
 }
+void contiCheck(){
+}
+
 void autopilot(){
    checkBurst();
    blinkMode();
