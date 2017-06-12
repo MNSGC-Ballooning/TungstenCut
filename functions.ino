@@ -40,16 +40,51 @@ void autopilot(){
    checkBurst();
    blinkMode();
    burnMode();
+   altTheSingleLadies();
+   if((millis()>=burnDelay)&&!delayBurn){   //Check to see if timer has run out or if cut has been commanded and if it is not currenlty in a delayed burn
+     runBurn();
+     delayBurn=true;
+     GPSaction("timed cutdown attempt");
+   }
+   contiCheck();
+}
 
-    if((millis()>=burnDelay)&&!delayBurn){   //Check to see if timer has run out or if cut has been commanded and if it is not currenlty in a delayed burn
-      runBurn();
-      delayBurn=true;
-      GPSaction("timed cutdown attempt");
+void altTheSingleLadies(){          //function which makes decisions based on altitude
+  if(GPS.fix){
+    
+    if((GPS.altitude * 3.28048>= (cutAlt-3000))&&!gatePass){
+      gatePass=true;
+      prevAlt=GPS.altitude * 3.28048;
+      sendXBee("Within 3000ft of Cutdown Altitude");
+      logAction("Within 3000ft of Cutdown Altitude");
     }
-    contiCheck();
-    //...........................Firing Burner.......................  
-    //for now, conticcheck disables Cutnow, so burncurrent lets us know if we are attempting a burn
+    else if((GPS.altitude * 3.28048>= (cutAlt-3000))&&gatePass){
+        
+        if(!altCheck&&(millis()-altTimer >=1000)){    //if it's been 1 second 
+          altTimer=millis();          //Reset timer
+          altCheck=true;             //Do nothing in particular
+          prevAlt=GPS.altitude * 3.28048;
+          }
+        if(altCheck&&(millis()-altTimer>=1000)){ //If it's been 1 second again...
+          sendXBee("Verifying proximity to Cutdown Altitude");
+          logAction("Verifying proximity to Cutdown Altitude");
+          if((GPS.altitude * 3.28048)-prevAlt>= 200){
+            sendXBee("GPS hits too far apart, resetting altitude decision-making");
+            logAction("GPS hits too far apart, resetting altitude decision-making");
+            gatePass=false; //Should stop if GPS hits are more than 200ft apart. 
+          }
+          altCheck=false;
+      }
 
+     else if(GPS.altitude * 3.28048>=cutAlt&&gatePass){
+      sendXBee("Activating GPS Altitude Triggered Cutdown");
+      logAction("Activating GPS Altitude Triggered Cutdown");
+      //runburn();
+     }
+      
+    }
+
+}
 }
 void burnAction::Burn(){
   if(ontimes>0){
