@@ -27,6 +27,11 @@ void checkBurst(){
         logAction("burst detected");
         bursted = true;
       }
+      else{
+        checkingburst = false;
+        altDelay = 0;
+         
+      }
     }
     else if(!GPS.fix){                   //if no fix reset the whole process
       checkingburst = false;
