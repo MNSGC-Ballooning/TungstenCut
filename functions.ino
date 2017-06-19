@@ -52,7 +52,7 @@ void autopilot(){
 }
 
 void altTheSingleLadies(){          //function which makes decisions based on altitude
-  if(GPS.fix){
+  if(GPS.fix&&!bursted){
     
     if((GPS.altitude * 3.28048>= (cutAlt-3000))&&!gatePass){
       gatePass=true;
