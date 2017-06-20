@@ -62,8 +62,8 @@ void altTheSingleLadies(){          //function which makes decisions based on al
     if((GPS.altitude * 3.28048>= (cutAlt-3000))&&!gatePass){
       gatePass=true;
       prevAlt=GPS.altitude * 3.28048;
-      sendXBee("Within 3000ft of Cutdown Altitude");
-      logAction("Within 3000ft of Cutdown Altitude");
+      //sendXBee("Within 3000ft of Cutdown Altitude");            //we dont want to spam ourselves
+      //logAction("Within 3000ft of Cutdown Altitude");
     }
     else if((GPS.altitude * 3.28048>= (cutAlt-3000))&&gatePass){
         
