@@ -181,7 +181,7 @@ void setup() {
 
   sendXBee("GPS log created: " + GPSname);
 
-  while (!eventLog) {                   //both power and data LEDs will blink together if card is inserted but file fails to be created                 /
+/*  while (!eventLog) {                   //both power and data LEDs will blink together if card is inserted but file fails to be created                 /
       sendXBee("Eventlog file creation failed");
       digitalWrite(ledSD, HIGH);
       digitalWrite(ledPin, HIGH);
@@ -198,7 +198,7 @@ void setup() {
       digitalWrite(ledSD, LOW);
       digitalWrite(ledPin, LOW);
       delay(1500);
-  }
+  }*/
   digitalWrite(fireBurner, LOW); //sets burner to off just in case
   String GPSHeader = "Flight Time, Lat, Long, Altitude (ft), Date, Hour:Min:Sec, Fix,";
   GPSlog.println(GPSHeader);//set up GPS log format
