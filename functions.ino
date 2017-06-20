@@ -62,8 +62,8 @@ void altTheSingleLadies(){          //function which makes decisions based on al
     if((GPS.altitude * 3.28048>= (cutAlt-3000))&&!gatePass){
       gatePass=true;
       prevAlt=GPS.altitude * 3.28048;
-      //sendXBee("Within 3000ft of Cutdown Altitude");            //we dont want to spam ourselves
-      //logAction("Within 3000ft of Cutdown Altitude");
+      sendXBee("Within 3000ft of Cutdown Altitude");            
+      logAction("Within 3000ft of Cutdown Altitude");
     }
     else if((GPS.altitude * 3.28048>= (cutAlt-3000))&&gatePass){
         
@@ -71,8 +71,8 @@ void altTheSingleLadies(){          //function which makes decisions based on al
           altTimer=millis();          //Reset timer
           altCheck=true;             //Do nothing in particular
           prevAlt=GPS.altitude * 3.28048;
-          sendXBee("beginning altitude verification");
-          logAction("beginning altitude verification");
+          //sendXBee("beginning altitude verification");               //we dont want to spam ourselves
+          //logAction("beginning altitude verification");
           }
         if(altCheck&&(millis()-altTimer>=1000)){ //If it's been 1 second again...
           //sendXBee("Verifying proximity to Cutdown Altitude");     we dont want to spam ourselves
