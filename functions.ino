@@ -71,10 +71,12 @@ void altTheSingleLadies(){          //function which makes decisions based on al
           altTimer=millis();          //Reset timer
           altCheck=true;             //Do nothing in particular
           prevAlt=GPS.altitude * 3.28048;
+          sendXBee("beginning altitude verification");
+          logAction("beginning altitude verification");
           }
         if(altCheck&&(millis()-altTimer>=1000)){ //If it's been 1 second again...
-          sendXBee("Verifying proximity to Cutdown Altitude");
-          logAction("Verifying proximity to Cutdown Altitude");
+          //sendXBee("Verifying proximity to Cutdown Altitude");     we dont want to spam ourselves
+          //logAction("Verifying proximity to Cutdown Altitude");
           if((GPS.altitude * 3.28048)-prevAlt>= 200){
             sendXBee("GPS hits too far apart, resetting altitude decision-making");
             logAction("GPS hits too far apart, resetting altitude decision-making");
