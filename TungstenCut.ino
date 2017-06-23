@@ -44,19 +44,19 @@
      Data LED (BLUE)              | D3                    |  "action" LED (Blue), tells us what the payload is doing
      SD                           | D4, D11-13            |  11-13 not not have wires but they are used!
      SD LED (RED)                 | D5                    | "SD" LED (Red). Only on when the file is open in SD card
+     Continutity Check OUTPUT     | D6                    | Outputs a voltatge for the continuity check
+     Continuity check INPUT       | D7                    | Reads the voltage for the continuity check
      GPS serial                   | serial 1              | serial for GPS
      -------------------------------------------------------------------------------------------------------------------------
 */
 
 //~~~~~~~~~~~~~~~Pin Variables~~~~~~~~~~~~~~~
-#define ledPin 3          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
-
 #define fireBurner 2       // Pin which opens the relay to fire. High = Fire!
-
-#define ledSD 5            //Pin which controls the SD LED
-
+#define ledPin 3          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 #define chipSelect 4      //SD Card pin
-
+#define ledSD 5               //Pin which controls the SD LED
+#define CONTOUT 6          //Outputs voltage for continuity test
+#define CONTIN 7         // reads continuity check voltage
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~ 
 //variables for the altitude cutting command                
 boolean gatePass;                   
