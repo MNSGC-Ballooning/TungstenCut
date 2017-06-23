@@ -135,6 +135,8 @@ void setup() {
   pinMode(fireBurner, OUTPUT);
   pinMode(ledSD, OUTPUT);
   pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
+  pinMode(CONTOUT, OUTPUT);       //continuity check pins
+  pinMode(CONTIN, INPUT);
   sendXBee("Pins Initialized");
   
 // initiate xbee
@@ -200,6 +202,7 @@ void setup() {
       delay(1500);
   }*/
   digitalWrite(fireBurner, LOW); //sets burner to off just in case
+  digitalWrite(CONTOUT, HIGH);   //
   String GPSHeader = "Flight Time, Lat, Long, Altitude (ft), Date, Hour:Min:Sec, Fix,";
   GPSlog.println(GPSHeader);//set up GPS log format
   sendXBee("GPS header added");

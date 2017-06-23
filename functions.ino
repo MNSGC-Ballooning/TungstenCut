@@ -40,6 +40,13 @@ void checkBurst(){
    }
 }
 void contiCheck(){
+  if(!recovery){
+    if(digitalRead(CONTIN) == LOW){
+      recovery = true;
+      logAction("main line detachment detected");
+      sendXBee("main line detachment detected");
+    }
+  }
 }
 
 void autopilot(){
