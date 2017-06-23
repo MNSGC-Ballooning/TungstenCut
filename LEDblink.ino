@@ -59,6 +59,9 @@ void blinkMode(){
       currentBlink = &countdownBlink;
     }
   }
+   if(recovery){
+      currentBlink = &recoveryBlink;
+    }
   currentBlink -> BLINK();
   
 }
