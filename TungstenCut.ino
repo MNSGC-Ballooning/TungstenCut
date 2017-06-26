@@ -74,6 +74,13 @@ const String xBeeID = "W1"; //xBee ID
 //blinnking variables
 boolean LEDon = false;  
 
+class action{
+  protected:
+    unsigned long Time;
+    String nam;
+   public:
+    String getName();
+};
 class Blink:public action{
   protected:
     int ondelay;
