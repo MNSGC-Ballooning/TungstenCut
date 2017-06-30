@@ -129,7 +129,7 @@ burnAction::burnAction(int on, int off, int ont, int stag, unsigned long tim){
 }
 void burnMode(){
   //if we are done with the burnblinking we will start the burn
-  if(currentBlink->getName()=="burnBlink"&&currentBlink->getOnTimes()==0)
+  if(currentBlink->getName()=="burnBlink"&&currentBlink->getOnTimes()==1)
   {
     currentBurn = new burnAction(500,200,3,1000, millis());
   }
