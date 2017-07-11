@@ -5,7 +5,7 @@
 #include <SoftwareSerial.h>
 //==============================================================
 //               Code For Tungsten Cutter
-//                 Danny Toth May/June 2017 - tothx051 and Simon Peterson- pet00291
+//                 Danny Toth Summer 2017 - tothx051 and Simon Peterson- pet00291
 //==============================================================
 
 //Version Description: Working xBee with limited commands (add/sub time, request time/cutdown). SD logging with poor formatting.
