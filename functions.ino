@@ -39,7 +39,7 @@ void checkBurst(){
     }
    }
 }
-void contiCheck(){
+/*void contiCheck(){
   if(!recovery){
     if(digitalRead(CONTIN) == LOW){
       recovery = true;
@@ -47,7 +47,7 @@ void contiCheck(){
       sendXBee("main line detachment detected");
     }
   }
-}
+}*/
 
 void autopilot(){
 
@@ -60,7 +60,7 @@ void autopilot(){
      delayBurn=true;
      GPSaction("timed cutdown attempt");
    }
-   contiCheck();
+   //contiCheck();
 }
 
 void altTheSingleLadies(){          //function which makes decisions based on altitude
