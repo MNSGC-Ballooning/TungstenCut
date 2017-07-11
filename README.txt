@@ -24,22 +24,22 @@ ________________________________________________________________________________
   / . \| |_) |  __/  __/ | |___| (_) | | | | | | | | | | | (_| | | | | (_| \__ \_|
  /_/ \_\____/ \___|\___|  \_____\___/|_| |_| |_|_| |_| |_|\__,_|_| |_|\__,_|___(_)
 ----------------------------------------------------------------------------------
-XBee ID: "W1"
+XBee ID: "W" + the letter identifier of the stack. For example, stack A is "WA", B is "WB", etc.
 
 xBee Command Protocol: xBeeID + "?" + command + "!"
 
 List of xBee Commands:
 
 Command:        Example:        Function:
-WA__            W1?WA15!        adds time in minutes to failsafe timer, returns new timer
+WA__            WA?WA15!        adds time in minutes to failsafe timer, returns new timer
 
-WR__            W1?WR13!        removes time from failsafe in minutes, returns remaining timer
+WR__            WA?WR13!        removes time from failsafe in minutes, returns remaining timer
 
-WB              W1?WB!          Blinks the "Action LED". Does nothing else.
+WB              WA?WB!          Blinks the "Action LED". Does nothing else.
 
-WX              W1?WX!          Initiates Cutdown!
+WX              WA?WX!          Initiates Cutdown!
 
-WT              W1?WT!          Polls for remaining failsafe time
+WT              WA?WT!          Polls for remaining failsafe time
 
-GPS             W1?GPS!         Polls most recent GPS data
+GPS             WA?GPS!         Polls most recent GPS data
 ==============================================================================================================================================

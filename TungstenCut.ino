@@ -30,6 +30,8 @@
 
 int burn_Delay = 3600; //Countdown timer in seconds! Changeable via xBee.
 
+const String xBeeID = "W1"; //xBee ID
+
 long cutAlt = 100000; //Default cutdown altitude in feet! Changeable via xBee.
 
 //=============================================================================================================================================
@@ -69,8 +71,6 @@ unsigned long burnDelay = long(burn_Delay) * 1000;
 boolean recovery = false;
 int altDelay = 5;
 boolean delayBurn = false;
-//xBee Stuff
-const String xBeeID = "W1"; //xBee ID
 //blinnking variables
 boolean LEDon = false;
 
