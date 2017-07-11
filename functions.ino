@@ -108,12 +108,14 @@ void burnAction::Burn(){
     digitalWrite(fireBurner, HIGH);
     Time= millis();
     burnerON = true;
+    Serial.println("switching on");
   }
   if(millis()-Time>=(ondelay+stagger*(3-ontimes))&&burnerON){
     digitalWrite(fireBurner, LOW);
     burnerON = false;
     Time = millis(); 
     ontimes--;
+    Serial.println("Switching off");
   }
 }
 }
@@ -129,7 +131,7 @@ burnAction::burnAction(int on, int off, int ont, int stag, unsigned long tim){
 }
 void burnMode(){
   //if we are done with the burnblinking we will start the burn
-  if(currentBlink->getName()=="burnBlink"&&currentBlink->getOnTimes()==1)
+  if(currentBlink->getName()=="burnBlink"&&currentBlink->getOnTimes()==0)
   {
     currentBurn = new burnAction(500,200,3,1000, millis());
   }
