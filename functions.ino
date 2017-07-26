@@ -95,7 +95,7 @@ void altTheSingleLadies(){          //function which makes decisions based on al
      else if(GPS.altitude * 3.28048>=cutAlt&&gatePass){
       sendXBee("Activating GPS Altitude Triggered Cutdown");
       logAction("Activating GPS Altitude Triggered Cutdown");
-      //runburn();
+      runBurn();
      
       
     }
@@ -108,14 +108,12 @@ void burnAction::Burn(){
     digitalWrite(fireBurner, HIGH);
     Time= millis();
     burnerON = true;
-    Serial.println("switching on");
   }
   if(millis()-Time>=(ondelay+stagger*(3-ontimes))&&burnerON){
     digitalWrite(fireBurner, LOW);
     burnerON = false;
     Time = millis(); 
     ontimes--;
-    Serial.println("Switching off");
   }
 }
 }
