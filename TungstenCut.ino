@@ -28,11 +28,11 @@
 //  /_____/\__,_/_/  /_/ /_/  /_____/\___/_/\__,_/\__, /   \____/\____/_/ /_/_/ /_/\__, /\__,_/_/   \__,_/\__/_/\____/_/ /_/
 //                                               /____/                           /____/
 
-int burn_Delay = 10000; //Countdown timer in seconds! Changeable via xBee.
+int burn_Delay = 3600; //Countdown timer in seconds! Changeable via xBee.
 
-const String xBeeID = "WC"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
+const String xBeeID = "WA"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
 
-long cutAlt = 80000; //Default cutdown altitude in feet! Changeable via xBee.
+long cutAlt = 75000; //Default cutdown altitude in feet! Changeable via xBee.
 
 //=============================================================================================================================================
 //=============================================================================================================================================
