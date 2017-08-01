@@ -29,11 +29,11 @@
 //                                               /____/                           /____/
 
 int burn_Delay = 3600; //Countdown timer in seconds! Changeable via xBee.
-
+bool timeBurn = true;   //set to true to activate delay burns. can be changed through Xbee
 const String xBeeID = "WA"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
 
 long cutAlt = 75000; //Default cutdown altitude in feet! Changeable via xBee.
-
+bool altCut = true;  //set to true to perfom an altitude cutdown. can be toggled through Xbee.
 //=============================================================================================================================================
 //=============================================================================================================================================
 
@@ -61,10 +61,6 @@ long cutAlt = 75000; //Default cutdown altitude in feet! Changeable via xBee.
 #define CONTIN 7         // reads continuity check voltage
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 //variables for the altitude cutting command
-boolean gatePass;
-unsigned long prevAlt;
-boolean altCheck;
-unsigned long altTimer = 0;
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
 boolean burnerON = false;
 unsigned long burnDelay = long(burn_Delay) * 1000;

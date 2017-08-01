@@ -25,7 +25,7 @@ void updateGPS() {
       data += (String(GPS.hour) + ":" + String(GPS.minute) + ":" + String(GPS.seconds) + ",");   
       if (GPS.fix) {
         data += "fix,";
-        lastGPS = long(GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds);
+        lastGPS = GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
       }
       else
         data += ("No fix,");
@@ -41,7 +41,7 @@ void updateGPS() {
   }
 
 int getGPStime() {
-  return days * 86400 + GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
+  return GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
 }
 
 int getLastGPS() {    //returns time in seconds between last successful fix and initial fix. Used to match with altitude data

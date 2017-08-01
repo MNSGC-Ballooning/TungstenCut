@@ -17,12 +17,19 @@ void checkBurst(){
       checkingburst= true;
       checkTime= getLastGPS();
     }
-    else if(newData&&altDelay<5&&(getLastGPS()-checkTime)<2000){                //is there good new data, is it part of the 5 seccond period, and is this good new data coming in with 2 seconds of the other data
-      checkTime = getLastGPS();
-      altDelay++;
+    else if(GPS.fix&&altDelay<5&&(getLastGPS()-checkTime)>1){
+      if((GPS.altitude*3.28048-checkAlt)<-30){
+        Serial.println(String(altDelay));
+        checkTime = getLastGPS();
+        checkAlt =  (GPS.altitude*3.28048);                                 
+        altDelay++;
+      }
+      else{
+        checkingburst = false;
+      }
      }
-    else if(newData&&altDelay==5&&(getLastGPS()-checkTime)<2000){
-      if(checkAlt-(GPS.altitude*3.28048)>100){                                   // a five second difference greater than 100 feet(not absolute value, so it still rises)
+    else if(GPS.fix&&altDelay==5&&(getLastGPS()-checkTime>1)){
+      if(checkAlt-(GPS.altitude*3.28048)>30){                                   // a five second difference greater than 100 feet(not absolute value, so it still rises)
         sendXBee("burst detected");
         logAction("burst detected");
         bursted = true;
@@ -55,16 +62,16 @@ void autopilot(){
    blinkMode();
    burnMode();
    altTheSingleLadies();
-   if((millis()>=burnDelay)&&!delayBurn){   //Check to see if timer has run out or if cut has been commanded and if it is not currenlty in a delayed burn
-     runBurn();
-     delayBurn=true;
+   if((millis()>=burnDelay)&&!delayBurn&&timeBurn){   //Check to see if timer has run out or if cut 
+     runBurn();                                       //has been commanded and if it is not currenlty in a delayed burn, 
+     delayBurn=true;                                  //or if we even was a delayed burn
      GPSaction("timed cutdown attempt");
    }
    //contiCheck();
 }
 
-void altTheSingleLadies(){          //function which makes decisions based on altitude
-  if(GPS.fix&&!bursted){
+/*void altTheSingleLadies(){          //function which makes decisions based on altitude
+  if(GPS.fix){
     
     if((GPS.altitude * 3.28048>= (cutAlt-3000))&&!gatePass){
       gatePass=true;
@@ -101,6 +108,53 @@ void altTheSingleLadies(){          //function which makes decisions based on al
     }
 
     }   
+    else{
+      gatePass = false;
+    }
+}*/
+
+void altTheSingleLadies(){
+  static bool cutCheck = false;
+  static byte checkTimes = 0;
+  static unsigned long prevAlt = 0;
+  static unsigned long altTimer = 0;
+  static bool sent = false;
+  if(GPS.fix){
+    if(!cutCheck){
+      prevAlt = GPS.altitude * 3.28048;
+      cutCheck = true;
+      checkTimes = 0;
+      altTimer = getLastGPS();
+      sent = false;
+    }
+    else if((getLastGPS()-altTimer > 2)&& GPS.altitude-prevAlt > 300){
+      cutCheck = false;
+      sendXBee("GPS jump detected, resetting cutdown decisions");
+    }
+    else if((getLastGPS-altTimer> 2) && cutAlt-GPS.altitude<3000 && !sent ){
+      sendXBee("within 3000 feet of cutdown altitude");
+      sent = true;
+      prevAlt = GPS.altitude * 3.28048; 
+      altTimer = getLastGPS();
+    }
+    else if (checkTimes < 15 && getLastGPS-altTimer > 2&& GPS.altitude>cutAlt){
+      String toSend = "veryifying proximity to cutdown. will cut in " + String(15-checkTimes) + " GPS hits above cut altitude";
+      sendXBee(toSend);
+      checkTimes++;
+      prevAlt = GPS.altitude * 3.28048; 
+      altTimer = getLastGPS();
+    }
+    else{
+      sendXBee("running altitude burn");
+      runBurn();
+      cutCheck = false;
+    }
+    
+  }
+  else{
+    cutCheck = false;
+  }
+   
 }
 void burnAction::Burn(){
   if(ontimes>0){
