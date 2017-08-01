@@ -19,7 +19,6 @@ void checkBurst(){
     }
     else if(GPS.fix&&altDelay<5&&(getLastGPS()-checkTime)>1){
       if((GPS.altitude*3.28048-checkAlt)<-30){
-        Serial.println(String(altDelay));
         checkTime = getLastGPS();
         checkAlt =  (GPS.altitude*3.28048);                                 
         altDelay++;
@@ -144,7 +143,7 @@ void altTheSingleLadies(){
       prevAlt = GPS.altitude * 3.28048; 
       altTimer = getLastGPS();
     }
-    else{
+    else if (checkTime == 15){
       sendXBee("running altitude burn");
       runBurn();
       cutCheck = false;
