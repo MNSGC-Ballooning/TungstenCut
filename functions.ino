@@ -126,24 +126,25 @@ void altTheSingleLadies(){
       altTimer = getLastGPS();
       sent = false;
     }
-    else if((getLastGPS()-altTimer > 2)&& GPS.altitude-prevAlt > 300){
+    else if((getLastGPS()-altTimer > 2)&& GPS.altitude * 3.28048-prevAlt > 3000){
       cutCheck = false;
       sendXBee("GPS jump detected, resetting cutdown decisions");
     }
-    else if((getLastGPS-altTimer> 2) && cutAlt-GPS.altitude<3000 && !sent ){
+    else if((getLastGPS()-altTimer> 2) && cutAlt-GPS.altitude * 3.28048<3000 && !sent ){
       sendXBee("within 3000 feet of cutdown altitude");
       sent = true;
       prevAlt = GPS.altitude * 3.28048; 
       altTimer = getLastGPS();
     }
-    else if (checkTimes < 15 && getLastGPS-altTimer > 2&& GPS.altitude>cutAlt){
+    else if (checkTimes < 15 && getLastGPS()-altTimer > 2&& GPS.altitude * 3.28048>cutAlt){
       String toSend = "veryifying proximity to cutdown. will cut in " + String(15-checkTimes) + " GPS hits above cut altitude";
       sendXBee(toSend);
       checkTimes++;
       prevAlt = GPS.altitude * 3.28048; 
       altTimer = getLastGPS();
+      Serial.println(String(checkTimes));
     }
-    else if (checkTime == 15){
+    else if (checkTimes == 15){
       sendXBee("running altitude burn");
       runBurn();
       cutCheck = false;
@@ -184,7 +185,7 @@ void burnMode(){
   //if we are done with the burnblinking we will start the burn
   if(currentBlink->getName()=="burnBlink"&&currentBlink->getOnTimes()==0)
   {
-    currentBurn = new burnAction(500,200,3,1000, millis());
+    currentBurn = new burnAction(10000,200,3,1000, millis());
   }
   //if done with the burn go back to idling
   if(currentBurn->getOnTimes()==0){
