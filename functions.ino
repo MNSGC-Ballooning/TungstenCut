@@ -137,12 +137,18 @@ void altTheSingleLadies(){
       altTimer = getLastGPS();
     }
     else if (checkTimes < 15 && getLastGPS()-altTimer > 2&& GPS.altitude * 3.28048>cutAlt){
-      String toSend = "veryifying proximity to cutdown. will cut in " + String(15-checkTimes) + " GPS hits above cut altitude";
+      String toSend = "veryifying proximity to cutdown. will cut in " + String(14-checkTimes) + " GPS hits above cut altitude";
       sendXBee(toSend);
       checkTimes++;
       prevAlt = GPS.altitude * 3.28048; 
       altTimer = getLastGPS();
       Serial.println(String(checkTimes));
+    }
+    else if(checkTimes < 15 && getLastGPS()-altTimer > 2 && GPS.altitude * 3.28048 < cutAlt){
+      sendXBee("GPS hit below cut altitude, resetting GPS hit counter");
+      cutCheck = false;
+      
+      
     }
     else if (checkTimes == 15){
       sendXBee("running altitude burn");
