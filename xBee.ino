@@ -1,6 +1,6 @@
 //Takes a string to send out via xBee, and logs the transmission to the SD card with a timestamp
 void sendXBee(String out) {
-  Serial.println(xBeeID + ";" + out + "!");
+  xBee.send(out);
   openEventlog();
   if(SDcard){
     eventLog.println(flightTimeStr() + "  TX  " + out);
@@ -19,42 +19,15 @@ void logCommand(String com, String command) {
   closeEventlog();
 }
 
-//Current method of sending an acknowledgement via RFD
-void acknowledge() {
-  Serial.println(xBeeID + "\n");
-}
-
-String lastCommand = "";
-unsigned long commandTime = 0;
-
 //Primary xBee function that looks for incoming messages, parses them, and executes the corresponding commands
 void xBeeCommand(){
-  boolean complete = false;                  //Stuff we don't care about
-  String command = "";
-  char inChar;
-  while (Serial.available() > 0) {
-    inChar = (char)Serial.read();
-    if (inChar != ' ') {
-      command += inChar;
-      if (inChar == '!') { 
-        complete = true;
-        break;
-      }
-    }
-    delay(10);
-  }
+  //check for incoming xBeeCommands
+  String Com = xBee.receive();
 
-  if (!complete) return;                                                                   //Stuff we don't care about
-  if (command.equals(lastCommand) && (millis() - commandTime < 30000)) return; 
-  int split = command.indexOf('?');
-  if (!(command.substring(0, split)).equals(xBeeID)) return;
-  lastCommand = command;
-  String Com = command.substring(split + 1, command.length() - 1);
-  acknowledge();
-  commandTime = millis();
-  
+  //receive() returns empty string if no commands sent
+  if (Com.equals("")) return;
 
-  
+  //Find and execute correct command
   if ((Com.substring(0,2)).equals("WA")) {
     //Add time in minutes to failsafe
     unsigned long addedTime = atol((Com.substring(2, Com.length())).c_str());

@@ -2,7 +2,7 @@
 //Libraries
 #include <SD.h>
 #include <Adafruit_GPS.h>
-#include <SoftwareSerial.h>
+#include <Relay_XBee.h>
 //==============================================================
 //               Code For Tungsten Cutter
 //                 Danny Toth Summer 2017 - tothx051 and Simon Peterson- pet00291
@@ -125,6 +125,10 @@ File GPSlog;
 String Ename = "";
 String GPSname = "";
 boolean SDcard = true;
+
+//XBee Stuff
+XBee xBee = XBee(&Serial, xBeeID);
+
 void setup() {
   // initialize pins
   pinMode(ledPin, OUTPUT);
@@ -133,10 +137,9 @@ void setup() {
   pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
   pinMode(CONTOUT, OUTPUT);       //continuity check pins
   pinMode(CONTIN, INPUT);
-  sendXBee("Pins Initialized");
 
   // initiate xbee
-  Serial.begin(9600);
+  xBee.begin(9600);
   sendXBee("xBee begin");
 
   //Initiate GPS Data lines
@@ -150,7 +153,7 @@ void setup() {
 
   //initialize SD card
   if (!SD.begin(chipSelect)) {            //power LED will blink if no card is inserted
-    Serial.println("No SD");
+    sendXBee("No SD");
     digitalWrite(ledSD, HIGH);
     delay(500);
     digitalWrite(ledSD, LOW);
