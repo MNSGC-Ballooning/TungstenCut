@@ -101,11 +101,12 @@ void xBeeCommand(){
   else if (Com.equals("WT")) {
     //Poll for cutdown timer remaining, returns minutes:seconds
     logCommand(Com, "Poll Remaining Time");
-    unsigned long t = (burnDelay-millis())/1000;
-    String tStr = String(t / 60) + ":";
-    t %= 60;
-    tStr += String(t / 10) + String(t % 10);
-    sendXBee(tStr);
+    if(timeBurn){
+      sendXBee(timeLeft());
+    }
+    else{
+      sendXBee("timed cut is currently not enabled");
+    }
     
   }
 
@@ -152,7 +153,14 @@ void xBeeCommand(){
 
   else if((Com.substring(0,2)).equals("WD")){   //poll cutdown altitude
     logCommand(Com, "poll cutdown altitude");
-    sendXBee("Cutdown altitude: " + String(cutAlt));
+    String toSend = "Cutdown altitude: " + String(cutAlt);
+    if(altCut){
+      toSend += ",  altitude cut is enabled";
+    }
+    else{
+      toSend += ", altitude cut is disabled";
+    }
+    sendXBee(toSend);
   }
       
   else {
