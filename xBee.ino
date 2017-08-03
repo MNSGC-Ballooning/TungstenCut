@@ -54,21 +54,17 @@ void xBeeCommand(){
   if ((Com.substring(0,2)).equals("WA")) {
     //Add time in minutes to failsafe
     unsigned long addedTime = atol((Com.substring(2, Com.length())).c_str());
-    sendXBee("added Time: "+ String(addedTime)+ " Minutes");
     logCommand(Com, "Added time to failsafe");
+    sendXBee("added Time: "+ String(addedTime)+ " Minutes");
     burnDelay += (addedTime*60*1000);  //Converts minutes to milliseconds
-    int timeLeft = int((burnDelay-millis())/1000);
-    String timeLeftStr = (String(timeLeft/60) + ":");
-    timeLeft %= 60;
-    timeLeftStr += (String(timeLeft / 10) + String(timeLeft % 10));
-    sendXBee("Time until cutdown: " + timeLeftStr);
+    sendXBee("Time until cutdown: " + timeLeft());
   }
 
  else if ((Com.substring(0,2)).equals("WR")) {
     //Remove time in minutes to failsafe
     unsigned long remTime = atol((Com.substring(2, Com.length())).c_str());
-    sendXBee("Time removed: "+ String(remTime)+ " Minutes");
     logCommand(Com, "Removed time from failsafe");
+    sendXBee("Time removed: "+ String(remTime)+ " Minutes");
     burnDelay -= (remTime*60*1000);  //Converts minutes to milliseconds
     int timeLeft = int((burnDelay-millis())/1000);
     String timeLeftStr = (String(timeLeft/60) + ":");
@@ -110,6 +106,7 @@ void xBeeCommand(){
     t %= 60;
     tStr += String(t / 10) + String(t % 10);
     sendXBee(tStr);
+    
   }
 
   
@@ -123,14 +120,40 @@ void xBeeCommand(){
     sendXBee(message);
   }
 
- else if ((Com.substring(0,2)).equals("WU")) {
+   else if((Com.substring(0,2)).equals("WD")){   //disable altitude cut
+    altCut = false;
+    logCommand(Com, "altitude cut disabled");
+    sendXBee("Altitude cutdown is now disabled");
+   }
+   else if ((Com.substring(0,2)).equals("WU")) {   //sets new cutdown Altitude
     //Set Cutdown Altitude
     long newAlt = atol((Com.substring(2, Com.length())).c_str());
-    sendXBee("New Cutdown Altitude: "+ String(newAlt)+ " Feet");
     logCommand(Com, "New Cutdown Altitude: "+ String(newAlt)+ " Feet");
-    cutAlt = (newAlt);                                              //sets new cutdown Altitude
+    sendXBee("New Cutdown Altitude: "+ String(newAlt)+ " Feet");
+    cutAlt = newAlt;                                              
+  }
+  else if((Com.substring(0,2)).equals("WE")){   //enable altitude cut
+    altCut = true;
+    logCommand(Com, "altitude cut enabled");
+    sendXBee("Altitude cutdown is now enabled, will cut at: " + String(cutAlt) + "feet");
+   }
+  else if((Com.substring(0,2)).equals("WC")){   //enable time burn     
+    timeBurn = true;
+    logCommand(Com, "timed cut enabled");
+    burnDelay = millis() + 3600;                //make the default timer 60 minutes
+    sendXBee("timed cut enabled, time until cutdown: " + timeLeft());
   }
 
+  else if((Com.substring(0,2)).equals("WS")){   //disable time burn
+    timeBurn = false;
+    logCommand(Com, "timed cut disabled");
+    sendXBee("timed cut disabled");
+  }
+
+  else if((Com.substring(0,2)).equals("WD")){   //poll cutdown altitude
+    logCommand(Com, "poll cutdown altitude");
+    sendXBee("Cutdown altitude: " + String(cutAlt));
+  }
       
   else {
     //If no recognizable command was received, inform ground station

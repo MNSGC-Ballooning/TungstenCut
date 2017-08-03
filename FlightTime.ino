@@ -16,3 +16,12 @@ String flightTimeStr() {
   fTime += (String(t / 10) + String(t % 10));
   return fTime;
 }
+
+String timeLeft(){
+  int timeLeft = int((burnDelay-millis())/1000);
+  String timeLeftStr = (String(timeLeft/60) + ":");
+  timeLeft %= 60;
+  timeLeftStr += (String(timeLeft / 10) + String(timeLeft % 10));
+  return timeLeftStr;
+}
+

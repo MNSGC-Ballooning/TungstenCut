@@ -37,9 +37,21 @@ WR__            WA?WR13!        removes time from failsafe in minutes, returns r
 
 WB              WA?WB!          Blinks the "Action LED". Does nothing else.
 
-WX              WA?WX!          Initiates Cutdown!
+WX              WA?WX!          Initiates Cutdown
 
 WT              WA?WT!          Polls for remaining failsafe time
 
 GPS             WA?GPS!         Polls most recent GPS data
+
+WD              WA?WD!          disables altitude cutdown
+
+WU              WA?WU50000!	sets new altitude for cutdown
+
+WE		WA?WE!		enables altitude cutdown cutdown
+
+WC   		WA?WC! 		enables timed burn. resets timer to 60 minutes
+
+WS 		WA?WS!		disables timed burn.
+
+WD		WA?WD! 		polls cutdown altitude
 ==============================================================================================================================================
