@@ -53,5 +53,5 @@ WC   		WA?WC! 		enables timed burn. resets timer to 60 minutes
 
 WS 		WA?WS!		disables timed burn.
 
-WD		WA?WD! 		polls cutdown altitude
+WF		WA?WF! 		polls cutdown altitude
 ==============================================================================================================================================

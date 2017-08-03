@@ -143,7 +143,6 @@ void altTheSingleLadies(){
       checkTimes++;
       prevAlt = GPS.altitude * 3.28048; 
       altTimer = getLastGPS();
-      Serial.println(String(checkTimes));
     }
     else if(checkTimes < 15 && checkTimes >2 && getLastGPS()-altTimer > 2 && GPS.altitude * 3.28048 < cutAlt){
       sendXBee("GPS hit below cut altitude, resetting GPS hit counter");

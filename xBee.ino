@@ -145,7 +145,7 @@ void xBeeCommand(){
   else if((Com.substring(0,2)).equals("WC")){   //enable time burn     
     timeBurn = true;
     logCommand(Com, "timed cut enabled");
-    burnDelay = millis() + 3600;                //make the default timer 60 minutes
+    burnDelay = millis() + 3600000;                //make the default timer 60 minutes
     sendXBee("timed cut enabled, time until cutdown: " + timeLeft());
   }
 
@@ -155,7 +155,7 @@ void xBeeCommand(){
     sendXBee("timed cut disabled");
   }
 
-  else if((Com.substring(0,2)).equals("WD")){   //poll cutdown altitude
+  else if((Com.substring(0,2)).equals("WF")){   //poll cutdown altitude
     logCommand(Com, "poll cutdown altitude");
     String toSend = "Cutdown altitude: " + String(cutAlt);
     if(altCut){
