@@ -60,8 +60,10 @@ void autopilot(){
    checkBurst();
    blinkMode();
    burnMode();
-   altTheSingleLadies();
-   if((millis()>=burnDelay)&&!delayBurn&&timeBurn){   //Check to see if timer has run out or if cut 
+   if(altCut){
+    altTheSingleLadies();
+   }
+   if((millis()>=burnDelay)&&!delayBurn&&timeBurn&&timeBurn){   //Check to see if timer has run out or if cut 
      runBurn();                                       //has been commanded and if it is not currenlty in a delayed burn, 
      delayBurn=true;                                  //or if we even was a delayed burn
      GPSaction("timed cutdown attempt");
