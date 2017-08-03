@@ -29,10 +29,10 @@
 //                                               /____/                           /____/
 
 int burn_Delay = 3600; //Countdown timer in seconds! Changeable via xBee.
-bool timeBurn = true;   //set to true to activate delay burns. can be changed through Xbee
+bool timeBurn = false;   //set to true to activate delay burns. can be changed through Xbee
 const String xBeeID = "WA"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
 long cutAlt = 75000; //Default cutdown altitude in feet! Changeable via xBee.
-boolean altCut = true;  //set to true to perfom an altitude cutdown. can be toggled through Xbee.
+boolean altCut = false;  //set to true to perfom an altitude cutdown. can be toggled through Xbee.
 //=============================================================================================================================================
 //=============================================================================================================================================
 
