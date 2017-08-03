@@ -56,7 +56,6 @@ void checkBurst(){
 }*/
 
 void autopilot(){
-
    checkBurst();
    blinkMode();
    burnMode();
@@ -146,7 +145,7 @@ void altTheSingleLadies(){
       altTimer = getLastGPS();
       Serial.println(String(checkTimes));
     }
-    else if(checkTimes < 15 && getLastGPS()-altTimer > 2 && GPS.altitude * 3.28048 < cutAlt){
+    else if(checkTimes < 15 && checkTimes >2 && getLastGPS()-altTimer > 2 && GPS.altitude * 3.28048 < cutAlt){
       sendXBee("GPS hit below cut altitude, resetting GPS hit counter");
       cutCheck = false;
       
