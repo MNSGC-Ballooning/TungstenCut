@@ -3,7 +3,7 @@ boolean GPSlogOpen = false;
 //The following functions handle both opening files and controlling the data indicator LED
 
 void openEventlog() {
-  if (!eventlogOpen) {
+  if (!eventlogOpen&&SDcard) {
     eventLog = SD.open(Ename, FILE_WRITE);;
     eventlogOpen = true;
     digitalWrite(ledSD, HIGH);
@@ -11,7 +11,7 @@ void openEventlog() {
 }
 
 void closeEventlog() {
-  if (eventlogOpen) {
+  if (eventlogOpen&&SDcard) {
     eventLog.close();
     eventlogOpen = false;
     if (!eventlogOpen)
@@ -19,7 +19,7 @@ void closeEventlog() {
   }
 }
 void openGPSlog() {
-  if (!GPSlogOpen) {
+  if (!GPSlogOpen&&SDcard) {
     GPSlog = SD.open(GPSname, FILE_WRITE);;
     GPSlogOpen = true;
     digitalWrite(ledSD, HIGH);
@@ -27,7 +27,7 @@ void openGPSlog() {
 }
 
 void closeGPSlog() {
-  if (GPSlogOpen) {
+  if (GPSlogOpen&&SDcard) {
     GPSlog.close();
     GPSlogOpen = false;
     if (!GPSlogOpen)
@@ -37,9 +37,11 @@ void closeGPSlog() {
 
 //Takes a string describing any event that takes place and records it in the eventlog with a timestamp. 
 void logAction(String event) {
+  if(SDcard){
   openEventlog();
   eventLog.println(flightTimeStr() + "  AC  " + event);
   closeEventlog();
+  }
 }
 
 void GPSaction(String action){

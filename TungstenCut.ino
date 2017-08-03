@@ -32,7 +32,7 @@ int burn_Delay = 3600; //Countdown timer in seconds! Changeable via xBee.
 bool timeBurn = true;   //set to true to activate delay burns. can be changed through Xbee
 const String xBeeID = "WA"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
 long cutAlt = 75000; //Default cutdown altitude in feet! Changeable via xBee.
-bool altCut = true;  //set to true to perfom an altitude cutdown. can be toggled through Xbee.
+boolean altCut = true;  //set to true to perfom an altitude cutdown. can be toggled through Xbee.
 //=============================================================================================================================================
 //=============================================================================================================================================
 
@@ -123,7 +123,7 @@ File eventLog;
 File GPSlog;
 String Ename = "";
 String GPSname = "";
-
+boolean SDcard = true;
 void setup() {
   // initialize pins
   pinMode(ledPin, OUTPUT);
@@ -148,12 +148,13 @@ void setup() {
   sendXBee("GPS configured");
 
   //initialize SD card
-  while (!SD.begin(chipSelect)) {            //power LED will blink if no card is inserted
+  if (!SD.begin(chipSelect)) {            //power LED will blink if no card is inserted
     Serial.println("No SD");
     digitalWrite(ledSD, HIGH);
     delay(500);
     digitalWrite(ledSD, LOW);
     delay(500);
+    SDcard = false;
   }
   sendXBee("Checking for existing file");
   //Check for existing event logs and creates a new one
