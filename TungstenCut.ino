@@ -140,20 +140,20 @@ void setup() {
 
   // initiate xbee
   xBee.begin(9600);
-  sendXBee("xBee begin");
+  xBee.send("xBee begin");
 
   //Initiate GPS Data lines
   GPS.begin(9600);
-  sendXBee("GPS begin");
+  xBee.send("GPS begin");
 
   //GPS setup and config
   GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
   GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
-  sendXBee("GPS configured");
+  xBee.send("GPS configured");
 
   //initialize SD card
   if (!SD.begin(chipSelect)) {            //power LED will blink if no card is inserted
-    sendXBee("No SD");
+    xBee.send("No SD");
     digitalWrite(ledSD, HIGH);
     delay(500);
     digitalWrite(ledSD, LOW);
