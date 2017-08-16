@@ -59,7 +59,9 @@ void autopilot(){
    checkBurst();
    blinkMode();
    burnMode();
-   beacon();
+   if(bacon){
+    beacon();
+   }
    if(altCut){
     altTheSingleLadies();
    }
@@ -206,13 +208,13 @@ void beacon(){
   if(millis()-beaconTimer>10000){ //if 10 seconds have passed
     String toSend = "";
     if(GPS.fix){
-      toSend += (String(GPS.hour)+ "," + String(GPS.minute) + "," + String(GPS.seconds) + ","
+      toSend += (String(GPS.hour)+ ":" + String(GPS.minute) + ":" + String(GPS.seconds) + ","
       + String(GPS.latitudeDegrees) + "," + String(GPS.longitudeDegrees) + "," + String(GPS.altitude) +
       "," + String(GPS.satellites));
       sendXBee(toSend);
       }
     else{
-      toSend += (String(GPS.hour) + "," + String(GPS.minute) + "," + String(GPS.seconds) + ","
+      toSend += (String(GPS.hour) + ":" + String(GPS.minute) + ":" + String(GPS.seconds) + ","
       + "0" + "," + "0" + "," + "0" + String(GPS.satellites));
       sendXBee(toSend);
       
