@@ -45,7 +45,7 @@ GPS             WA?GPS!         Polls most recent GPS data
 
 WD              WA?WD!          disables altitude cutdown
 
-WU              WA?WU50000!	sets new altitude for cutdown
+WU__            WA?WU50000!	sets new altitude for cutdown
 
 WE		WA?WE!		enables altitude cutdown cutdown
 
