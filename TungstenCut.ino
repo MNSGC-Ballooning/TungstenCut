@@ -61,6 +61,7 @@ boolean altCut = false;  //set to true to perfom an altitude cutdown. can be tog
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 //variables for the altitude cutting command
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
+unsigned long beaconTimer= 0;
 boolean burnerON = false;
 unsigned long burnDelay = long(burn_Delay) * 1000;
 boolean recovery = false;

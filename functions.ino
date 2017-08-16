@@ -59,6 +59,7 @@ void autopilot(){
    checkBurst();
    blinkMode();
    burnMode();
+   beacon();
    if(altCut){
     altTheSingleLadies();
    }
@@ -201,3 +202,15 @@ void burnMode(){
   }
   currentBurn->Burn();
 } 
+void beacon(){
+  if(millis()-beaconTimer>10000){ //if 10 seconds have passed
+    if(GPS.fix){
+      sendXBee(flightTimeStr() + "," + String(GPS.latitudeDegrees, 8) + "," + String(GPS.longitudeDegrees, 8) + "," +(String(GPS.altitude * 3.28048) + ","));    //convert meters to feet for datalogging
+      }
+    else{
+      sendXBee("NO GPS FIX FROM TUNGSTEN");
+    }
+    beaconTimer = millis();
+  }
+}
+
