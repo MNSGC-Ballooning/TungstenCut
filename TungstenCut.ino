@@ -60,6 +60,7 @@ boolean altCut = false;  //set to true to perfom an altitude cutdown. can be tog
 #define CONTIN 7         // reads continuity check voltage
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 //variables for the altitude cutting command
+boolean bacon = true;  //true for beacon updates
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
 unsigned long beaconTimer= 0;
 boolean burnerON = false;

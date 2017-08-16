@@ -139,6 +139,16 @@ void xBeeCommand(){
     }
     sendXBee(toSend);
   }
+  else if(Com.substring(0,2).equals("WQ")){
+    bacon = true;
+    logCommand(Com, "beacon enabled");
+    sendXBee("beacon enabled");
+  }
+  else if(Com.substring(0,2).equals("WP")){
+    bacon = false;
+    logCommand(Com, "beacon disabled");
+    sendXBee("beacon disabled");
+  }
       
   else {
     //If no recognizable command was received, inform ground station

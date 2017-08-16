@@ -54,4 +54,8 @@ WC   		WA?WC! 		enables timed burn. resets timer to 60 minutes
 WS 		WA?WS!		disables timed burn.
 
 WF		WA?WF! 		polls cutdown altitude
+
+WQ		WA?WQ!  	enables beacon
+
+WP		WA?WP!		disables bacon
 ==============================================================================================================================================

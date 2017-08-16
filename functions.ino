@@ -59,7 +59,9 @@ void autopilot(){
    checkBurst();
    blinkMode();
    burnMode();
-   beacon();
+   if(bacon){
+    beacon();
+   }
    if(altCut){
     altTheSingleLadies();
    }
