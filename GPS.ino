@@ -16,7 +16,7 @@ void updateGPS() {
       firstFix = true;
 
     }
-    if (getGPStime() > lastGPS) {
+    if (getGPStime() > lastGPS && newData) {
       openGPSlog();
       String data = "";
       data += (flightTimeStr() + "," + String(GPS.latitudeDegrees, 6) + "," + String(GPS.longitudeDegrees, 6) + ",");
@@ -27,19 +27,15 @@ void updateGPS() {
         data += "fix,";
         lastGPS = GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
       }
-      else
+      else{
         data += ("No fix,");
-      
+        lastGPS = GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
+      }
       GPSlog.println(data);
-     
       closeGPSlog();
     }
-    }
-  else{
-    newData = false;
   }
-  }
-
+}
 int getGPStime() {
   return GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
 }

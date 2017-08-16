@@ -204,11 +204,18 @@ void burnMode(){
 } 
 void beacon(){
   if(millis()-beaconTimer>10000){ //if 10 seconds have passed
+    String toSend = "";
     if(GPS.fix){
-      sendXBee(flightTimeStr() + "," + String(GPS.latitudeDegrees, 6) + "," + String(GPS.longitudeDegrees, 6) + "," +(String(GPS.altitude * 3.28048) + ","));    //convert meters to feet for datalogging
+      toSend += (String(GPS.hour)+ "," + String(GPS.minute) + "," + String(GPS.seconds) + ","
+      + String(GPS.latitudeDegrees) + "," + String(GPS.longitudeDegrees) + "," + String(GPS.altitude) +
+      "," + String(GPS.satellites));
+      sendXBee(toSend);
       }
     else{
-      sendXBee("NO GPS FIX FROM TUNGSTEN");
+      toSend += (String(GPS.hour) + "," + String(GPS.minute) + "," + String(GPS.seconds) + ","
+      + "0" + "," + "0" + "," + "0" + String(GPS.satellites));
+      sendXBee(toSend);
+      
     }
     beaconTimer = millis();
   }
