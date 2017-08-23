@@ -29,10 +29,13 @@
 //                                               /____/                           /____/
 
 int burn_Delay = 3600; //Countdown timer in seconds! Changeable via xBee.
+int float_Time = 1800; //Float Duration in seconds
 bool timeBurn = false;   //set to true to activate delay burns. can be changed through Xbee
-const String xBeeID = "WA"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
-long cutAlt = 75000; //Default cutdown altitude in feet! Changeable via xBee.
+const String xBeeID = "WC"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
+long cutAlt = 90000; //Default cutdown altitude in feet! Changeable via xBee.
 boolean altCut = false;  //set to true to perfom an altitude cutdown. can be toggled through Xbee.
+boolean floatCut = false;
+boolean floatEnabled = false;
 //=============================================================================================================================================
 //=============================================================================================================================================
 
@@ -53,6 +56,7 @@ boolean altCut = false;  //set to true to perfom an altitude cutdown. can be tog
 
 //~~~~~~~~~~~~~~~Pin Variables~~~~~~~~~~~~~~~
 #define fireBurner 2       // Pin which opens the relay to fire. High = Fire!
+#define fireBurnerDos 7   // Pin which opens the second relay to fire. High = Fire!
 #define ledPin 3          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 #define chipSelect 4      //SD Card pin
 #define ledSD 5               //Pin which controls the SD LED
@@ -65,6 +69,9 @@ boolean bacon = true;  //true for beacon updates
 unsigned long beaconTimer= 0;
 boolean burnerON = false;
 unsigned long burnDelay = long(burn_Delay) * 1000;
+unsigned long floatTimer = long(float_Time)* 1000;
+unsigned long floatStart = 0;
+boolean secondBurn = false;
 boolean recovery = false;
 int altDelay = 5;
 boolean delayBurn = false;

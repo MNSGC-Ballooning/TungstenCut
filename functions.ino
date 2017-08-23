@@ -65,6 +65,9 @@ void autopilot(){
    if(altCut){
     altTheSingleLadies();
    }
+   if(floatCut){
+    hoverfloat();
+   }
    if((millis()>=burnDelay)&&!delayBurn&&timeBurn&&timeBurn){   //Check to see if timer has run out or if cut 
      runBurn();                                       //has been commanded and if it is not currenlty in a delayed burn, 
      delayBurn=true;                                  //or if we even was a delayed burn
@@ -156,6 +159,11 @@ void altTheSingleLadies(){
     else if (checkTimes == 15){
       sendXBee("running altitude burn");
       runBurn();
+      if(floatEnabled){
+        floatCut = true;
+        floatStart = millis();
+      }
+      
       cutCheck = false;
     }
     
@@ -165,15 +173,45 @@ void altTheSingleLadies(){
   }
    
 }
+
+void hoverfloat(){
+  sendXBee("Float timer started");
+  if((millis()-floatStart)>=floatTimer){
+    secondBurn = true;
+  }
+}
 void burnAction::Burn(){
   if(ontimes>0){
    if((millis()-Time>=offdelay)&&!burnerON){
-    digitalWrite(fireBurner, HIGH);
+    if(floatEnabled){
+      if(secondBurn){
+        digitalWrite(fireBurnerDos, HIGH);
+      }
+      else{
+        digitalWrite(fireBurner, HIGH);
+      }
+    }
+    else{
+      digitalWrite(fireBurner, HIGH);
+      digitalWrite(fireBurnerDos, HIGH);
+    }
     Time= millis();
     burnerON = true;
   }
   if(millis()-Time>=(ondelay+stagger*(3-ontimes))&&burnerON){
-    digitalWrite(fireBurner, LOW);
+    if(floatEnabled){
+      if(secondBurn){
+    
+        digitalWrite(fireBurnerDos, LOW);
+      }
+      else{
+        digitalWrite(fireBurner, LOW);
+      }
+    }
+    else{
+      digitalWrite(fireBurner, LOW);
+      digitalWrite(fireBurnerDos, LOW);
+    }
     burnerON = false;
     Time = millis(); 
     ontimes--;
