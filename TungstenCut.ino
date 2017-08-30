@@ -4,8 +4,9 @@
 #include <Adafruit_GPS.h>
 #include <Relay_XBee.h>
 //==============================================================
-//               Code For Tungsten Cutter
+//               Code For Tungsten/Razor Cutter
 //                 Danny Toth Summer 2017 - tothx051 and Simon Peterson- pet00291
+//                 Edited for MURI Project by Garrett Ailts- ailts008
 //==============================================================
 
 //Version Description: Working xBee with limited commands (add/sub time, request time/cutdown). SD logging with poor formatting.
@@ -55,8 +56,10 @@ boolean floatEnabled = false;
 */
 
 //~~~~~~~~~~~~~~~Pin Variables~~~~~~~~~~~~~~~
-#define fireBurner 2       // Pin which opens the relay to fire. High = Fire!
-#define fireBurnerDos 7   // Pin which opens the second relay to fire. High = Fire!
+#define fireBurner 2      // Pin which opens the relay to fire. High = Fire!
+#define razorCutter 9     // Pin which turns servo with razor blade. High = Fire! 
+#define fireBurnerDos 8   // Pin which opens the second relay to fire. High = Fire!
+#define razorCutterDos 7  // Pin which turns 2nd servo with razor blade. High = Fire!
 #define ledPin 3          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 #define chipSelect 4      //SD Card pin
 #define ledSD 5               //Pin which controls the SD LED
@@ -141,6 +144,9 @@ void setup() {
   // initialize pins
   pinMode(ledPin, OUTPUT);
   pinMode(fireBurner, OUTPUT);
+  pinMode(razorCutter, OUTPUT);
+  pinMode(fireBurnerDos, OUTPUT);
+  pinMode(razorCutterDos, OUTPUT);
   pinMode(ledSD, OUTPUT);
   pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
   pinMode(CONTOUT, OUTPUT);       //continuity check pins

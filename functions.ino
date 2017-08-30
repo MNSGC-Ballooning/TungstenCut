@@ -186,14 +186,18 @@ void burnAction::Burn(){
     if(floatEnabled){
       if(secondBurn){
         digitalWrite(fireBurnerDos, HIGH);
+        digitalWrite(razorCutterDos, HIGH);
       }
       else{
         digitalWrite(fireBurner, HIGH);
+        digitalWrite(razorCutter, HIGH);
       }
     }
     else{
       digitalWrite(fireBurner, HIGH);
+      digitalWrite(razorCutter, HIGH);
       digitalWrite(fireBurnerDos, HIGH);
+      digitalWrite(razorCutterDos, HIGH);
     }
     Time= millis();
     burnerON = true;
@@ -203,14 +207,18 @@ void burnAction::Burn(){
       if(secondBurn){
     
         digitalWrite(fireBurnerDos, LOW);
+        digitalWrite(razorCutterDos, LOW);
       }
       else{
         digitalWrite(fireBurner, LOW);
+        digitalWrite(razorCutter, LOW);
       }
     }
     else{
       digitalWrite(fireBurner, LOW);
+      digitalWrite(razorCutter, LOW);
       digitalWrite(fireBurnerDos, LOW);
+      digitalWrite(razorCutterDos, LOW);
     }
     burnerON = false;
     Time = millis(); 
