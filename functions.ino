@@ -169,11 +169,13 @@ void burnAction::Burn(){
   if(ontimes>0){
    if((millis()-Time>=offdelay)&&!burnerON){
     digitalWrite(fireBurner, HIGH);
+    digitalWrite(razorCutter, HIGH);
     Time= millis();
     burnerON = true;
   }
   if(millis()-Time>=(ondelay+stagger*(3-ontimes))&&burnerON){
     digitalWrite(fireBurner, LOW);
+    digitalWrite(razorCutter, LOW);
     burnerON = false;
     Time = millis(); 
     ontimes--;

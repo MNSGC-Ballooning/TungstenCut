@@ -53,6 +53,7 @@ boolean altCut = false;  //set to true to perfom an altitude cutdown. can be tog
 
 //~~~~~~~~~~~~~~~Pin Variables~~~~~~~~~~~~~~~
 #define fireBurner 2       // Pin which opens the relay to fire. High = Fire!
+#define razorCutter 7      // Pin which turns a servo with a razor blade. High = Cut!
 #define ledPin 3          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 #define chipSelect 4      //SD Card pin
 #define ledSD 5               //Pin which controls the SD LED
@@ -134,6 +135,7 @@ void setup() {
   // initialize pins
   pinMode(ledPin, OUTPUT);
   pinMode(fireBurner, OUTPUT);
+  pinMode(razorCutter, OUTPUT);
   pinMode(ledSD, OUTPUT);
   pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
   pinMode(CONTOUT, OUTPUT);       //continuity check pins
