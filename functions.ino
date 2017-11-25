@@ -6,8 +6,11 @@ void removeTime(int subtraction){
   burnDelay -=(subtraction*1000);
 }
 void runBurn(){
+  
   currentBlink= new Blink(200,500,5, "burnBlink", millis());
+  if(secondBurn){
   recovery = true;
+  }
 }
 
 void checkBurst(){
@@ -65,7 +68,8 @@ void autopilot(){
    if(altCut){
     altTheSingleLadies();
    }
-   if(floatCut){
+ 
+   if(floatCut==true){
     hoverfloat();
    }
    if((millis()>=burnDelay)&&!delayBurn&&timeBurn&&timeBurn){   //Check to see if timer has run out or if cut 
@@ -73,7 +77,7 @@ void autopilot(){
      delayBurn=true;                                  //or if we even was a delayed burn
      GPSaction("timed cutdown attempt");
    }
-   //contiCheck();
+   releaseCheck();
 }
 
 /*void altTheSingleLadies(){          //function which makes decisions based on altitude
@@ -111,7 +115,6 @@ void autopilot(){
       runBurn();
      
       
-    }
 
     }   
     else{
@@ -126,6 +129,7 @@ void altTheSingleLadies(){
   static unsigned long altTimer = 0;
   static bool sent = false;
   if(GPS.fix){
+    }
     if(!cutCheck){
       prevAlt = GPS.altitude * 3.28048;
       cutCheck = true;
@@ -156,18 +160,15 @@ void altTheSingleLadies(){
       
       
     }
-    else if (checkTimes == 15){
+    else if(checkTimes == 15){
       sendXBee("running altitude burn");
       runBurn();
-      if(floatEnabled){
-        floatCut = true;
-        floatStart = millis();
-      }
+      
       
       cutCheck = false;
     }
     
-  }
+
   else{
     cutCheck = false;
   }
@@ -175,18 +176,21 @@ void altTheSingleLadies(){
 }
 
 void hoverfloat(){
-  sendXBee("Float timer started");
+  
   if((millis()-floatStart)>=floatTimer){
-    secondBurn = true;
+    sendXBee("Second burn set equal to true");
+    runBurn();
   }
+  
 }
 void burnAction::Burn(){
   if(ontimes>0){
    if((millis()-Time>=offdelay)&&!burnerON){
     if(floatEnabled){
-      if(secondBurn){
+      if(secondBurn==true){
         digitalWrite(fireBurnerDos, HIGH);
         digitalWrite(razorCutterDos, HIGH);
+        sendXBee("Firing second cutter!");
       }
       else{
         digitalWrite(fireBurner, HIGH);
@@ -208,6 +212,7 @@ void burnAction::Burn(){
     
         digitalWrite(fireBurnerDos, LOW);
         digitalWrite(razorCutterDos, LOW);
+        
       }
       else{
         digitalWrite(fireBurner, LOW);
@@ -224,6 +229,7 @@ void burnAction::Burn(){
     Time = millis(); 
     ontimes--;
   }
+  
 }
 }
 int burnAction::getOnTimes(){
@@ -244,9 +250,17 @@ void burnMode(){
   }
   //if done with the burn go back to idling
   if(currentBurn->getOnTimes()==0){
-    digitalWrite(fireBurner, LOW);
+    if(secondBurn){
+      digitalWrite(fireBurnerDos, LOW);
+    }
+    else{
+      digitalWrite(fireBurner, LOW);
+    }
+    
     delete currentBurn;
     currentBurn = &idleBurn;
+    secondBurn = true;
+   
   }
   currentBurn->Burn();
 } 
@@ -260,4 +274,34 @@ void beacon(){
     beaconTimer = millis();
   }
 }
+void releaseCheck(){
+  if(floatEnabled==true){
+    if(check2==false){
+      if(secondBurn==true){
+        if(digitalRead(balloon_2_releaseCheck_in)==HIGH){
+        sendXBee("Balloon 2 away!");
+        check2=true;
+        }
+      }
+    }
+    
+    if(check1==false){
+      if(digitalRead(balloon_1_releaseCheck_in)==HIGH){
+        floatCut = true;
+        floatStart = millis();
+        currentBlink = new Blink(1000, 10000, -1, "floatBlink", 0);
+        sendXBee("Balloon 1 away! Float timer started");
+        check1=true;
+      }
+    }
+  }
+  else{
+    if(digitalRead(balloon_1_releaseCheck_in)==HIGH && digitalRead(balloon_2_releaseCheck_in)==HIGH){
+      sendXBee("Balloon 1 and Balloon 2 away!");
+      recovery=true; 
+    }
+  }
+  
+}
+  
 
