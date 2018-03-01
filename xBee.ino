@@ -1,6 +1,6 @@
 //Takes a string to send out via xBee, and logs the transmission to the SD card with a timestamp
 void sendXBee(String out) {
-  xBee.send(out);
+  Serial.println(xBeeID + ";" + out + "!");  openEventlog();
   openEventlog();
   if(SDcard){
     eventLog.println(flightTimeStr() + "  TX  " + out);
@@ -8,6 +8,10 @@ void sendXBee(String out) {
   }
   closeEventlog();  
   }
+
+void acknowledge() {
+  Serial.println(xBeeID + "\n");
+}
 
 //Takes the string of the xBee command as well as a description and logs to the SD card with a timestamp
 void logCommand(String com, String command) {
@@ -18,11 +22,33 @@ void logCommand(String com, String command) {
   }
   closeEventlog();
 }
-
+String lastCommand = "";
+unsigned long commandTime = 0;
 //Primary xBee function that looks for incoming messages, parses them, and executes the corresponding commands
 void xBeeCommand(){
-  //check for incoming xBeeCommands
-  String Com = xBee.receive();
+    boolean complete = false;                  //Stuff we don't care about
+  String command = "";
+  char inChar;
+  while (Serial.available() > 0) {
+    inChar = (char)Serial.read();
+    if (inChar != ' ') {
+      command += inChar;
+      if (inChar == '!') { 
+        complete = true;
+        break;
+      }
+    }
+    delay(10);
+  }
+
+  if (!complete) return;                                                                   //Stuff we don't care about
+  if (command.equals(lastCommand) && (millis() - commandTime < 30000)) return; 
+  int split = command.indexOf('?');
+  if (!(command.substring(0, split)).equals(xBeeID)) return;
+  lastCommand = command;
+  String Com = command.substring(split + 1, command.length() - 1);
+  acknowledge();
+commandTime = millis();
 
   //receive() returns empty string if no commands sent
   if (Com.equals("")) return;
@@ -64,12 +90,12 @@ void xBeeCommand(){
   else if (Com.equals("WX")) {
     //Burns the Tungsten, enters "recovery mode" after cutdown confirmed
     runBurn();
-    if(GPS.fix){
-      logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.latitudeDegrees, 4) + "," + String(GPS.longitudeDegrees, 4) + ", Altitude: " + String(GPS.altitude * 3.28048) + "ft. FIX");  
-      sendXBee("Starting Cut at Altitude " + String(GPS.altitude * 3.28048) + "ft. Watch your heads!");
+    if(1){ //GPS.fix
+      logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.location.lat(), 4) + "," + String(GPS.location.lng(), 4) + ", Altitude: " + String(GPS.altitude.feet()) + "ft. FIX");  
+      sendXBee("Starting Cut at Altitude " + String(GPS.altitude.feet()) + "ft. Watch your heads!");
     }
     else{
-      logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.latitudeDegrees, 4) + "," + String(GPS.longitudeDegrees, 4) + ", Altitude: " + String(GPS.altitude * 3.28048) + "ft. NO FIX");
+      logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.location.lat(), 4) + "," + String(GPS.location.lng(), 4) + ", Altitude: " + String(GPS.altitude.feet()) + "ft. FIX");
       sendXBee("Starting Cut at unknown altitude, Watch your heads!");
     }
   }
@@ -91,9 +117,9 @@ void xBeeCommand(){
    else if (Com.equals("GPS")) {
     //Poll most recent GPS data
     logCommand(Com, "Request GPS data");
-    String message = "Time: " + String(GPS.hour) + ":" + String(GPS.minute) + ":" + String(GPS.seconds)+ ",";   
-    message += "latitude: " + String(GPS.latitudeDegrees) + "," + "logitude: " + String(GPS.longitudeDegrees) + "," + "altitude: " + String(GPS.altitude * 3.28048) + ",";
-    if (GPS.fix) message += "Fix";
+    String message = "Time: " + String(GPS.time.hour()) + ":" + String(GPS.time.minute()) + ":" + String(GPS.time.second())+ ",";   
+    message += "latitude: " + String(GPS.location.lat()) + "," + "logitude: " + String(GPS.location.lng()) + "," + "altitude: " + String(GPS.altitude.feet()) + ",";
+    if (1) message += "Fix";
     else message += "No Fix";
     sendXBee(message);
   }

@@ -1,8 +1,10 @@
 
 //Libraries
+
+#include <SPI.h>
 #include <SD.h>
-#include <Adafruit_GPS.h>
-#include <Relay_XBee.h>
+#include <TinyGPS++.h>
+#include <SoftwareSerial.h>
 //==============================================================
 //               Code For Tungsten/Razor Cutter
 //                 Danny Toth Summer 2017 - tothx051 and Simon Peterson- pet00291
@@ -121,7 +123,9 @@ burnAction idleBurn = burnAction(0, 0, -1, 200, 0);
 burnAction* currentBurn = &idleBurn;
 
 //GPS Stuff
-Adafruit_GPS GPS(&Serial1); //Constructor for GPS object
+//copernicus version
+//Adafruit_GPS GPS(&Serial1); //Constructor for GPS object
+TinyGPSPlus GPS;
 int GPSstartTime;
 boolean newDay = false;
 boolean firstFix = false;
@@ -137,9 +141,6 @@ String Ename = "";
 String GPSname = "";
 boolean SDcard = true;
 
-//XBee Stuff
-XBee xBee = XBee(&Serial, xBeeID);
-
 void setup() {
   // initialize pins
   pinMode(ledPin, OUTPUT);
@@ -151,23 +152,20 @@ void setup() {
   pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
   pinMode(CONTOUT, OUTPUT);       //continuity check pins
   pinMode(CONTIN, INPUT);
-
+  //initiate GPS serial
+   Serial1.begin(4800);    //
   // initiate xbee
-  xBee.begin(9600);
-  xBee.send("xBee begin");
-
+  Serial.begin(9600);
+  sendXBee("xBee begin");
   //Initiate GPS Data lines
-  GPS.begin(9600);
-  xBee.send("GPS begin");
+  sendXBee("GPS begin");
 
   //GPS setup and config
-  GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
-  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
-  xBee.send("GPS configured");
+  sendXBee("GPS configured");
 
   //initialize SD card
   if (!SD.begin(chipSelect)) {            //power LED will blink if no card is inserted
-    xBee.send("No SD");
+    sendXBee("No SD");
     digitalWrite(ledSD, HIGH);
     delay(500);
     digitalWrite(ledSD, LOW);

@@ -6,30 +6,29 @@ long lastGPS = -1000000;  //for testing purposes
 void updateGPS() {
   
   while (Serial1.available() > 0) {
-    GPS.read();
+    GPS.encode(Serial1.read());
   }
-  if (GPS.newNMEAreceived()) {
-    GPS.parse(GPS.lastNMEA());
+  if (GPS.altitude.isUpdated() || GPS.location.isUpdated()) {
     newData= true;
-    if (!firstFix && GPS.fix) {
-      GPSstartTime = GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
+    if (!firstFix && 1) {     gps.fix
+      GPSstartTime = GPS.time.hour * 3600 + GPS.time.minute * 60 + GPS.time.second;
       firstFix = true;
 
     }
     if (getGPStime() > lastGPS && newData) {
       openGPSlog();
       String data = "";
-      data += (flightTimeStr() + "," + String(GPS.latitudeDegrees, 6) + "," + String(GPS.longitudeDegrees, 6) + ",");
-      data += (String(GPS.altitude * 3.28048) + ",");    //convert meters to feet for datalogging
-      data += (String(GPS.month) + "/" + String(GPS.day) + "/" + String(GPS.year) + ",");
-      data += (String(GPS.hour) + ":" + String(GPS.minute) + ":" + String(GPS.seconds) + ",");   
+      data += (flightTimeStr() + "," + String(GPS.location.lat(), 6) + "," + String(GPS.location.lng(), 6) + ",");
+      data += ((String(GPS.altitude.feet)) + ",");    //convert meters to feet for datalogging
+      data += (String(GPS.date.month) + "/" + String(GPS.date.day) + "/" + String(GPS.date.year) + ",");
+      data += (String(GPS.time.hour) + ":" + String(GPS.time.minute) + ":" + String(GPS.time.second) + ",");   
       if (GPS.fix) {
         data += "fix,";
-        lastGPS = GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
+        lastGPS = GPS.time.hour * 3600 + GPS.time.minute * 60 + GPS.time.second;
       }
       else{
         data += ("No fix,");
-        lastGPS = GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
+        lastGPS = GPS.time.hour * 3600 + GPS.time.minute * 60 + GPS.time.second;
       }
       GPSlog.println(data);
       closeGPSlog();
@@ -37,7 +36,7 @@ void updateGPS() {
   }
 }
 int getGPStime() {
-  return GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
+  return (GPS.time.hour * 3600 + GPS.time.minute * 60 + GPS.time.second);
 }
 
 int getLastGPS() {    //returns time in seconds between last successful fix and initial fix. Used to match with altitude data

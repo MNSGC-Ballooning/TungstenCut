@@ -13,14 +13,14 @@ void runBurn(){
 void checkBurst(){
   if(!bursted){
     if(GPS.fix&&!checkingburst){
-      checkAlt = (GPS.altitude*3.28048);
+      checkAlt = (GPS.altitude.feet());
       checkingburst= true;
       checkTime= getLastGPS();
     }
     else if(GPS.fix&&altDelay<5&&(getLastGPS()-checkTime)>1){
       if((GPS.altitude*3.28048-checkAlt)<-30){
         checkTime = getLastGPS();
-        checkAlt =  (GPS.altitude*3.28048);                                 
+        checkAlt =  (GPS.altitude.feet());                                 
         altDelay++;
       }
       else{
@@ -28,7 +28,7 @@ void checkBurst(){
       }
      }
     else if(GPS.fix&&altDelay==5&&(getLastGPS()-checkTime>1)){
-      if(checkAlt-(GPS.altitude*3.28048)>30){                                   // a five second difference greater than 100 feet(not absolute value, so it still rises)
+      if(checkAlt-(GPS.altitude.feet())>30){                                   // a five second difference greater than 100 feet(not absolute value, so it still rises)
         sendXBee("burst detected");
         logAction("burst detected");
         bursted = true;
@@ -253,10 +253,18 @@ void burnMode(){
 void beacon(){
   if(millis()-beaconTimer>10000){ //if 10 seconds have passed
     String toSend = "";
-    if(GPS.fix)
-      xBee.sendGPS(GPS.hour, GPS.minute, GPS.seconds, GPS.latitudeDegrees, GPS.longitudeDegrees, GPS.altitude, GPS.satellites);
-    else
-      xBee.sendGPS(0,0,0,0,0,0,0);
+    if(GPS.fix){
+      toSend += (String(GPS.time.hour)+ "," + String(GPS.time.minute) + "," + String(GPS.time.second) + ","
+      + String(GPS.location.lat()) + "," + String(GPS.location.lng()) + "," + String(GPS.altitude.feet()) +
+      "," + GPS.satellites);
+      sendXBee(toSend);
+      }
+    else{
+      toSend += (String(GPS.time.hour()) + "," + String(GPS.time.minute()) + "," + String(GPS.time.second()) + ","
+      + "0" + "," + "0" + "," + "0" + GPS.satellites);
+      sendXBee(toSend);
+      
+    }
     beaconTimer = millis();
   }
 }
