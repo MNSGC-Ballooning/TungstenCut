@@ -12,13 +12,13 @@ void runBurn(){
 
 void checkBurst(){
   if(!bursted){
-    if(GPS.fix&&!checkingburst){
+    if(1&&!checkingburst){   //
       checkAlt = (GPS.altitude.feet());
       checkingburst= true;
       checkTime= getLastGPS();
     }
-    else if(GPS.fix&&altDelay<5&&(getLastGPS()-checkTime)>1){
-      if((GPS.altitude*3.28048-checkAlt)<-30){
+    else if(1&&altDelay<5&&(getLastGPS()-checkTime)>1){   //GPS.fix
+      if((GPS.altitude.feet()-checkAlt)<-30){
         checkTime = getLastGPS();
         checkAlt =  (GPS.altitude.feet());                                 
         altDelay++;
@@ -27,7 +27,7 @@ void checkBurst(){
         checkingburst = false;
       }
      }
-    else if(GPS.fix&&altDelay==5&&(getLastGPS()-checkTime>1)){
+    else if(1&&altDelay==5&&(getLastGPS()-checkTime>1)){    //GPS.fix
       if(checkAlt-(GPS.altitude.feet())>30){                                   // a five second difference greater than 100 feet(not absolute value, so it still rises)
         sendXBee("burst detected");
         logAction("burst detected");
@@ -39,7 +39,7 @@ void checkBurst(){
          
       }
     }
-    else if(!GPS.fix){                   //if no fix reset the whole process
+    else if(!1){        //GPS.fix              //if no fix reset the whole process
       checkingburst = false;
       altDelay = 0;
     }
@@ -125,32 +125,32 @@ void altTheSingleLadies(){
   static unsigned long prevAlt = 0;
   static unsigned long altTimer = 0;
   static bool sent = false;
-  if(GPS.fix){
+  if(1){    //GPS.fix
     if(!cutCheck){
-      prevAlt = GPS.altitude * 3.28048;
+      prevAlt = GPS.altitude.feet();
       cutCheck = true;
       checkTimes = 0;
       altTimer = getLastGPS();
       sent = false;
     }
-    else if((getLastGPS()-altTimer > 2)&& GPS.altitude * 3.28048-prevAlt > 3000){
+    else if((getLastGPS()-altTimer > 2)&& GPS.altitude.feet()-prevAlt > 3000){
       cutCheck = false;
       sendXBee("GPS jump detected, resetting cutdown decisions");
     }
-    else if((getLastGPS()-altTimer> 2) && cutAlt-GPS.altitude * 3.28048<3000 && !sent ){
+    else if((getLastGPS()-altTimer> 2) && cutAlt-GPS.altitude.feet()<3000 && !sent ){
       sendXBee("within 3000 feet of cutdown altitude");
       sent = true;
-      prevAlt = GPS.altitude * 3.28048; 
+      prevAlt = GPS.altitude.feet(); 
       altTimer = getLastGPS();
     }
-    else if (checkTimes < 15 && getLastGPS()-altTimer > 2&& GPS.altitude * 3.28048>cutAlt){
+    else if (checkTimes < 15 && getLastGPS()-altTimer > 2&& GPS.altitude.feet()>cutAlt){
       String toSend = "veryifying proximity to cutdown. will cut in " + String(14-checkTimes) + " GPS hits above cut altitude";
       sendXBee(toSend);
       checkTimes++;
-      prevAlt = GPS.altitude * 3.28048; 
+      prevAlt = GPS.altitude.feet(); 
       altTimer = getLastGPS();
     }
-    else if(checkTimes < 15 && checkTimes >2 && getLastGPS()-altTimer > 2 && GPS.altitude * 3.28048 < cutAlt){
+    else if(checkTimes < 15 && checkTimes >2 && getLastGPS()-altTimer > 2 && GPS.altitude.feet() < cutAlt){
       sendXBee("GPS hit below cut altitude, resetting GPS hit counter");
       cutCheck = false;
       
@@ -253,15 +253,15 @@ void burnMode(){
 void beacon(){
   if(millis()-beaconTimer>10000){ //if 10 seconds have passed
     String toSend = "";
-    if(GPS.fix){
-      toSend += (String(GPS.time.hour)+ "," + String(GPS.time.minute) + "," + String(GPS.time.second) + ","
+    if(1){   //GPS.fix
+      toSend += (String(GPS.time.hour())+ "," + String(GPS.time.minute()) + "," + String(GPS.time.second()) + ","
       + String(GPS.location.lat()) + "," + String(GPS.location.lng()) + "," + String(GPS.altitude.feet()) +
-      "," + GPS.satellites);
+      "," + String(1));
       sendXBee(toSend);
       }
     else{
       toSend += (String(GPS.time.hour()) + "," + String(GPS.time.minute()) + "," + String(GPS.time.second()) + ","
-      + "0" + "," + "0" + "," + "0" + GPS.satellites);
+      + "0" + "," + "0" + "," + "0" + String(1));
       sendXBee(toSend);
       
     }

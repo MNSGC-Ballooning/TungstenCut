@@ -10,8 +10,8 @@ void updateGPS() {
   }
   if (GPS.altitude.isUpdated() || GPS.location.isUpdated()) {
     newData= true;
-    if (!firstFix && 1) {     gps.fix
-      GPSstartTime = GPS.time.hour * 3600 + GPS.time.minute * 60 + GPS.time.second;
+    if (!firstFix && 1) {     //gps.fix
+      GPSstartTime = GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second();
       firstFix = true;
 
     }
@@ -19,16 +19,16 @@ void updateGPS() {
       openGPSlog();
       String data = "";
       data += (flightTimeStr() + "," + String(GPS.location.lat(), 6) + "," + String(GPS.location.lng(), 6) + ",");
-      data += ((String(GPS.altitude.feet)) + ",");    //convert meters to feet for datalogging
-      data += (String(GPS.date.month) + "/" + String(GPS.date.day) + "/" + String(GPS.date.year) + ",");
-      data += (String(GPS.time.hour) + ":" + String(GPS.time.minute) + ":" + String(GPS.time.second) + ",");   
-      if (GPS.fix) {
+      data += ((String(GPS.altitude.feet())) + ",");    //convert meters to feet for datalogging
+      data += (String(GPS.date.month()) + "/" + String(GPS.date.day()) + "/" + String(GPS.date.year()) + ",");
+      data += (String(GPS.time.hour()) + ":" + String(GPS.time.minute()) + ":" + String(GPS.time.second()) + ",");   
+      if (1) {    //GPS.fix
         data += "fix,";
-        lastGPS = GPS.time.hour * 3600 + GPS.time.minute * 60 + GPS.time.second;
+        lastGPS = GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second();
       }
       else{
         data += ("No fix,");
-        lastGPS = GPS.time.hour * 3600 + GPS.time.minute * 60 + GPS.time.second;
+        lastGPS = GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second();
       }
       GPSlog.println(data);
       closeGPSlog();
@@ -36,7 +36,7 @@ void updateGPS() {
   }
 }
 int getGPStime() {
-  return (GPS.time.hour * 3600 + GPS.time.minute * 60 + GPS.time.second);
+  return (GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second());
 }
 
 int getLastGPS() {    //returns time in seconds between last successful fix and initial fix. Used to match with altitude data
