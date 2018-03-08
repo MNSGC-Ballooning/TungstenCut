@@ -6,6 +6,7 @@ long lastGPS = -1000000;  //for testing purposes
 void updateGPS() {
   
   while (Serial1.available() > 0) {
+    Serial.println("OSDBNOIFS");
     GPS.encode(Serial1.read());
   }
   if (GPS.altitude.isUpdated() || GPS.location.isUpdated()) {
