@@ -1,6 +1,8 @@
 
 //Libraries
-
+//this requires a special modded version of the TinyGPS library because for whatever
+//reason the TinyGPS library does not include a "Fix" variable. the library can be found here:
+//https://github.com/simonpeterson/TinyGPS/tree/master
 #include <SPI.h>
 #include <SD.h>
 #include <TinyGPS++.h>
@@ -47,13 +49,14 @@ boolean floatEnabled = true;
      Component                    | Pins used             | Notes
 
      xBee serial                  | D0-1                  | IMPORTANT- is hardware serial (controls xBee and hard serial line), cannot upload with xBee plugged in
-     Fireburner                   | D2                    |
+     Fireburner                   | D8                    |
      Data LED (BLUE)              | D3                    |  "action" LED (Blue), tells us what the payload is doing
      SD                           | D4, D11-13            |  11-13 not not have wires but they are used!
      SD LED (RED)                 | D5                    | "SD" LED (Red). Only on when the file is open in SD card
      Continutity Check OUTPUT     | D6                    | Outputs a voltatge for the continuity check
-     Continuity check INPUT       | D7                    | Reads the voltage for the continuity check
-     GPS serial                   | serial 1              | serial for GPS
+     razorcutter pin              | D7                    | Reads the voltage for the continuity check
+     GPS serial                   | serial 1              | serial for GPS (pins 18 and 19 on the mega
+     fix                          | D8                    | whether or not we have a GPS fix, must be used with copernicus GPS unit
      -------------------------------------------------------------------------------------------------------------------------
 */
 
@@ -65,10 +68,11 @@ boolean floatEnabled = true;
 #define ledPin 3          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 #define chipSelect 4      //SD Card pin
 #define ledSD 5               //Pin which controls the SD LED
-const int balloon_1_releaseCheck_out=22; // Outputs high signal for cut check on balloon 1 by input pin 23          
-const int balloon_1_releaseCheck_in=23; // Reads signal from pin 22 to check for balloon 1 release. Low = Balloon 1 released!
-const int balloon_2_releaseCheck_out=48; // Outputs high signal for release check on balloon 2 by input pin 49  
-const int balloon_2_releaseCheck_in=49; // Reads siganl from pin 48 ro check for balloon 2 release. Low = Balloon 2 released!
+#define fix_led  
+const int balloon_1_releaseCheck_out= 22; // Outputs high signal for cut check on balloon 1 by input pin 23          
+const int balloon_1_releaseCheck_in=  23; // Reads signal from pin 22 to check for balloon 1 release. Low = Balloon 1 released!
+const int balloon_2_releaseCheck_out= 48; // Outputs high signal for release check on balloon 2 by input pin 49  
+const int balloon_2_releaseCheck_in=  49; // Reads siganl from pin 48 ro check for balloon 2 release. Low = Balloon 2 released!
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 //variables for the altitude cutting command
 boolean bacon = true;  //true for beacon updates
@@ -253,7 +257,7 @@ void setup() {
 
 }
 void loop() {
-
+  
   xBeeCommand(); //Checks for xBee commands
   updateGPS();   //updates the GPS
   autopilot();   //autopilot function that checks status and runs actions

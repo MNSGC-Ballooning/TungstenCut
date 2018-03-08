@@ -15,12 +15,12 @@ void runBurn(){
 
 void checkBurst(){
   if(!bursted){
-    if(1&&!checkingburst){   //
+    if(GPS.Fix&&!checkingburst){   //
       checkAlt = (GPS.altitude.feet());
       checkingburst= true;
       checkTime= getLastGPS();
     }
-    else if(1&&altDelay<5&&(getLastGPS()-checkTime)>1){   //GPS.fix
+    else if(GPS.Fix&&altDelay<5&&(getLastGPS()-checkTime)>1){   //GPS.fix
       if((GPS.altitude.feet()-checkAlt)<-30){
         checkTime = getLastGPS();
         checkAlt =  (GPS.altitude.feet());                                 
@@ -30,7 +30,7 @@ void checkBurst(){
         checkingburst = false;
       }
      }
-    else if(1&&altDelay==5&&(getLastGPS()-checkTime>1)){    //GPS.fix
+    else if(GPS.Fix&&altDelay==5&&(getLastGPS()-checkTime>1)){    //GPS.fix
       if(checkAlt-(GPS.altitude.feet())>30){                                   // a five second difference greater than 100 feet(not absolute value, so it still rises)
         sendXBee("burst detected");
         logAction("burst detected");
@@ -73,8 +73,8 @@ void autopilot(){
     hoverfloat();
    }
    if((millis()>=burnDelay)&&!delayBurn&&timeBurn&&timeBurn){   //Check to see if timer has run out or if cut 
-     runBurn();                                       //has been commanded and if it is not currenlty in a delayed burn, 
-     delayBurn=true;                                  //or if we even was a delayed burn
+     runBurn();                                                 //has been commanded and if it is not currenlty in a delayed burn, 
+     delayBurn=true;                                            //or if we even was a delayed burn
      GPSaction("timed cutdown attempt");
    }
    releaseCheck();
@@ -128,7 +128,7 @@ void altTheSingleLadies(){
   static unsigned long prevAlt = 0;
   static unsigned long altTimer = 0;
   static bool sent = false;
-  if(1){    //GPS.fix
+  if(GPS.Fix){    //GPS.fix
     if(!cutCheck){
       prevAlt = GPS.altitude.feet();
       cutCheck = true;
@@ -267,7 +267,7 @@ void burnMode(){
 void beacon(){
   if(millis()-beaconTimer>10000){ //if 10 seconds have passed
     String toSend = "";
-    if(1){   //GPS.fix
+    if(GPS.Fix){
       toSend += (String(GPS.time.hour())+ "," + String(GPS.time.minute()) + "," + String(GPS.time.second()) + ","
       + String(GPS.location.lat()) + "," + String(GPS.location.lng()) + "," + String(GPS.altitude.feet()) +
       "," + String(1));

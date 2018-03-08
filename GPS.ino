@@ -6,12 +6,11 @@ long lastGPS = -1000000;  //for testing purposes
 void updateGPS() {
   
   while (Serial1.available() > 0) {
-    Serial.println("OSDBNOIFS");
     GPS.encode(Serial1.read());
   }
   if (GPS.altitude.isUpdated() || GPS.location.isUpdated()) {
     newData= true;
-    if (!firstFix && 1) {     //gps.fix
+    if (!firstFix && GPS.Fix) {     //gps.fix
       GPSstartTime = GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second();
       firstFix = true;
 
@@ -23,7 +22,7 @@ void updateGPS() {
       data += ((String(GPS.altitude.feet())) + ",");    //convert meters to feet for datalogging
       data += (String(GPS.date.month()) + "/" + String(GPS.date.day()) + "/" + String(GPS.date.year()) + ",");
       data += (String(GPS.time.hour()) + ":" + String(GPS.time.minute()) + ":" + String(GPS.time.second()) + ",");   
-      if (1) {    //GPS.fix
+      if (GPS.Fix) { 
         data += "fix,";
         lastGPS = GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second();
       }
