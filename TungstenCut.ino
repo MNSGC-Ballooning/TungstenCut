@@ -83,13 +83,6 @@ int altDelay = 5;
 boolean delayBurn = false;
 //blinnking variables
 boolean LEDon = false;
-<<<<<<< HEAD
-//~~~~~~~~~Release Check~~~~~~~~~~~//
-boolean check1 = false;
-boolean check2 = false;
-=======
-
->>>>>>> 1a1dff6148b6ee9d97acda308847e0a91a35af41
 
 class action {
   protected:
