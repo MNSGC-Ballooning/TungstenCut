@@ -1,6 +1,6 @@
 //Takes a string to send out via xBee, and logs the transmission to the SD card with a timestamp
 void sendXBee(String out) {
-  Serial.println(xBeeID + ";" + out + "!");  openEventlog();
+  Serial.println(xBeeID + ";" + out + "!");
   openEventlog();
   if(SDcard){
     eventLog.println(flightTimeStr() + "  TX  " + out);
