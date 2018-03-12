@@ -66,7 +66,7 @@ void autopilot(){
     altTheSingleLadies();
    }
    floatCheck();
-   if((millis()>=burnDelay)&&!delayBurn&&timeBurn&&timeBurn){   //Check to see if timer has run out or if cut 
+   if((millis()>=burnDelay)&&!delayBurn&&timeBurn){   //Check to see if timer has run out or if cut 
      runBurn();                                                 //has been commanded and if it is not currenlty in a delayed burn, 
      delayBurn=true;                                            //or if we even was a delayed burn
      GPSaction("timed cutdown attempt");
@@ -115,7 +115,7 @@ void autopilot(){
     }
 }*/
 
-/*void altTheSingleLadies(){
+void altTheSingleLadies(){
   static bool cutCheck = false;
   static byte checkTimes = 0;
   static unsigned long prevAlt = 0;
@@ -167,7 +167,7 @@ void autopilot(){
    
 }
 }
-*/
+
 
 void floatCheck(){
   static bool cutCheck = false;
@@ -177,7 +177,7 @@ void floatCheck(){
   static bool sent = false;
   if(GPS.Fix){    //GPS.fix
     if(!cutCheck){
-      prevAlt = GPS.altitude.feet()
+      prevAlt = GPS.altitude.feet();
       cutCheck = true;
       checkTimes = 0;
       altTimer = getLastGPS();

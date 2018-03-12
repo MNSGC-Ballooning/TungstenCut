@@ -66,7 +66,7 @@ boolean floatEnabled = true;
 #define ledPin 3          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 #define chipSelect 4      //SD Card pin
 #define ledSD 5               //Pin which controls the SD LED
-#define fix_led  
+#define fix_led 6
 
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 //variables for the altitude cutting command
@@ -83,7 +83,9 @@ int altDelay = 5;
 boolean delayBurn = false;
 //blinnking variables
 boolean LEDon = false;
-
+//variables for LED fix blinking time
+#define FixDelay 2000
+#define noFixDelay 15000
 class action {
   protected:
     unsigned long Time;
@@ -116,7 +118,7 @@ class burnAction: public action {
 };
 
 
-
+//main action LED blinking commands
 Blink recoveryBlink = Blink(200, 2000, -1, "recoveryBlink", 0);
 Blink countdownBlink = Blink(200, 850, -1, "countdownBlink", 0);
 Blink* currentBlink = &countdownBlink;
@@ -149,6 +151,7 @@ void setup() {
   pinMode(razorCutter, OUTPUT);
   pinMode(ledSD, OUTPUT);
   pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
+  pinMode(fix_led, OUTPUT);
   //initiate GPS serial
    Serial1.begin(4800);    //
 
