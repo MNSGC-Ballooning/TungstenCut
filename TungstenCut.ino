@@ -96,7 +96,7 @@ boolean LEDon = false;
 //temperature sensor setup
 OneWire oneWire(TempPin);                  //setup onewire bus for temp sensor
 DallasTemperature TempSensors(&oneWire);   //declare the sensor
-unsigned int Temperature = 0;              //the temperature
+String Temperature = " ";              //the temperature
 #define TEMPTIME 5000                      //how often the temperature should be read
 class action {
   protected:
@@ -235,7 +235,7 @@ void setup() {
         delay(1500);
     }*/
   digitalWrite(fireBurner, LOW); //sets burner to off just in case
-  String GPSHeader = "Flight Time, Lat, Long, Altitude (ft), Date, Hour:Min:Sec, Fix,";
+  String GPSHeader = "Flight Time, Lat, Long, Altitude (ft), Date, Hour:Min:Sec, Fix, Temperature";
   GPSlog.println(GPSHeader);//set up GPS log format
   sendXBee("GPS header added");
 
