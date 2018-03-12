@@ -10,8 +10,7 @@
 #include <SoftwareSerial.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
-
-
+#include <SparkFun_ADXL345.h>
 //==============================================================
 //               Code For Tungsten/Razor Cutter
 //                 Danny Toth Summer 2017 - tothx051 and Simon Peterson- pet00291
@@ -63,6 +62,7 @@ boolean floatEnabled = true;
      GPS serial                   | serial 1              | serial for GPS (pins 18 and 19 on the mega
      fix                          | D6                    | whether or not we have a GPS fix, must be used with copernicus GPS unit
      Tempread                     | D9                   | temperature sensor reading
+
      -------------------------------------------------------------------------------------------------------------------------
 */
 
@@ -145,7 +145,7 @@ boolean newDay = false;
 boolean firstFix = false;
 int days = 0;          //used to store previous altitude values to check for burst
 boolean sliced = false;
-boolean checkingburst = false;
+boolean checkingCut = false;
 boolean newData = false;
 int checkTime;
 //SD Stuff
@@ -154,6 +154,9 @@ File GPSlog;
 String Ename = "";
 String GPSname = "";
 boolean SDcard = true;
+
+//Accelerometer Stuff
+ADXL345 adxl = ADXL345();
 
 void setup() {
   // initialize pins
