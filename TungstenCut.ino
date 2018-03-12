@@ -63,16 +63,11 @@ boolean floatEnabled = true;
 //~~~~~~~~~~~~~~~Pin Variables~~~~~~~~~~~~~~~
 #define fireBurner 8      // Pin which opens the relay to fire. High = Fire!
 #define razorCutter 7     // Pin which turns servo with razor blade. High = Fire! 
-#define fireBurnerDos 2   // Pin which opens the second relay to fire. High = Fire!
-#define razorCutterDos 9  // Pin which turns 2nd servo with razor blade. High = Fire!
 #define ledPin 3          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 #define chipSelect 4      //SD Card pin
 #define ledSD 5               //Pin which controls the SD LED
 #define fix_led  
-const int balloon_1_releaseCheck_out= 22; // Outputs high signal for cut check on balloon 1 by input pin 23          
-const int balloon_1_releaseCheck_in=  23; // Reads signal from pin 22 to check for balloon 1 release. Low = Balloon 1 released!
-const int balloon_2_releaseCheck_out= 48; // Outputs high signal for release check on balloon 2 by input pin 49  
-const int balloon_2_releaseCheck_in=  49; // Reads siganl from pin 48 ro check for balloon 2 release. Low = Balloon 2 released!
+
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 //variables for the altitude cutting command
 boolean bacon = true;  //true for beacon updates
@@ -89,9 +84,6 @@ boolean delayBurn = false;
 //blinnking variables
 boolean LEDon = false;
 
-//~~~~~~~~~Release Check~~~~~~~~~~~//
-boolean check1 = false;
-boolean check2 = false;
 
 class action {
   protected:
@@ -156,16 +148,11 @@ void setup() {
   pinMode(ledPin, OUTPUT);
   pinMode(fireBurner, OUTPUT);
   pinMode(razorCutter, OUTPUT);
-  pinMode(fireBurnerDos, OUTPUT);
-  pinMode(razorCutterDos, OUTPUT);
   pinMode(ledSD, OUTPUT);
   pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
   //initiate GPS serial
    Serial1.begin(4800);    //
-  pinMode(balloon_1_releaseCheck_out, OUTPUT);// Balloon 1 release check pins
-  pinMode(balloon_1_releaseCheck_in, INPUT);
-  pinMode(balloon_2_releaseCheck_out, OUTPUT); // Balloon 2 release check pins
-  pinMode(balloon_2_releaseCheck_in, INPUT);
+
   
 
   // initiate xbee
@@ -232,12 +219,6 @@ void setup() {
   GPSlog.println(GPSHeader);//set up GPS log format
   sendXBee("GPS header added");
 
-  //Set up balloon release checks
-  digitalWrite(balloon_1_releaseCheck_in, HIGH);
-  digitalWrite(balloon_1_releaseCheck_out, LOW);
-  digitalWrite(balloon_2_releaseCheck_in, HIGH);
-  digitalWrite(balloon_2_releaseCheck_out, LOW);
-  
 
   String eventLogHeader = "Time, Sent/Received, Command";
   eventLog.println(eventLogHeader);
@@ -246,13 +227,7 @@ void setup() {
   closeEventlog();
   closeGPSlog();
   
-  if(digitalRead(balloon_1_releaseCheck_in)==LOW){
-    sendXBee("Balloon release check 1 set up properly");
-  }
 
-  if(digitalRead(balloon_2_releaseCheck_in)==LOW){
-    sendXBee("Balloon release check 2 set up properly");
-  }
   sendXBee("Setup Complete");
 
 }
