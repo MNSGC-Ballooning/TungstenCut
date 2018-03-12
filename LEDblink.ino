@@ -79,12 +79,12 @@ void Fixblink(){
   }
   if((millis()-timer>=Delay)&&!fixON){
     fixON = true;
-    digitalWrite(fix_led, LOW);
+    digitalWrite(fix_led, HIGH);
     timer= millis();
   }
   if((millis()-timer>=300)&&fixON){
     fixON = false;
-    digitalWrite(fix_led, HIGH);
+    digitalWrite(fix_led, LOW);
     timer = millis();
   }
 }

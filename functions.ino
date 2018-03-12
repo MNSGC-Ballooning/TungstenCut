@@ -59,6 +59,7 @@ void autopilot(){
    checkBurst();
    blinkMode();
    burnMode();
+   Fixblink();
    if(bacon){
     beacon();
    }
