@@ -1,4 +1,5 @@
 
+
 //Libraries
 //this requires a special modded version of the TinyGPS library because for whatever
 //reason the TinyGPS library does not include a "Fix" variable. the library can be found here:
@@ -7,6 +8,10 @@
 #include <SD.h>
 #include <TinyGPS++.h>
 #include <SoftwareSerial.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+
 //==============================================================
 //               Code For Tungsten/Razor Cutter
 //                 Danny Toth Summer 2017 - tothx051 and Simon Peterson- pet00291
@@ -51,12 +56,13 @@ boolean floatEnabled = true;
      xBee serial                  | D0-1                  | IMPORTANT- is hardware serial (controls xBee and hard serial line), cannot upload with xBee plugged in
      Fireburner                   | D8                    |
      Data LED (BLUE)              | D3                    |  "action" LED (Blue), tells us what the payload is doing
-     SD                           | D4, D11-13            |  11-13 not not have wires but they are used!
+     SD                           | D4, D11-13            |  11-13 do not not have wires but they are used!
      SD LED (RED)                 | D5                    | "SD" LED (Red). Only on when the file is open in SD card
      Continutity Check OUTPUT     | D6                    | Outputs a voltatge for the continuity check
      razorcutter pin              | D7                    | Reads the voltage for the continuity check
      GPS serial                   | serial 1              | serial for GPS (pins 18 and 19 on the mega
      fix                          | D6                    | whether or not we have a GPS fix, must be used with copernicus GPS unit
+     Tempread                     | D9                   | temperature sensor reading
      -------------------------------------------------------------------------------------------------------------------------
 */
 
@@ -67,7 +73,7 @@ boolean floatEnabled = true;
 #define chipSelect 4      //SD Card pin
 #define ledSD 5           //Pin which controls the SD LED
 #define fix_led 6         //led  which blinks for fix
-
+#define TempPin    9      //temperature reading pin
 
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 //variables for the altitude cutting command
@@ -87,6 +93,10 @@ boolean LEDon = false;
 //variables for LED fix blinking time
 #define FixDelay 1000
 #define noFixDelay 15000
+//temperature sensor setup
+OneWire oneWire(TempPin);                  //setup onewire bus for temp sensor
+DallasTemperature TempSensors(&oneWire);   //declare the sensor
+unsigned int Temperature = 0;              //the temperature
 class action {
   protected:
     unsigned long Time;
@@ -134,7 +144,7 @@ int GPSstartTime;
 boolean newDay = false;
 boolean firstFix = false;
 int days = 0;          //used to store previous altitude values to check for burst
-boolean bursted = false;
+boolean sliced = false;
 boolean checkingburst = false;
 boolean newData = false;
 int checkTime;
@@ -153,6 +163,8 @@ void setup() {
   pinMode(ledSD, OUTPUT);
   pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
   pinMode(fix_led, OUTPUT);
+  TempSensors.begin();               //set up temperature sensors
+  
   //initiate GPS serial
    Serial1.begin(4800);    //
 
