@@ -83,7 +83,7 @@ boolean delayBurn = false;
 //blinnking variables
 boolean LEDon = false;
 //variables for LED fix blinking time
-#define FixDelay 2000
+#define FixDelay 1000
 #define noFixDelay 15000
 class action {
   protected:
