@@ -10,7 +10,7 @@
 #include <SoftwareSerial.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
-#include <SparkFun_ADXL345.h>
+#include <SparkFun_ADXL345.h>      //accelerometer library
 //==============================================================
 //               Code For Tungsten/Razor Cutter
 //                 Danny Toth Summer 2017 - tothx051 and Simon Peterson- pet00291
@@ -97,6 +97,7 @@ boolean LEDon = false;
 OneWire oneWire(TempPin);                  //setup onewire bus for temp sensor
 DallasTemperature TempSensors(&oneWire);   //declare the sensor
 unsigned int Temperature = 0;              //the temperature
+#define TEMPTIME 5000                      //how often the temperature should be read
 class action {
   protected:
     unsigned long Time;

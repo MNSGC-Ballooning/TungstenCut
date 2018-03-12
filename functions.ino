@@ -210,7 +210,14 @@ burnAction::burnAction(int on, int off, int ont, int stag, unsigned long tim){
   stagger = stag;
   Time = tim;
 }
-
+void readTemp(){
+  static unsigned long Timer = 0;
+  if(millis()-Timer>= TEMPTIME){
+    TempSensors.requestTemperatures();
+    Temperature = TempSensors.getTempCByIndex(0);
+    Timer = millis();
+  }
+}
 void burnMode(){
   //if we are done with the burnblinking we will start the burn
   if(currentBlink->getName()=="burnBlink"&&currentBlink->getOnTimes()==0)
