@@ -88,7 +88,6 @@ int altDelay = 5;
 boolean delayBurn = false;
 //blinnking variables
 boolean LEDon = false;
-
 //~~~~~~~~~Release Check~~~~~~~~~~~//
 boolean check1 = false;
 boolean check2 = false;
