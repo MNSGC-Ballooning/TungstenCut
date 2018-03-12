@@ -154,18 +154,6 @@ commandTime = millis();
     sendXBee("timed cut disabled");
   }
 
-  else if((Com.substring(0,2)).equals("FE")){ //enable float cut
-    floatEnabled = true;
-    logCommand(Com, "float enabled");
-    sendXBee("float enabled");
-  }
-
-  else if((Com.substring(0,2)).equals("FD")){  //disable float cut
-    floatEnabled = false;
-    logCommand(Com, "float disabled");
-    sendXBee("float disabled");
-  }
-
   else if((Com.substring(0,2)).equals("FA")){  //add 10 minutes to float cut
     float_Time += 600;
     logCommand(Com, "Ten minutes added to float time");
