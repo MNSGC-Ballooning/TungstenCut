@@ -56,7 +56,7 @@ boolean floatEnabled = true;
      Continutity Check OUTPUT     | D6                    | Outputs a voltatge for the continuity check
      razorcutter pin              | D7                    | Reads the voltage for the continuity check
      GPS serial                   | serial 1              | serial for GPS (pins 18 and 19 on the mega
-     fix                          | D8                    | whether or not we have a GPS fix, must be used with copernicus GPS unit
+     fix                          | D6                    | whether or not we have a GPS fix, must be used with copernicus GPS unit
      -------------------------------------------------------------------------------------------------------------------------
 */
 
