@@ -77,7 +77,6 @@ boolean burnerON = false;
 unsigned long burnDelay = long(burn_Delay) * 1000;
 unsigned long floatTimer = long(float_Time)* 1000;
 unsigned long floatStart = 0;
-boolean secondBurn = false;
 boolean recovery = false;
 int altDelay = 5;
 boolean delayBurn = false;
@@ -133,8 +132,8 @@ int GPSstartTime;
 boolean newDay = false;
 boolean firstFix = false;
 int days = 0;          //used to store previous altitude values to check for burst
-boolean bursted = false;
-boolean checkingburst = false;
+boolean sliced = false;
+boolean checkingCut = false;
 boolean newData = false;
 int checkTime;
 //SD Stuff
