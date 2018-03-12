@@ -165,14 +165,15 @@ void setup() {
   sendXBee("GPS configured");
 
   //initialize SD card
-  if (!SD.begin(chipSelect)) {            //power LED will blink if no card is inserted
-    sendXBee("No SD");
+  while (!SD.begin(chipSelect)) {            //power LED will blink if no card is inserted
+    Serial.println("No SD");
     digitalWrite(ledSD, HIGH);
     delay(500);
     digitalWrite(ledSD, LOW);
     delay(500);
     SDcard = false;
   }
+  SDcard = true;
   sendXBee("Checking for existing file");
   //Check for existing event logs and creates a new one
   for (int i = 0; i < 100; i++) {
