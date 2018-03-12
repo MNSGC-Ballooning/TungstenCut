@@ -241,12 +241,12 @@ void beacon(){
     if(GPS.Fix){
       toSend += (String(GPS.time.hour())+ "," + String(GPS.time.minute()) + "," + String(GPS.time.second()) + ","
       + String(GPS.location.lat()) + "," + String(GPS.location.lng()) + "," + String(GPS.altitude.feet()) +
-      "," + String(1));
+      "," + String(0) + "," + String(Temperature));
       sendXBee(toSend);
       }
     else{
       toSend += (String(GPS.time.hour()) + "," + String(GPS.time.minute()) + "," + String(GPS.time.second()) + ","
-      + "0" + "," + "0" + "," + "0" + String(1));
+      + "0" + "," + "0" + "," + "0" + String(0)+ "," + String(Temperature));
       sendXBee(toSend);
       
     }
