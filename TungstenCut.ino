@@ -65,8 +65,9 @@ boolean floatEnabled = true;
 #define razorCutter 7     // Pin which turns servo with razor blade. High = Fire! 
 #define ledPin 3          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 #define chipSelect 4      //SD Card pin
-#define ledSD 5               //Pin which controls the SD LED
-#define fix_led 6
+#define ledSD 5           //Pin which controls the SD LED
+#define fix_led 6         //led  which blinks for fix
+
 
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 //variables for the altitude cutting command
@@ -77,6 +78,7 @@ boolean burnerON = false;
 unsigned long burnDelay = long(burn_Delay) * 1000;
 unsigned long floatTimer = long(float_Time)* 1000;
 unsigned long floatStart = 0;
+boolean secondBurn = false;
 boolean recovery = false;
 int altDelay = 5;
 boolean delayBurn = false;
@@ -132,8 +134,8 @@ int GPSstartTime;
 boolean newDay = false;
 boolean firstFix = false;
 int days = 0;          //used to store previous altitude values to check for burst
-boolean sliced = false;
-boolean checkingCut = false;
+boolean bursted = false;
+boolean checkingburst = false;
 boolean newData = false;
 int checkTime;
 //SD Stuff
