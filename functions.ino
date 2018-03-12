@@ -65,10 +65,7 @@ void autopilot(){
    if(altCut){
     altTheSingleLadies();
    }
- 
-   if(floatCut==true){
-    hoverfloat();
-   }
+   floatCheck();
    if((millis()>=burnDelay)&&!delayBurn&&timeBurn&&timeBurn){   //Check to see if timer has run out or if cut 
      runBurn();                                                 //has been commanded and if it is not currenlty in a delayed burn, 
      delayBurn=true;                                            //or if we even was a delayed burn
@@ -118,7 +115,7 @@ void autopilot(){
     }
 }*/
 
-void altTheSingleLadies(){
+/*void altTheSingleLadies(){
   static bool cutCheck = false;
   static byte checkTimes = 0;
   static unsigned long prevAlt = 0;
@@ -170,12 +167,58 @@ void altTheSingleLadies(){
    
 }
 }
+*/
 
-void hoverfloat(){
-  
-  if((millis()-floatStart)>=floatTimer){
-    sendXBee("Burn set equal to true");
-    runBurn();
+void floatCheck(){
+  static bool cutCheck = false;
+  static byte checkTimes = 0;
+  static unsigned long prevAlt = 0;
+  static unsigned long altTimer = 0;
+  static bool sent = false;
+  if(GPS.Fix){    //GPS.fix
+    if(!cutCheck){
+      prevAlt = GPS.altitude.feet()
+      cutCheck = true;
+      checkTimes = 0;
+      altTimer = getLastGPS();
+      sent = false;
+    }
+    else if((getLastGPS()-altTimer > 2)&& GPS.altitude.feet()-prevAlt > 3000){
+      cutCheck = false;
+      sendXBee("GPS jump detected, resetting cutdown decisions");
+    }
+    else if((getLastGPS()-altTimer> 2) && cutAlt-GPS.altitude.feet()<3000 && !sent ){
+      sendXBee("within 3000 feet of cutdown altitude");
+      sent = true;
+      prevAlt = GPS.altitude.feet(); 
+      altTimer = getLastGPS();
+    }
+    else if (checkTimes < 15 && getLastGPS()-altTimer > 2&& GPS.altitude.feet()>cutAlt){
+      String toSend = "veryifying proximity to cutdown. will cut in " + String(14-checkTimes) + " GPS hits above cut altitude";
+      sendXBee(toSend);
+      checkTimes++;
+      prevAlt = GPS.altitude.feet(); 
+      altTimer = getLastGPS();
+    }
+    else if(checkTimes < 15 && checkTimes >2 && getLastGPS()-altTimer > 2 && GPS.altitude.feet() < cutAlt){
+      sendXBee("GPS hit below cut altitude, resetting GPS hit counter");
+      cutCheck = false;
+      
+      
+    }
+    else if(checkTimes == 15){
+      sendXBee("running altitude burn");
+      runBurn();
+      
+      
+      cutCheck = false;
+    }
+    
+
+  else{
+    cutCheck = false;
+  }
+ 
   }
   
 }
