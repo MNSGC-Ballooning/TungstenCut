@@ -90,7 +90,7 @@ commandTime = millis();
   else if (Com.equals("WX")) {
     //Burns the Tungsten, enters "recovery mode" after cutdown confirmed
     runBurn();
-    if(1){ //GPS.fix
+    if(GPS.Fix){ //GPS.fix
       logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.location.lat(), 4) + "," + String(GPS.location.lng(), 4) + ", Altitude: " + String(GPS.altitude.feet()) + "ft. FIX");  
       sendXBee("Starting Cut at Altitude " + String(GPS.altitude.feet()) + "ft. Watch your heads!");
     }

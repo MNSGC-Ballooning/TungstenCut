@@ -30,6 +30,7 @@ void updateGPS() {
         data += ("No fix,");
         lastGPS = GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second();
       }
+      data += Temperature;
       GPSlog.println(data);
       closeGPSlog();
     }

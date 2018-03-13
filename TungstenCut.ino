@@ -11,7 +11,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <SparkFun_ADXL345.h>      //accelerometer library
-
 //==============================================================
 //               Code For Tungsten/Razor Cutter
 //                 Danny Toth Summer 2017 - tothx051 and Simon Peterson- pet00291
@@ -45,6 +44,8 @@ bool marryPoppins = true;
 const String xBeeID = "WB"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
 long cutAlt = 80000; //Default cutdown altitude in feet! Changeable via xBee.
 boolean altCut = true;  //set to true to perfom an altitude cutdown. can be toggled through Xbee.
+
+
 
 //=============================================================================================================================================
 //=============================================================================================================================================
@@ -160,7 +161,7 @@ boolean SDcard = true;
 
 //Accelerometer Stuff
 ADXL345 adxl = ADXL345();
-boolean shift=false;
+boolean shift = false;
 
 void setup() {
   // initialize pins
@@ -186,11 +187,9 @@ void setup() {
   //GPS setup and config
   sendXBee("GPS configured");
 
-  //Initialize Accelerometer
   adxl.powerOn();
   adxl.setRangeSetting(16);
   adxl.setSpiBit(0);
-
 
   //initialize SD card
   while (!SD.begin(chipSelect)) {            //power LED will blink if no card is inserted
