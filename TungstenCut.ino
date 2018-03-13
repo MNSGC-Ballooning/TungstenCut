@@ -38,12 +38,13 @@
 //  /_____/\__,_/_/  /_/ /_/  /_____/\___/_/\__,_/\__, /   \____/\____/_/ /_/_/ /_/\__, /\__,_/_/   \__,_/\__/_/\____/_/ /_/
 //                                               /____/                           /____/
 
-int burn_Delay = 3600; //Countdown timer in seconds! Changeable via xBee.
+int Master_Timer = 7200; //Flight master timer that terminates flight when the timer runs out! Changeable via xBee.
+bool judgementDay = true;   //set to true to activate master timer. can be changed through Xbee
 int float_Time = 1800; //Float Duration in seconds
-bool timeBurn = false;   //set to true to activate delay burns. can be changed through Xbee
+bool marryPoppins = true;
 const String xBeeID = "WB"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
-long cutAlt = 90000; //Default cutdown altitude in feet! Changeable via xBee.
-boolean altCut = false;  //set to true to perfom an altitude cutdown. can be toggled through Xbee.
+long cutAlt = 80000; //Default cutdown altitude in feet! Changeable via xBee.
+boolean altCut = true;  //set to true to perfom an altitude cutdown. can be toggled through Xbee.
 
 //=============================================================================================================================================
 //=============================================================================================================================================
@@ -53,15 +54,16 @@ boolean altCut = false;  //set to true to perfom an altitude cutdown. can be tog
      Component                    | Pins used             | Notes
 
      xBee serial                  | D0-1                  | IMPORTANT- is hardware serial (controls xBee and hard serial line), cannot upload with xBee plugged in
-     Fireburner                   | D8                    |
-     Data LED (BLUE)              | D3                    |  "action" LED (Blue), tells us what the payload is doing
-     SD                           | D4, D11-13            |  11-13 do not not have wires but they are used!
+     Fireburner                   | D8                    | High to this pin fires tungsten burner
+     Data LED (BLUE)              | D3                    | "action" LED (Blue), tells us what the payload is doing
+     SD                           | D4, D50-52            | 50-52 do not not have wires but they are used!
      SD LED (RED)                 | D5                    | "SD" LED (Red). Only on when the file is open in SD card
      Continutity Check OUTPUT     | D6                    | Outputs a voltatge for the continuity check
-     razorcutter pin              | D7                    | Reads the voltage for the continuity check
+     razorcutter pin              | D7                    | High to this pin spins razor blade
      GPS serial                   | serial 1              | serial for GPS (pins 18 and 19 on the mega
      fix                          | D6                    | whether or not we have a GPS fix, must be used with copernicus GPS unit
-     Tempread                     | D9                   | temperature sensor reading
+     Tempread                     | D9                    | temperature sensor reading
+     Accel I2C                    | SDA,SCL               | I2C communication for accelerometer (pins 20 and 21)
 
      -------------------------------------------------------------------------------------------------------------------------
 */
@@ -81,10 +83,10 @@ boolean bacon = true;  //true for beacon updates
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
 unsigned long beaconTimer= 0;
 boolean burnerON = false;
-unsigned long burnDelay = long(burn_Delay) * 1000;
+unsigned long masterTimer = long(Master_Timer) * 1000;
 unsigned long floatTimer = long(float_Time)* 1000;
 unsigned long floatStart = 0;
-boolean secondBurn = false;
+boolean floating = false;
 boolean recovery = false;
 int altDelay = 5;
 boolean delayBurn = false;

@@ -18,7 +18,7 @@ String flightTimeStr() {
 }
 
 String timeLeft(){
-  int timeLeft = int((burnDelay-millis())/1000);
+  int timeLeft = int((masterTimer-millis())/1000);
   String timeLeftStr = (String(timeLeft/60) + ":");
   timeLeft %= 60;
   timeLeftStr += (String(timeLeft / 10) + String(timeLeft % 10));

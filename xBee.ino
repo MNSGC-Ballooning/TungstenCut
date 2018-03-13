@@ -59,8 +59,8 @@ commandTime = millis();
     unsigned long addedTime = atol((Com.substring(2, Com.length())).c_str());
     logCommand(Com, "Added time to failsafe");
     sendXBee("added Time: "+ String(addedTime)+ " Minutes");
-    burnDelay += (addedTime*60*1000);  //Converts minutes to milliseconds
-    sendXBee("Time until cutdown: " + timeLeft());
+    masterTimer += (addedTime*60*1000);  //Converts minutes to milliseconds
+    sendXBee("Master Timer: " + timeLeft());
   }
 
  else if ((Com.substring(0,2)).equals("WR")) {
@@ -68,12 +68,12 @@ commandTime = millis();
     unsigned long remTime = atol((Com.substring(2, Com.length())).c_str());
     logCommand(Com, "Removed time from failsafe");
     sendXBee("Time removed: "+ String(remTime)+ " Minutes");
-    burnDelay -= (remTime*60*1000);  //Converts minutes to milliseconds
-    int timeLeft = int((burnDelay-millis())/1000);
+    masterTimer -= (remTime*60*1000);  //Converts minutes to milliseconds
+    int timeLeft = int((masterTimer-millis())/1000);
     String timeLeftStr = (String(timeLeft/60) + ":");
     timeLeft %= 60;
     timeLeftStr += (String(timeLeft / 10) + String(timeLeft % 10));
-    sendXBee("Time until cutdown: " + timeLeftStr);
+    sendXBee("Master Timer: " + timeLeftStr);
   }
 
 
@@ -104,11 +104,11 @@ commandTime = millis();
   else if (Com.equals("WT")) {
     //Poll for cutdown timer remaining, returns minutes:seconds
     logCommand(Com, "Poll Remaining Time");
-    if(timeBurn){
+    if(judgementDay){
       sendXBee(timeLeft());
     }
     else{
-      sendXBee("timed cut is currently not enabled");
+      sendXBee("Master timer is currently not enabled");
     }
     
   }
@@ -142,16 +142,28 @@ commandTime = millis();
     sendXBee("Altitude cutdown is now enabled, will cut at: " + String(cutAlt) + "feet");
    }
   else if((Com.substring(0,2)).equals("WC")){   //enable time burn     
-    timeBurn = true;
-    logCommand(Com, "timed cut enabled");
-    burnDelay = millis() + 3600000;                //make the default timer 60 minutes
-    sendXBee("timed cut enabled, time until cutdown: " + timeLeft());
+    judgementDay = true;
+    logCommand(Com, "Master timer enabled");
+    masterTimer = millis() + 7200000;                //make the default timer 2 hours
+    sendXBee("Master timer enabled, time until cutdown: " + timeLeft());
   }
 
   else if((Com.substring(0,2)).equals("WS")){   //disable time burn
-    timeBurn = false;
-    logCommand(Com, "timed cut disabled");
-    sendXBee("timed cut disabled");
+    judgementDay = false;
+    logCommand(Com, "Master timer disabled");
+    sendXBee("Master timer disabled");
+  }
+
+  else if((Com.substring(0,2)).equals("FE")){
+    marryPoppins=true;
+    logCommand(Com, "Timed float cut enabled");
+    sendXBee("Timed float cut enabled");
+  }
+
+  else if((Com.substring(0,2)).equals("FD")){
+    marryPoppins=false;
+    logCommand(Com, "Timed float cut disabled");
+    sendXBee("Timed float cut disabled");
   }
 
   else if((Com.substring(0,2)).equals("FA")){  //add 10 minutes to float cut

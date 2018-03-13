@@ -1,9 +1,9 @@
 void addTime(int addition){
-  burnDelay+=(addition*1000);
+  masterTimer +=(addition*1000);
 }
 
 void removeTime(int subtraction){
-  burnDelay -=(subtraction*1000);
+  masterTimer -=(subtraction*1000);
 }
 void runBurn(){
   currentBlink= new Blink(200,500,5, "burnBlink", millis());
@@ -29,8 +29,8 @@ void checkCut(){
      }
     else if(GPS.Fix&&altDelay==5&&(getLastGPS()-checkTime>1)){    //GPS.fix
       if(checkAlt-(GPS.altitude.feet())>30){                                   // a five second difference greater than 100 feet(not absolute value, so it still rises)
-        sendXBee("burst detected");
-        logAction("burst detected");
+        sendXBee("cut detected");
+        logAction("cut detected");
         sliced = true;
       }
       else{
@@ -70,59 +70,20 @@ void autopilot(){
    if(altCut){
     altTheSingleLadies();
    }
+   if(floating){
+    deathScythe();
+   }
 
-   if((millis()>=burnDelay)&&!delayBurn&&timeBurn){   //Check to see if timer has run out or if cut 
+   if((millis()>=masterTimer)&&!delayBurn&&judgementDay){   //Check to see if timer has run out or if cut 
      runBurn();                                                 //has been commanded and if it is not currenlty in a delayed burn, 
-     delayBurn=true;                                            //or if we even was a delayed burn
-     GPSaction("timed cutdown attempt");
+     delayBurn=true;                                            //or if it even was a delayed burn
+     GPSaction("You are TERMINATED!");
    }
 }
 
-/*void altTheSingleLadies(){          //function which makes decisions based on altitude
-  if(GPS.fix){
-    
-    if((GPS.altitude * 3.28048>= (cutAlt-3000))&&!gatePass){
-      gatePass=true;
-      prevAlt=GPS.altitude * 3.28048;
-      sendXBee("Within 3000ft of Cutdown Altitude");            
-      logAction("Within 3000ft of Cutdown Altitude");
-    }
-    else if((GPS.altitude * 3.28048>= (cutAlt-3000))&&gatePass){
-        
-        if(!altCheck&&(millis()-altTimer >=1000)){    //if it's been 1 second 
-          altTimer=millis();          //Reset timer
-          altCheck=true;             //Do nothing in particular
-          prevAlt=GPS.altitude * 3.28048;
-          //sendXBee("beginning altitude verification");               //we dont want to spam ourselves
-          //logAction("beginning altitude verification");
-          }
-        if(altCheck&&(millis()-altTimer>=1000)){ //If it's been 1 second again...
-          //sendXBee("Verifying proximity to Cutdown Altitude");     we dont want to spam ourselves
-          //logAction("Verifying proximity to Cutdown Altitude");
-          if((GPS.altitude * 3.28048)-prevAlt>= 200){
-            sendXBee("GPS hits too far apart, resetting altitude decision-making");
-            logAction("GPS hits too far apart, resetting altitude decision-making");
-            gatePass=false; //Should stop if GPS hits are more than 200ft apart. 
-          }
-          altCheck=false;
-      }
-    }
-     else if(GPS.altitude * 3.28048>=cutAlt&&gatePass){
-      sendXBee("Activating GPS Altitude Triggered Cutdown");
-      logAction("Activating GPS Altitude Triggered Cutdown");
-      runBurn();
-     
-      
-
-    }   
-    else{
-      gatePass = false;
-    }
-}*/
 
 void altTheSingleLadies(){
   static bool cutCheck = false;
-  static bool floating = false;
   static byte checkTimes = 0;
   static byte checkFloat = 0;
   static unsigned long prevAlt = 0;
@@ -131,10 +92,18 @@ void altTheSingleLadies(){
   if(GPS.Fix){    //GPS.fix
     prevAlt = GPS.altitude.feet();
     altTimer = getLastGPS();
-    if((getLastGPS()-altTimer > 2) && GPS.altitude.feet()< prevAlt){
-      
-      floating=true;
-    }
+    if(floating==false && (getLastGPS()-altTimer > 2) && GPS.altitude.feet()< prevAlt){
+      checkFloat++;
+      if(checkFloat>15){
+        floating=true;
+        floatStart=millis();
+        sendXBee("Burst detected, float timer started");
+        if(GPS.altitude.feet()<cutAlt){
+          sendXBee("Burst occured early, setting altCut to 1000 feet below current altitude");
+          altCut=GPS.altitude.feet()-1000;
+        }
+      }
+     }
     if(floating==true){
       if(!cutCheck){
         prevAlt = GPS.altitude.feet();
@@ -169,8 +138,7 @@ void altTheSingleLadies(){
       else if(checkTimes == 15){
         sendXBee("running altitude burn");
         runBurn();
-        
-        
+        floating=false;
         cutCheck = false;
       }
       
@@ -181,6 +149,13 @@ void altTheSingleLadies(){
    }
    
 }
+}
+
+void deathScythe(){
+  if((millis()-floatStart)>floatTimer){
+    runBurn();
+    floating=false;
+  }
 }
 
 void detectShift(){
