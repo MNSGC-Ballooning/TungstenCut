@@ -21,7 +21,7 @@ void updateGPS() {
       data += (flightTimeStr() + "," + String(GPS.location.lat(), 6) + "," + String(GPS.location.lng(), 6) + ",");
       data += ((String(GPS.altitude.feet())) + ",");    //convert meters to feet for datalogging
       data += (String(GPS.date.month()) + "/" + String(GPS.date.day()) + "/" + String(GPS.date.year()) + ",");
-      data += (String(GPS.time.hour()) + ":" + String(GPS.time.minute()) + ":" + String(GPS.time.second()) + ",");   
+      data += (String(GPS.time.hour()) + ":" + String(GPS.time.minute()) + ":" + String(GPS.time.second()) + ","); 
       if (GPS.Fix) { 
         data += "fix,";
         lastGPS = GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second();
@@ -31,6 +31,8 @@ void updateGPS() {
         lastGPS = GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second();
       }
       data += Temperature;
+      adxl.readAccel(&x,&y,&z);
+      data += ("Accelerometer (x,y,z): " + String(x) + ", " + String(y) + ", " +String(z));  
       GPSlog.println(data);
       closeGPSlog();
     }

@@ -65,7 +65,7 @@ void autopilot(){
     beacon();
    }
    if(shift==false){
-    detectShift();
+    detectShift(x,y,z);
    }
    if(altCut){
     altTheSingleLadies();
@@ -158,8 +158,7 @@ void deathScythe(){
   }
 }
 
-void detectShift(){
-  static int x,y,z;
+void detectShift(int x, int y, int z){
   static byte shiftCheck=0;
   static unsigned long currentTime=millis();
   static unsigned long prevTime=millis();
@@ -172,7 +171,7 @@ void detectShift(){
     }
   }
   if(shiftCheck>15){
-    sendXBee("Orientation shift detected. One balloon has burst!");
+    sendXBee("Orientation shift detected!");
     shift=true;
   }
 }

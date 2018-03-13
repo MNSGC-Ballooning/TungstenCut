@@ -162,6 +162,7 @@ boolean SDcard = true;
 //Accelerometer Stuff
 ADXL345 adxl = ADXL345();
 boolean shift = false;
+int x,y,z;
 
 void setup() {
   // initialize pins
