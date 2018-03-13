@@ -64,6 +64,9 @@ void autopilot(){
    if(bacon){
     beacon();
    }
+   if(shift==false){
+    detectShift();
+   }
    if(altCut){
     altTheSingleLadies();
    }
@@ -180,7 +183,24 @@ void altTheSingleLadies(){
 }
 }
 
-
+void detectShift(){
+  static int x,y,z;
+  static byte shiftCheck=0;
+  static unsigned long currentTime=millis();
+  static unsigned long prevTime=millis();
+  adxl.readAccel(&x,&y,&z);
+  if(x>19 | x<-26){
+    currentTime=millis();
+    if(z<20 && currentTime-prevTime>1000){
+     shiftCheck++;
+     prevTime=currentTime;
+    }
+  }
+  if(shiftCheck>15){
+    sendXBee("Orientation shift detected. One balloon has burst!");
+    shift=true;
+  }
+}
 
 void burnAction::Burn(){
   if(ontimes>0){

@@ -90,7 +90,7 @@ commandTime = millis();
   else if (Com.equals("WX")) {
     //Burns the Tungsten, enters "recovery mode" after cutdown confirmed
     runBurn();
-    if(1){ //GPS.fix
+    if(GPS.Fix){ //GPS.fix
       logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.location.lat(), 4) + "," + String(GPS.location.lng(), 4) + ", Altitude: " + String(GPS.altitude.feet()) + "ft. FIX");  
       sendXBee("Starting Cut at Altitude " + String(GPS.altitude.feet()) + "ft. Watch your heads!");
     }
@@ -152,18 +152,6 @@ commandTime = millis();
     timeBurn = false;
     logCommand(Com, "timed cut disabled");
     sendXBee("timed cut disabled");
-  }
-
-  else if((Com.substring(0,2)).equals("FE")){ //enable float cut
-    floatEnabled = true;
-    logCommand(Com, "float enabled");
-    sendXBee("float enabled");
-  }
-
-  else if((Com.substring(0,2)).equals("FD")){  //disable float cut
-    floatEnabled = false;
-    logCommand(Com, "float disabled");
-    sendXBee("float disabled");
   }
 
   else if((Com.substring(0,2)).equals("FA")){  //add 10 minutes to float cut
