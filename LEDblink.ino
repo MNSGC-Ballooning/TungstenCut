@@ -71,7 +71,7 @@ void Fixblink(){
   static bool fixON = false;
   static int Delay = noFixDelay;
   
-  if(GPS.Fix){
+  if(GPS.Fix && GPS.altitude.feet()!= 0 ){
       Delay = noFixDelay;  
   }
   else{
