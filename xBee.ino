@@ -154,7 +154,7 @@ commandTime = millis();
     sendXBee("Master timer disabled");
   }
 
-  else if((Com.substring(0,2)).equals("FE")){
+  else if((Com.substring(0,2)).equals("FE")){   
     marryPoppins=true;
     logCommand(Com, "Timed float cut enabled");
     sendXBee("Timed float cut enabled");
@@ -166,16 +166,20 @@ commandTime = millis();
     sendXBee("Timed float cut disabled");
   }
 
-  else if((Com.substring(0,2)).equals("FA")){  //add 10 minutes to float cut
-    float_Time += 600;
-    logCommand(Com, "Ten minutes added to float time");
-    sendXBee("ten minutes added to float time");
+  else if((Com.substring(0,2)).equals("FA")){  //add time to float cut in minutes
+    unsigned long addedTime = atol((Com.substring(2, Com.length())).c_str());
+    logCommand(Com, "Added time to floattimer");
+    sendXBee("added Time: "+ String(addedTime)+ " Minutes");
+    floatTimer += (addedTime*60*1000);  //Converts minutes to milliseconds
+    sendXBee("Float Timer in seconds: " + (floatTimer/1000));
   }
 
-  else if((Com.substring(0,2)).equals("FS")){  //subtract 10 minutes from float cut
-    float_Time -= 600;
-    logCommand(Com, "Ten minutes subtracted from float time");
-    sendXBee("ten minutes subtracted from float time");
+  else if((Com.substring(0,2)).equals("FS")){  //subtract time from float cut in minutes
+    unsigned long addedTime = atol((Com.substring(2, Com.length())).c_str());
+    logCommand(Com, "subtracted time to floattimer");
+    sendXBee("subtracted Time: "+ String(addedTime)+ " Minutes");
+    floatTimer -= (addedTime*60*1000);  //Converts minutes to milliseconds
+    sendXBee("Float Timer in seconds: " + (floatTimer/1000));
   }
 
   else if((Com.substring(0,2)).equals("WF")){   //poll cutdown altitude
@@ -202,6 +206,13 @@ commandTime = millis();
   else if(Com.substring(0,2).equals("TE")){
     logCommand(Com, "poll temperature");
     sendXBee("Battery Temperature: " + Temperature);
+  }
+  else if(Com.substring(0,2).equals("PF")){
+    logCommand(Com, "poll float time");
+    sendXBee("Float time in seconds: " + String(floatTimer));
+    if(floating){
+      sendXBee("floating time remaining in seconds: " + String((floatTimer - (millis()-floatStart))/1000));
+    }
   }
       
   else {
