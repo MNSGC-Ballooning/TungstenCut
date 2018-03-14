@@ -101,14 +101,14 @@ void altTheSingleLadies(){
         floatStart=millis();
         sendXBee("Burst detected, float timer started");
       }
+      else{
+        checkFloat = 0;
+        sendXBee("checkfloat reset");
+      }
       if(GPS.altitude.feet()<cutAlt){
           sendXBee("Burst occured early, setting altCut to 1000 feet below current altitude");
           altCut=GPS.altitude.feet()-1000;
         }
-      }
-      else{
-        checkFloat = 0;
-        sendXBee("checkfloat reset");
       }
      }
     if(floating==true){
