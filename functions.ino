@@ -17,7 +17,7 @@ void checkCut(){
       checkingCut= true;
       checkTime= getLastGPS();
     }
-    else if(GPS.Fix&&GPS.altitude.feet()!= 0 &&altDelay<5&&(getLastGPS()-checkTime)>1){   //GPS.fix
+    else if(GPS.Fix && GPS.altitude.feet()!= 0 &&altDelay<5&&(getLastGPS()-checkTime)>1){   //GPS.fix
       if((GPS.altitude.feet()-checkAlt)<-30){
         checkTime = getLastGPS();
         checkAlt =  (GPS.altitude.feet());                                 
@@ -27,7 +27,7 @@ void checkCut(){
         checkingCut = false;
       }
      }
-    else if(GPS.Fix&&GPS.altitude.feet()!= 0 &&altDelay==5&&(getLastGPS()-checkTime>1)){    //GPS.fix
+    else if(GPS.Fix && GPS.altitude.feet()!= 0 &&altDelay==5&&(getLastGPS()-checkTime>1)){    //GPS.fix
       if(checkAlt-(GPS.altitude.feet())>30){                                   // a five second difference greater than 100 feet(not absolute value, so it still rises)
         sendXBee("cut detected");
         logAction("cut detected");
@@ -93,18 +93,18 @@ void altTheSingleLadies(){
     altTimer = getLastGPS();
     if((getLastGPS()-altTimer> 2)){
       if(floating==false && GPS.altitude.feet()< prevAlt){
-      sendXBee("checking for float: " + String(checkFloat));
-      checkFloat++;
-      prevAlt=GPS.altitude.feet();
+        sendXBee("checking for float: " + String(checkFloat));
+        checkFloat++;
+        prevAlt=GPS.altitude.feet();
       if(checkFloat>15){
         floating=true;
         floatStart=millis();
         sendXBee("Burst detected, float timer started");
-        if(GPS.altitude.feet()<cutAlt){
+      }
+      if(GPS.altitude.feet()<cutAlt){
           sendXBee("Burst occured early, setting altCut to 1000 feet below current altitude");
           altCut=GPS.altitude.feet()-1000;
         }
-      }
       }
       else{
         checkFloat = 0;
