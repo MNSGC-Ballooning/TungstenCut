@@ -108,11 +108,7 @@ void altTheSingleLadies(){
         checkFloat = 0;
         sendXBee("checkfloat reset");
       }
-      if(GPS.altitude.feet()<cutAlt){
-          sendXBee("Burst occured early, setting altCut to 1000 feet below current altitude");
-          altCut=GPS.altitude.feet()-1000;
-        }
-     }
+    }
     if(floating==true){
         if(!altset && GPS.altitude.feet() != 0 && GPS.Fix && GPS.altitude.feet()<cutAlt){
           sendXBee("Burst occured early, setting altCut to 1000 feet below current altitude");
