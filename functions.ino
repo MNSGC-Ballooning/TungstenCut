@@ -90,12 +90,12 @@ void altTheSingleLadies(){
   static unsigned long altTimer = 0;
   static bool sent = false;
   if(GPS.Fix&&GPS.altitude.feet()!= 0 ){    //GPS.fix
-    altTimer = getLastGPS();
     if((getLastGPS()-altTimer> 2)){
       if(floating==false && GPS.altitude.feet()< prevAlt){
         sendXBee("checking for float: " + String(checkFloat));
         checkFloat++;
         prevAlt=GPS.altitude.feet();
+        altTimer = getLastGPS();
       if(checkFloat>15){
         floating=true;
         floatStart=millis();
