@@ -86,7 +86,7 @@ void altTheSingleLadies(){
   static bool cutCheck = false;
   static byte checkTimes = 0;
   static byte checkFloat = 0;
-  static unsigned long prevAlt = 0;
+  static unsigned long prevAlt = 200000;
   static unsigned long altTimer = 0;
   static bool sent = false;
   if(GPS.Fix&&GPS.altitude.feet()!= 0 ){    //GPS.fix
@@ -95,6 +95,7 @@ void altTheSingleLadies(){
       if(floating==false && GPS.altitude.feet()< prevAlt){
       sendXBee("checking for float: " + String(checkFloat));
       checkFloat++;
+      prevAlt=GPS.altitude.feet();
       if(checkFloat>15){
         floating=true;
         floatStart=millis();
