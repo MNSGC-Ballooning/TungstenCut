@@ -41,7 +41,7 @@ int Master_Timer = 7200; //Flight master timer that terminates flight when the t
 bool judgementDay = true;   //set to true to activate master timer. can be changed through Xbee
 int float_Time = 1800; //Float Duration in seconds
 bool marryPoppins = true;
-const String xBeeID = "WB"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
+const String xBeeID = "WA"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
 long cutAlt = 80000; //Default cutdown altitude in feet! Changeable via xBee.
 boolean altCut = true;  //set to true to perfom an altitude cutdown. can be toggled through Xbee.
 
