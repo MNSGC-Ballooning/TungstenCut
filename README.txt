@@ -1,4 +1,4 @@
-# TungstenCut
+s# TungstenCut
 
 Code to run an Arduino-based system which uses hot tungsten filiment wire to cut rigging lines etc. 
 
@@ -58,4 +58,6 @@ WF		WA?WF! 		polls cutdown altitude
 WQ		WA?WQ!  	enables beacon
 
 WP		WA?WP!		disables bacon
+
+TP              WA?TE!          polls for temperature
 ==============================================================================================================================================

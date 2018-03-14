@@ -119,7 +119,7 @@ commandTime = millis();
     logCommand(Com, "Request GPS data");
     String message = "Time: " + String(GPS.time.hour()) + ":" + String(GPS.time.minute()) + ":" + String(GPS.time.second())+ ",";   
     message += "latitude: " + String(GPS.location.lat()) + "," + "logitude: " + String(GPS.location.lng()) + "," + "altitude: " + String(GPS.altitude.feet()) + ",";
-    if (1) message += "Fix";
+    if (GPS.Fix) message += "Fix";
     else message += "No Fix";
     sendXBee(message);
   }
@@ -198,6 +198,10 @@ commandTime = millis();
     bacon = false;
     logCommand(Com, "beacon disabled");
     sendXBee("beacon disabled");
+  }
+  else if(Com.substring(0,2).equals("TE")){
+    logCommand(Com, "poll temperature");
+    sendXBee("Battery Temperature: " + Temperature);
   }
       
   else {
