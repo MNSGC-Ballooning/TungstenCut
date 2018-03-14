@@ -84,13 +84,14 @@ void autopilot(){
 
 void altTheSingleLadies(){
   static bool cutCheck = false;
+  static bool altset = false;
   static byte checkTimes = 0;
   static byte checkFloat = 0;
   static unsigned long prevAlt = 200000;
   static unsigned long altTimer = 0;
   static bool sent = false;
   if(GPS.Fix&&GPS.altitude.feet()!= 0 ){    //GPS.fix
-    if((getLastGPS()-altTimer> 2)){
+    if((getLastGPS()-altTimer> 2) && !floating){
       if(floating==false && GPS.altitude.feet()< prevAlt){
         sendXBee("checking for float: " + String(checkFloat));
         checkFloat++;
@@ -113,6 +114,11 @@ void altTheSingleLadies(){
         }
      }
     if(floating==true){
+        if(!altset && GPS.altitude.feet() != 0 && GPS.Fix && GPS.altitude.feet()<cutAlt){
+          sendXBee("Burst occured early, setting altCut to 1000 feet below current altitude");
+          altCut=GPS.altitude.feet()-1000;
+          altset = true;
+        }
       if(!cutCheck){
         prevAlt = GPS.altitude.feet();
         cutCheck = true;
