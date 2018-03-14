@@ -102,7 +102,8 @@ void altTheSingleLadies(){
         sendXBee("Burst detected, float timer started");
       }
       }
-      else{
+      else if (checkFloat > 0){
+        altTimer = getLastGPS();
         checkFloat = 0;
         sendXBee("checkfloat reset");
       }
