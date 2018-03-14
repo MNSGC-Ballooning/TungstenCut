@@ -60,4 +60,10 @@ WQ		WA?WQ!  	enables beacon
 WP		WA?WP!		disables bacon
 
 TP              WA?TE!          polls for temperature
+
+FA              WA?FA3!         add 3 minutes to floatTimer 
+
+FS              WA?FS5!         subtract 5 minutes from foattimer
+
+PF              WA?PF!          poll for float time
 ==============================================================================================================================================

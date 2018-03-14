@@ -171,7 +171,7 @@ commandTime = millis();
     logCommand(Com, "Added time to floattimer");
     sendXBee("added Time: "+ String(addedTime)+ " Minutes");
     floatTimer += (addedTime*60*1000);  //Converts minutes to milliseconds
-    sendXBee("Float Timer in seconds: " + (floatTimer/1000));
+    sendXBee("Float Timer in seconds: " + String(floatTimer/1000));
   }
 
   else if((Com.substring(0,2)).equals("FS")){  //subtract time from float cut in minutes
@@ -179,7 +179,7 @@ commandTime = millis();
     logCommand(Com, "subtracted time to floattimer");
     sendXBee("subtracted Time: "+ String(addedTime)+ " Minutes");
     floatTimer -= (addedTime*60*1000);  //Converts minutes to milliseconds
-    sendXBee("Float Timer in seconds: " + (floatTimer/1000));
+    sendXBee("Float Timer in seconds: " + String(floatTimer/1000));
   }
 
   else if((Com.substring(0,2)).equals("WF")){   //poll cutdown altitude
@@ -209,7 +209,7 @@ commandTime = millis();
   }
   else if(Com.substring(0,2).equals("PF")){
     logCommand(Com, "poll float time");
-    sendXBee("Float time in seconds: " + String(floatTimer));
+    sendXBee("Float time in seconds: " + String(floatTimer/1000));
     if(floating){
       sendXBee("floating time remaining in seconds: " + String((floatTimer - (millis()-floatStart))/1000));
     }
