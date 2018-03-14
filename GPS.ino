@@ -30,7 +30,7 @@ void updateGPS() {
         data += ("No fix,");
         lastGPS = GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second();
       }
-      data += Temperature;
+      data += (Temperature + ",");
       adxl.readAccel(&x,&y,&z);
       data += ("Accelerometer (x,y,z): " + String(x) + ", " + String(y) + ", " +String(z));  
       GPSlog.println(data);
