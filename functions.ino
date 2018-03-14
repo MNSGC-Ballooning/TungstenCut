@@ -162,7 +162,6 @@ void detectShift(int x, int y, int z){
   static byte shiftCheck=0;
   static unsigned long currentTime=millis();
   static unsigned long prevTime=millis();
-  adxl.readAccel(&x,&y,&z);
   if(x>19 | x<-26){
     currentTime=millis();
     if(z<20 && currentTime-prevTime>1000){
@@ -236,12 +235,12 @@ void beacon(){
     if(GPS.Fix){
       toSend += (String(GPS.time.hour())+ "," + String(GPS.time.minute()) + "," + String(GPS.time.second()) + ","
       + String(GPS.location.lat()) + "," + String(GPS.location.lng()) + "," + String(GPS.altitude.feet()) +
-      "," + String(0) + "," + Temperature + "," + ("Accel (x,y,z): " + String(x) + String(y) +String(z)));
+      "," + String(0) + "," + Temperature + "," + ("Accel (x,y,z): " + String(x) + ", " + String(y) + ", " + String(z)));
       sendXBee(toSend);
       }
     else{
       toSend += (String(GPS.time.hour()) + "," + String(GPS.time.minute()) + "," + String(GPS.time.second()) + ","
-      + "0" + "," + "0" + "," + "0" + String(0)+ "," + Temperature) + ("Accel (x,y,z): " + String(x) + String(y) +String(z));
+      + "0" + "," + "0" + "," + "0" + String(0)+ "," + Temperature) + ("Accel (x,y,z): " + String(x) + ", " + String(y) + ", " + String(z));
       sendXBee(toSend);
       
     }

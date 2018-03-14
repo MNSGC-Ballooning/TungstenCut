@@ -4,7 +4,7 @@ long lastGPS = -1000000;  //for testing purposes
 
 //function to handle both retrieval of data from GPS module and sensors, as well as recording it on the SD card
 void updateGPS() {
-  
+  adxl.readAccel(&x,&y,&z);
   while (Serial1.available() > 0) {
     GPS.encode(Serial1.read());
   }
@@ -31,7 +31,6 @@ void updateGPS() {
         lastGPS = GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second();
       }
       data += (Temperature + ",");
-      adxl.readAccel(&x,&y,&z);
       data += ("Accelerometer (x,y,z): " + String(x) + ", " + String(y) + ", " +String(z));  
       GPSlog.println(data);
       closeGPSlog();
