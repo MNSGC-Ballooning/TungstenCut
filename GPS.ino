@@ -1,4 +1,5 @@
 
+
 float checkAlt;
 long lastGPS = -1000000;  //for testing purposes
 

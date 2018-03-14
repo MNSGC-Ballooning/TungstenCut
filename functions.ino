@@ -12,12 +12,12 @@ void runBurn(){
 
 void checkCut(){
   if(!sliced){
-    if(GPS.Fix&&!checkingCut){   //
+    if(GPS.Fix&&GPS.altitude.feet()!= 0 &&!checkingCut){   //
       checkAlt = (GPS.altitude.feet());
       checkingCut= true;
       checkTime= getLastGPS();
     }
-    else if(GPS.Fix&&altDelay<5&&(getLastGPS()-checkTime)>1){   //GPS.fix
+    else if(GPS.Fix&&GPS.altitude.feet()!= 0 &&altDelay<5&&(getLastGPS()-checkTime)>1){   //GPS.fix
       if((GPS.altitude.feet()-checkAlt)<-30){
         checkTime = getLastGPS();
         checkAlt =  (GPS.altitude.feet());                                 
@@ -27,7 +27,7 @@ void checkCut(){
         checkingCut = false;
       }
      }
-    else if(GPS.Fix&&altDelay==5&&(getLastGPS()-checkTime>1)){    //GPS.fix
+    else if(GPS.Fix&&GPS.altitude.feet()!= 0 &&altDelay==5&&(getLastGPS()-checkTime>1)){    //GPS.fix
       if(checkAlt-(GPS.altitude.feet())>30){                                   // a five second difference greater than 100 feet(not absolute value, so it still rises)
         sendXBee("cut detected");
         logAction("cut detected");
@@ -39,7 +39,7 @@ void checkCut(){
          
       }
     }
-    else if(!1){        //GPS.fix              //if no fix reset the whole process
+    else if(!GPS.Fix || GPS.altitude.feet() == 0 ){        //GPS.fix              //if no fix reset the whole process
       checkingCut = false;
       altDelay = 0;
     }
@@ -89,7 +89,7 @@ void altTheSingleLadies(){
   static unsigned long prevAlt = 0;
   static unsigned long altTimer = 0;
   static bool sent = false;
-  if(GPS.Fix){    //GPS.fix
+  if(GPS.Fix&&GPS.altitude.feet()!= 0 ){    //GPS.fix
     prevAlt = GPS.altitude.feet();
     altTimer = getLastGPS();
     if(floating==false && (getLastGPS()-altTimer > 2) && GPS.altitude.feet()< prevAlt){
@@ -232,7 +232,7 @@ void burnMode(){
 void beacon(){
   if(millis()-beaconTimer>10000){ //if 10 seconds have passed
     String toSend = "";
-    if(GPS.Fix){
+    if(GPS.Fix && GPS.altitude.feet()!= 0){
       toSend += (String(GPS.time.hour())+ "," + String(GPS.time.minute()) + "," + String(GPS.time.second()) + ","
       + String(GPS.location.lat()) + "," + String(GPS.location.lng()) + "," + String(GPS.altitude.feet()) +
       "," + String(0) + "," + Temperature + "," + ("Accel (x,y,z): " + String(x) + ", " + String(y) + ", " + String(z)));
@@ -240,7 +240,7 @@ void beacon(){
       }
     else{
       toSend += (String(GPS.time.hour()) + "," + String(GPS.time.minute()) + "," + String(GPS.time.second()) + ","
-      + "0" + "," + "0" + "," + "0" + String(0)+ "," + Temperature) + ("Accel (x,y,z): " + String(x) + ", " + String(y) + ", " + String(z));
+      + "0" + "," + "0" + "," + "0" + String(0)+ "," + Temperature + ",") + ("Accel (x,y,z): " + String(x) + ", " + String(y) + ", " + String(z));
       sendXBee(toSend);
       
     }
