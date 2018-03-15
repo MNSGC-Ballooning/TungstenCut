@@ -95,8 +95,6 @@ void altTheSingleLadies(){
       if(floating==false && GPS.altitude.feet()< prevAlt){
         sendXBee("checking for float: " + String(checkFloat));
         checkFloat++;
-        prevAlt=GPS.altitude.feet();
-        altTimer = getLastGPS();
       if(checkFloat>15){
         floating=true;
         floatStart=millis();
@@ -104,14 +102,11 @@ void altTheSingleLadies(){
       }
       }
       else if (checkFloat > 0){
-        altTimer = getLastGPS();
         checkFloat = 0;
         sendXBee("checkfloat reset");
       }
-      if(GPS.altitude.feet()<cutAlt){
-          sendXBee("Burst occured early, setting altCut to 1000 feet below current altitude");
-          altCut=GPS.altitude.feet()-1000;
-        }
+    altTimer = getLastGPS();
+    prevAlt=GPS.altitude.feet();
      }
     if(floating==true){
         if(!altset && GPS.altitude.feet() != 0 && GPS.Fix && GPS.altitude.feet()<cutAlt){
@@ -163,12 +158,16 @@ void altTheSingleLadies(){
    }
    
 }
+else if(checkFloat > 1){
+  checkFloat = 0;
+  sendXBee("no fix, cutfloat reset");
+}
 }
 
 void deathScythe(){
   if((millis()-floatStart)>floatTimer){
     runBurn();
-    floating=false;
+    altCut=false;
   }
 }
 
