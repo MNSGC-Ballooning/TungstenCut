@@ -149,6 +149,7 @@ void altTheSingleLadies(){
         sendXBee("running altitude burn");
         runBurn();
         floating=false;
+        altCut = false;
         cutCheck = false;
       }
       
