@@ -169,6 +169,7 @@ void deathScythe(){
   if((millis()-floatStart)>floatTimer){
     runBurn();
     altCut=false;
+    floating=false;
   }
 }
 
