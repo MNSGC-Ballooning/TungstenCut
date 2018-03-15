@@ -7,6 +7,7 @@ void removeTime(int subtraction){
 }
 void runBurn(){
   currentBlink= new Blink(200,500,5, "burnBlink", millis());
+  sendXBee("running burn");
   recovery = true;
 }
 
@@ -92,7 +93,7 @@ void altTheSingleLadies(){
   static bool sent = false;
   if(GPS.Fix&&GPS.altitude.feet()!= 0 ){    //GPS.fix
     if((getLastGPS()-altTimer> 2) && !floating){
-      if(floating==false && GPS.altitude.feet()< prevAlt){
+      if(GPS.altitude.feet()< prevAlt){
         sendXBee("checking for float: " + String(checkFloat));
         checkFloat++;
       if(checkFloat>15){
@@ -111,7 +112,7 @@ void altTheSingleLadies(){
     if(floating==true){
         if(!altset && GPS.altitude.feet() != 0 && GPS.Fix && GPS.altitude.feet()<cutAlt){
           sendXBee("Burst occured early, setting altCut to 1000 feet below current altitude");
-          altCut=GPS.altitude.feet()-1000;
+          cutAlt=GPS.altitude.feet()-1000;
           altset = true;
         }
       if(!cutCheck){
