@@ -39,7 +39,7 @@
 
 int Master_Timer = 7200; //Flight master timer that terminates flight when the timer runs out! Changeable via xBee.
 bool judgementDay = true;   //set to true to activate master timer. can be changed through Xbee
-int float_Time = 1800; //Float Duration in seconds
+int float_Time = 1200; //Float Duration in seconds
 bool marryPoppins = true;
 const String xBeeID = "WA"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
 long cutAlt = 80000; //Default cutdown altitude in feet! Changeable via xBee.
@@ -84,8 +84,8 @@ boolean bacon = true;  //true for beacon updates
 //~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
 unsigned long beaconTimer= 0;
 boolean burnerON = false;
-unsigned long masterTimer = long(Master_Timer) * 1000;
-unsigned long floatTimer = long(float_Time)* 1000;
+long masterTimer = long(Master_Timer) * 1000;
+long floatTimer = long(float_Time)* 1000;
 unsigned long floatStart = 0;
 boolean floating = false;
 boolean recovery = false;
