@@ -1,3 +1,5 @@
+
+
 /*   
  Tungsten cut v 1.1.0
  
@@ -13,4 +15,4 @@
  was edited by Simon Peterson for specific use in this program and can be found at:
  https://github.com/simonpeterson/TinyGPS
   */
-  
+#include <SparkFun_ADXL345.h>
