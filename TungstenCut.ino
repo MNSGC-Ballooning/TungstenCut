@@ -18,6 +18,7 @@
 #include <SparkFun_ADXL345.h>
 #include <DallasTemperature.h>
 #include <OneWire.h>
+#include <TinyGPS++.h>
 void setup(){
   
 }

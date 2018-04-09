@@ -4,7 +4,9 @@
     //identifier
     const char * Name;
     //delay for reading sensor
-    unsigned int Delay;        
+    unsigned int Delay;   
+    //timer for last check
+    unsigned long Timer;     
     //for sending commands to a sensor
     virtual void sendCommand();  
     //for initializing the sensor
@@ -47,19 +49,53 @@ class Accelerometer: public Sensor<int *> {
 class temperatureSensor: public Sensor<String>{
   public:
     DallasTemperature sensor;
-    uint8_t Pin;
     temperatureSensor(char* Name, int Pin, int Delay, String *temperature){
       temperature = &Data;
       this -> Name = Name;
       this -> Delay = Delay;
-      this -> Pin = Pin;
-    }
-    void init(){
       OneWire oneWire(Pin);
       sensor = DallasTemperature(&oneWire);
     }
-    void update(){
-      
+    void init(){
+      sensor.begin();
     }
+    void update(){
+      if(millis()-Timer>Delay){
+        sensor.requestTemperatures();
+        Data = sensor.getTempCByIndex(0);
+        Timer = millis();
+      }
+    }
+    String getData(){return Data;}
 };
+//the sensor class for the GPS does not need to be nearly as complex
+//because we are already using the tiny GPS++ library (once again, 
+//it is a custom libaray whose link can be found in the TungstenCut main
+//file
+class GPS: public Sensor<String>{
+  public:
+      TinyGPSPlus GPS;
+      //change to software serial if using software serial
+      HardwareSerial * port;
+      int baud;
+      GPS(char * Name, HardwareSerial * port, int baud){
+          this -> port = port;
+          this -> Name = Name;
+          this -> baud = baud;
+      }
+      void init(){
+        port -> begin(baud);
+      }
+      
+    private:
+       float getLong();
+       float getLat();
+       float altFeet();
+       int GPShour();
+       int GPSminute();
+       int GPSsecond();
+       
+       
+};
+
 
