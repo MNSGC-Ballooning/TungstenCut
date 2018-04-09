@@ -16,3 +16,12 @@
  https://github.com/simonpeterson/TinyGPS
   */
 #include <SparkFun_ADXL345.h>
+#include <DallasTemperature.h>
+#include <OneWire.h>
+void setup(){
+  
+}
+void loop(){
+  
+}
+
