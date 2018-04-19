@@ -1,6 +1,6 @@
+#include <Vector.h>
+
 #include <MuriSensors.h>
-
-
 
 /*   
  Tungsten cut v 1.1.0
@@ -60,10 +60,12 @@ Accelerometer Accel = Accelerometer("Accel", ACCEL_UPDATE_DELAY, &accelerations[
 temperatureSensor tempSensor = temperatureSensor("temp_sensor_1", TEMP_PIN, TEMP_UPDATE_DELAY, &temperature );
 GPS gps = GPS("GPS", &Serial1, GPS_BAUD);
 #define TEMP_1_PIN 9 
-
-
+//sensor array
 void setup(){
-  
+Vector<AbstractSensor*> sensors;
+sensors.push_back(Accel);
+sensors.push_back(gps);
+sensors.push_back(tempSensor);
 }
 void loop(){
   
