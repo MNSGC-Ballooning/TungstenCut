@@ -124,9 +124,9 @@ for (int i = 0; i < sensors.size(); i++){
 //create the SD files. Blink if something goes wrong
   while (!SD.begin(CHIPSELECT)) {            //power LED will blink if no card is inserted
     Serial.println("No SD");
-    sd_LED.turn_on();
+    sd_led.turn_on();
     delay(500);
-    sd_LED.turn_off();
+    sd_led.turn_off();
     delay(500);
   }
   //sendXBee("Checking for existing file");
@@ -153,7 +153,5 @@ for (int i = 0; i < sensors.size(); i++){
   //sendXBee("GPS log created: " + GPSname);
 
 }
-void loop(){
-  
-}
+void loop(){}
 

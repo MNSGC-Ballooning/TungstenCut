@@ -9,7 +9,6 @@ void closeEventlog() {
 }
 void openGPSlog() {
     GPSlog = SD.open(GPSname, FILE_WRITE);;
-    GPSlogOpen = true;
     sd_led.turn_on();
 }
 
