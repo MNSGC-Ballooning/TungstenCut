@@ -65,6 +65,33 @@ AbstractSensor * gps = &GpS;
 #define TEMP_1_PIN 9 
 //sensor array
 Vector<AbstractSensor*> sensors;
+
+// LED SETUP
+class LED {
+  public:
+      LED(uint8_t pin);
+      LED(uint8_t pin, unsigned int onTime, unsigned int offTime);
+      void turn_on();
+      void turn_off();
+      void blink();
+      void change_blink(unsigned int onTime, unsigned int offTime);
+      
+  private:
+    uint8_t state; //if the LED is on or off
+    uint8_t pin;
+    unsigned int onTime;
+    unsigned int offTime;
+    unsigned long timer;
+};
+
+//create all of the LEDS 
+LED sd_led = LED(SD_LED);
+LED data_led = LED(DATA_LED);
+LED fix_led = LED(FIX_LED);
+
+
+
+//SD class - class for writing to SD's
 void setup(){
 //add the sensors to the vector
 sensors.push_back(Accel);
