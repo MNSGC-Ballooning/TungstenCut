@@ -1,5 +1,4 @@
 #include <Vector.h>
-
 #include <MuriSensors.h>
 
 /*   
@@ -22,6 +21,7 @@
 #include <DallasTemperature.h>
 #include <OneWire.h>
 #include <TinyGPS++.h>
+
 
 /*
      Component                    | Pins used             | Notes
@@ -55,17 +55,27 @@ String temperature = "";
 
 //sensor setup
 //accelerometer
-Accelerometer Accel = Accelerometer("Accel", ACCEL_UPDATE_DELAY, &accelerations[0]);
+Accelerometer ACCEL = Accelerometer("Accel", ACCEL_UPDATE_DELAY, &accelerations[0]);
+AbstractSensor * Accel = &ACCEL;
 //temp sensor
-temperatureSensor tempSensor = temperatureSensor("temp_sensor_1", TEMP_PIN, TEMP_UPDATE_DELAY, &temperature );
-GPS gps = GPS("GPS", &Serial1, GPS_BAUD);
+temperatureSensor TEMPSENSOR = temperatureSensor("temp_sensor_1", TEMP_PIN, TEMP_UPDATE_DELAY, &temperature );
+AbstractSensor * TempSensor = &TEMPSENSOR;
+GPS GpS = GPS("GPS", &Serial1, GPS_BAUD);
+AbstractSensor * gps = &GpS;
 #define TEMP_1_PIN 9 
 //sensor array
-void setup(){
 Vector<AbstractSensor*> sensors;
+void setup(){
+//add the sensors to the vector
 sensors.push_back(Accel);
 sensors.push_back(gps);
-sensors.push_back(tempSensor);
+sensors.push_back(TempSensor);
+
+//initialize all of the sensors
+for (int i = 0; i < sensors.size(); i++){
+   sensors[i] -> init();
+}
+
 }
 void loop(){
   
