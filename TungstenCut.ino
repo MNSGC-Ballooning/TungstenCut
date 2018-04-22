@@ -1,3 +1,4 @@
+#include <SD.h>
 #include <Vector.h>
 #include <MuriSensors.h>
 
@@ -43,17 +44,27 @@
 #define CUTTER 7
 #define BURNER 8
 #define TEMP_PIN 9
+#define CHIPSELECT 4
 
 //sensor update delay times in ms
 #define ACCEL_UPDATE_DELAY 1000
 #define TEMP_UPDATE_DELAY 1000
+
 //baud rate for copernicus, changes depending on GPS used
 #define GPS_BAUD 4800
+
 //global reading variables for easy access to sensor data (not having to go through functions
 int accelerations[3] = {};
 String temperature = "";
 
-//sensor setup
+//SD card filenames
+#define GPS_FILENAME "GPS"
+#define EVENTLOG_FILENAME "ELOG"
+String Ename = " ";
+String GPSname = " ";
+File eventLog;
+File GPSlog;
+//SETUP FOR SENSORS AND THEIR CLASSES
 //accelerometer
 Accelerometer ACCEL = Accelerometer("Accel", ACCEL_UPDATE_DELAY, &accelerations[0]);
 AbstractSensor * Accel = &ACCEL;
@@ -92,7 +103,13 @@ LED fix_led = LED(FIX_LED);
 
 
 //SD class - class for writing to SD's
+class 
+
+//START OF SETUP CODE
+//WHERE EVERYTHING ACTUALLY HAPPENS
+
 void setup(){
+  
 //add the sensors to the vector
 sensors.push_back(Accel);
 sensors.push_back(gps);
@@ -102,6 +119,38 @@ sensors.push_back(TempSensor);
 for (int i = 0; i < sensors.size(); i++){
    sensors[i] -> init();
 }
+
+
+//create the SD files. Blink if something goes wrong
+  while (!SD.begin(CHIPSELECT)) {            //power LED will blink if no card is inserted
+    Serial.println("No SD");
+    sd_LED.turn_on();
+    delay(500);
+    sd_LED.turn_off();
+    delay(500);
+  }
+  //sendXBee("Checking for existing file");
+  //Check for existing event logs and creates a new one
+  for (int i = 0; i < 100; i++) {
+    if (!SD.exists(EVENTLOG_FILENAME + String(i / 10) + String(i % 10))) {
+      Ename = EVENTLOG_FILENAME + String(i / 10) + String(i % 10);
+      openEventlog();
+      break;
+    }
+  }
+
+  //sendXBee("event log created: " + Ename);
+
+  //Same but for GPS
+  for (int i = 0; i < 100; i++) {
+    if (!SD.exists("GPS" + String(i / 10) + String(i % 10) + ".csv")) {
+      GPSname = "GPS" + String(i / 10) + String(i % 10) + ".csv";
+      openGPSlog();
+      break;
+    }
+  }
+
+  //sendXBee("GPS log created: " + GPSname);
 
 }
 void loop(){
