@@ -71,7 +71,8 @@ AbstractSensor * Accel = &ACCEL;
 //temp sensor
 temperatureSensor TEMPSENSOR = temperatureSensor("temp_sensor_1", TEMP_PIN, TEMP_UPDATE_DELAY, &temperature );
 AbstractSensor * TempSensor = &TEMPSENSOR;
-GPS GpS = GPS("GPS", &Serial1, GPS_BAUD);
+TinyGPSPlus GPS;
+GPS_sensor GpS = GPS_sensor("GPS", &Serial1, GPS_BAUD, GPS);
 AbstractSensor * gps = &GpS;
 #define TEMP_1_PIN 9 
 //sensor array
@@ -102,8 +103,6 @@ LED fix_led = LED(FIX_LED);
 
 
 
-//SD class - class for writing to SD's
-class 
 
 //START OF SETUP CODE
 //WHERE EVERYTHING ACTUALLY HAPPENS
