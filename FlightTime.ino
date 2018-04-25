@@ -5,6 +5,7 @@ unsigned long flightTime() {
 
 //returns the above flight time as a usable string for print statements
 String flightTimeStr() {
+  //returns the time that the system has been turned on
   unsigned long t = flightTime() / 1000;
   String fTime = "";
   fTime += (String(t / 3600) + ":");
@@ -15,4 +16,13 @@ String flightTimeStr() {
   t %= 60;
   fTime += (String(t / 10) + String(t % 10));
   return fTime;
+}
+
+String timeLeft(){
+  //returns the time left until master timer cutdown.
+  int timeLeft = int((masterTimer-millis())/1000);
+  String timeLeftStr = (String(timeLeft/60) + ":");
+  timeLeft %= 60;
+  timeLeftStr += (String(timeLeft / 10) + String(timeLeft % 10));
+  return timeLeftStr;
 }

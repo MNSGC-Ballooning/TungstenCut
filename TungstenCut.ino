@@ -41,11 +41,13 @@
 #define DATA_LED 3
 #define SD_LED 5
 #define FIX_LED 6
-#define CUTTER 7
+#define RAZOR 7
 #define BURNER 8
 #define TEMP_PIN 9
 #define CHIPSELECT 4
 
+//CONTROL VARIABLES AND DEFINES
+long masterTimer = 7200000;       //master timer in milliseconds, time until cutdown
 //sensor update delay times in ms
 #define ACCEL_UPDATE_DELAY 1000
 #define TEMP_UPDATE_DELAY 1000
@@ -78,6 +80,10 @@ AbstractSensor * gps = &GpS;
 //sensor array
 Vector<AbstractSensor*> sensors;
 
+//XBEE setup
+//"W" stands for tungsten. Change the second character to correspond with the
+//comms relay being used- A, B, or C. remnant of the 2017 eclipse ballooning project
+const String xBeeID = "WA";
 // LED SETUP
 class LED {
   public:
@@ -86,13 +92,16 @@ class LED {
       void turn_on();
       void turn_off();
       void blink();
-      void change_blink(unsigned int onTime, unsigned int offTime);
+      void change_blink(unsigned int onTime, unsigned int offTime, uint8_t onTimes);
       
   private:
     uint8_t state; //if the LED is on or off
     uint8_t pin;
+    uint8_t onTimes;
     unsigned int onTime;
     unsigned int offTime;
+    unsigned int holderOnTime;
+    unsigned int holderOffTime;
     unsigned long timer;
 };
 
@@ -101,6 +110,28 @@ LED sd_led = LED(SD_LED);
 LED data_led = LED(DATA_LED);
 LED fix_led = LED(FIX_LED);
 
+//CREATE CUTTER CLASS TO MANAGE BURNERS AND RAZORS
+// **NOTE**
+//It is called a cutter when it is really a razor and a burner rolled into one.
+class Cutter {
+  public:
+     Cutter(uint8_t razor, uint8_t burner);
+     void runCut();
+     void runCut(unsigned int onTime, uint8_t times);
+     void checkAction();
+  private:
+     uint8_t burner;       //burner pin
+     uint8_t razor;        //razor pin
+     unsigned int onTime;  //time burner is on
+     unsigned int offTime; //time burner is off in cycles
+     uint8_t times;        //0 when no burns, > 0 when burns in queue
+     unsigned long timer;  //keeps track of time for burns
+     uint8_t state;        //whether the burner is on
+};
+
+//DECLARE THE CUTTERS
+
+Cutter cutter1 = Cutter(RAZOR, BURNER);
 
 
 
