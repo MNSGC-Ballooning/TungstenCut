@@ -48,6 +48,7 @@
 
 //CONTROL VARIABLES AND DEFINES
 long masterTimer = 7200000;       //master timer in milliseconds, time until cutdown
+#define FLOATTIME 1200000        //20 minutes of floattime is the default
 //sensor update delay times in ms
 #define ACCEL_UPDATE_DELAY 1000
 #define TEMP_UPDATE_DELAY 1000
@@ -74,7 +75,7 @@ AbstractSensor * Accel = &ACCEL;
 temperatureSensor TEMPSENSOR = temperatureSensor("temp_sensor_1", TEMP_PIN, TEMP_UPDATE_DELAY, &temperature );
 AbstractSensor * TempSensor = &TEMPSENSOR;
 TinyGPSPlus GPS;
-GPS_sensor GpS = GPS_sensor("GPS", &Serial1, GPS_BAUD, GPS);
+GPS_sensor GpS = GPS_sensor("GPS", &Serial1, GPS_BAUD, &GPS);
 AbstractSensor * gps = &GpS;
 #define TEMP_1_PIN 9 
 //sensor array
@@ -134,6 +135,22 @@ class Cutter {
 Cutter cutter1 = Cutter(RAZOR, BURNER);
 
 
+/****FLOAT WATCHING CLASS***
+ * class to watch and manage the floating of the balloon. built in with 
+ * actions to make sure that faulty GPS hits don't mess up the functionality of the system
+ * 
+ */
+class FloatWatch {
+  public:
+     FloatWatch(unsigned int floatTime);
+     void updateStatus();
+
+  private:
+     unsigned long Timer;
+     unsigned long floatTime;
+     
+};
+
 
 //START OF SETUP CODE
 //WHERE EVERYTHING ACTUALLY HAPPENS
@@ -183,5 +200,9 @@ for (int i = 0; i < sensors.size(); i++){
   //sendXBee("GPS log created: " + GPSname);
 
 }
-void loop(){}
+void loop(){
+  UpdateSensors();
+  cutter1.checkAction();
+  
+  }
 

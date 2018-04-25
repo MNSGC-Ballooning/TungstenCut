@@ -1,4 +1,5 @@
 //Takes a string to send out via xBee, and logs the transmission to the SD card with a timestamp
+/*
 void sendXBee(String out) {
   Serial.println(xBeeID + ";" + out + "!");
   openEventlog();
@@ -217,3 +218,4 @@ commandTime = millis();
     sendXBee(String(Com) + ":  Command Not Recognized");
   }
 }
+*/
