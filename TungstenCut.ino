@@ -148,7 +148,10 @@ class FloatWatch {
   private:
      unsigned long Timer;
      unsigned long floatTime;
-     
+     uint8_t floatState;             //the current state of the floatwatch
+     unsigned long prevAlt;
+     uint8_t checkFloat;        //how many times we've had decreasing hits
+     unsigned long floatStartTime;
 };
 
 
