@@ -1,28 +1,51 @@
 //Takes a string to send out via xBee, and logs the transmission to the SD card with a timestamp
+/*
 void sendXBee(String out) {
-  xBee.send(out);
+  Serial.println(xBeeID + ";" + out + "!");
   openEventlog();
-  if(SDcard){
     eventLog.println(flightTimeStr() + "  TX  " + out);
-  // eventlogB.println(flightTimeStr() + "  TX  " + out);
-  }
-  closeEventlog();  
-  }
 
-//Takes the string of the xBee command as well as a description and logs to the SD card with a timestamp
-void logCommand(String com, String command) {
-  openEventlog();
-  if(SDcard){
-    eventLog.println(flightTimeStr() + "  RX  " + com + "  " + command);
-  // eventlogB.println(flightTimeStr() + "  RX  " + com + "  " + command);
-  }
-  closeEventlog();
+  closeEventlog();  
 }
 
-//Primary xBee function that looks for incoming messages, parses them, and executes the corresponding commands
+void acknowledge() {
+  Serial.println(xBeeID + "\n");
+}
+
+//Takes the string of the xBee command as well as a description and logs to the SD card with a timestamp
+void logCommand(String com, String command){
+  openEventlog();
+    eventLog.println(flightTimeStr() + "  RX  " + com + "  " + command);
+  closeEventlog();
+}
+String lastCommand = "";
+unsigned long commandTime = 0;
+//Primary xBee function that looks for incoming messages, parses them, and executes the corresponding 
+//Talk to Ryan Bowers at the university of Minnesota concerning the details of this program
 void xBeeCommand(){
-  //check for incoming xBeeCommands
-  String Com = xBee.receive();
+  boolean complete = false;                  
+  String command = "";
+  char inChar;
+  while (Serial.available() > 0) {
+    inChar = (char)Serial.read();
+    if (inChar != ' ') {
+      command += inChar;
+      if (inChar == '!') { 
+        complete = true;
+        break;
+      }
+    }
+    delay(10);
+  }
+
+  if (!complete) return;                                                                   //Stuff we don't care about
+  if (command.equals(lastCommand) && (millis() - commandTime < 30000)) return; 
+  int split = command.indexOf('?');
+  if (!(command.substring(0, split)).equals(xBeeID)) return;
+  lastCommand = command;
+  String Com = command.substring(split + 1, command.length() - 1);
+  acknowledge();
+commandTime = millis();
 
   //receive() returns empty string if no commands sent
   if (Com.equals("")) return;
@@ -33,8 +56,8 @@ void xBeeCommand(){
     unsigned long addedTime = atol((Com.substring(2, Com.length())).c_str());
     logCommand(Com, "Added time to failsafe");
     sendXBee("added Time: "+ String(addedTime)+ " Minutes");
-    burnDelay += (addedTime*60*1000);  //Converts minutes to milliseconds
-    sendXBee("Time until cutdown: " + timeLeft());
+    masterTimer += (addedTime*60*1000);  //Converts minutes to milliseconds
+    sendXBee("Master Timer: " + timeLeft());
   }
 
  else if ((Com.substring(0,2)).equals("WR")) {
@@ -42,19 +65,19 @@ void xBeeCommand(){
     unsigned long remTime = atol((Com.substring(2, Com.length())).c_str());
     logCommand(Com, "Removed time from failsafe");
     sendXBee("Time removed: "+ String(remTime)+ " Minutes");
-    burnDelay -= (remTime*60*1000);  //Converts minutes to milliseconds
-    int timeLeft = int((burnDelay-millis())/1000);
+    masterTimer -= (remTime*60*1000);  //Converts minutes to milliseconds
+    int timeLeft = int((masterTimer-millis())/1000);
     String timeLeftStr = (String(timeLeft/60) + ":");
     timeLeft %= 60;
     timeLeftStr += (String(timeLeft / 10) + String(timeLeft % 10));
-    sendXBee("Time until cutdown: " + timeLeftStr);
+    sendXBee("Master Timer: " + timeLeftStr);
   }
 
 
 
    else if(Com.equals("WB")){
     //blinks the LED so you know it's connected
-    testBlink();
+    sd_led.change_blink(100,300,7);
     logCommand(Com, "Loggy log-log");
     sendXBee("Hey you figured it out. Took you long enough");
    }
@@ -63,13 +86,13 @@ void xBeeCommand(){
 
   else if (Com.equals("WX")) {
     //Burns the Tungsten, enters "recovery mode" after cutdown confirmed
-    runBurn();
-    if(GPS.fix){
-      logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.latitudeDegrees, 4) + "," + String(GPS.longitudeDegrees, 4) + ", Altitude: " + String(GPS.altitude * 3.28048) + "ft. FIX");  
-      sendXBee("Starting Cut at Altitude " + String(GPS.altitude * 3.28048) + "ft. Watch your heads!");
+    cutter1.runCut();
+    if(GPS.Fix){ //GPS.fix
+      logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.location.lat(), 4) + "," + String(GPS.location.lng(), 4) + ", Altitude: " + String(GPS.altitude.feet()) + "ft. FIX");  
+      sendXBee("Starting Cut at Altitude " + String(GPS.altitude.feet()) + "ft. Watch your heads!");
     }
     else{
-      logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.latitudeDegrees, 4) + "," + String(GPS.longitudeDegrees, 4) + ", Altitude: " + String(GPS.altitude * 3.28048) + "ft. NO FIX");
+      logCommand(Com, "Cuttdown Attempted at " + flightTimeStr() + "," + String(GPS.location.lat(), 4) + "," + String(GPS.location.lng(), 4) + ", Altitude: " + String(GPS.altitude.feet()) + "ft. FIX");
       sendXBee("Starting Cut at unknown altitude, Watch your heads!");
     }
   }
@@ -78,11 +101,11 @@ void xBeeCommand(){
   else if (Com.equals("WT")) {
     //Poll for cutdown timer remaining, returns minutes:seconds
     logCommand(Com, "Poll Remaining Time");
-    if(timeBurn){
+    if(judgementDay){
       sendXBee(timeLeft());
     }
     else{
-      sendXBee("timed cut is currently not enabled");
+      sendXBee("Master timer is currently not enabled");
     }
     
   }
@@ -91,9 +114,9 @@ void xBeeCommand(){
    else if (Com.equals("GPS")) {
     //Poll most recent GPS data
     logCommand(Com, "Request GPS data");
-    String message = "Time: " + String(GPS.hour) + ":" + String(GPS.minute) + ":" + String(GPS.seconds)+ ",";   
-    message += "latitude: " + String(GPS.latitudeDegrees) + "," + "logitude: " + String(GPS.longitudeDegrees) + "," + "altitude: " + String(GPS.altitude * 3.28048) + ",";
-    if (GPS.fix) message += "Fix";
+    String message = "Time: " + String(GPS.time.hour()) + ":" + String(GPS.time.minute()) + ":" + String(GPS.time.second())+ ",";   
+    message += "latitude: " + String(GPS.location.lat()) + "," + "logitude: " + String(GPS.location.lng()) + "," + "altitude: " + String(GPS.altitude.feet()) + ",";
+    if (GPS.Fix) message += "Fix";
     else message += "No Fix";
     sendXBee(message);
   }
@@ -116,16 +139,44 @@ void xBeeCommand(){
     sendXBee("Altitude cutdown is now enabled, will cut at: " + String(cutAlt) + "feet");
    }
   else if((Com.substring(0,2)).equals("WC")){   //enable time burn     
-    timeBurn = true;
-    logCommand(Com, "timed cut enabled");
-    burnDelay = millis() + 3600000;                //make the default timer 60 minutes
-    sendXBee("timed cut enabled, time until cutdown: " + timeLeft());
+    judgementDay = true;
+    logCommand(Com, "Master timer enabled");
+    masterTimer = millis() + 7200000;                //make the default timer 2 hours
+    sendXBee("Master timer enabled, time until cutdown: " + timeLeft());
   }
 
   else if((Com.substring(0,2)).equals("WS")){   //disable time burn
-    timeBurn = false;
-    logCommand(Com, "timed cut disabled");
-    sendXBee("timed cut disabled");
+    judgementDay = false;
+    logCommand(Com, "Master timer disabled");
+    sendXBee("Master timer disabled");
+  }
+
+  else if((Com.substring(0,2)).equals("FE")){   
+    marryPoppins=true;
+    logCommand(Com, "Timed float cut enabled");
+    sendXBee("Timed float cut enabled");
+  }
+
+  else if((Com.substring(0,2)).equals("FD")){
+    marryPoppins=false;
+    logCommand(Com, "Timed float cut disabled");
+    sendXBee("Timed float cut disabled");
+  }
+
+  else if((Com.substring(0,2)).equals("FA")){  //add time to float cut in minutes
+    unsigned long addedTime = atol((Com.substring(2, Com.length())).c_str());
+    logCommand(Com, "Added time to floattimer");
+    sendXBee("added Time: "+ String(addedTime)+ " Minutes");
+    floatTimer += (addedTime*60*1000);  //Converts minutes to milliseconds
+    sendXBee("Float Timer in seconds: " + String(floatTimer/1000));
+  }
+
+  else if((Com.substring(0,2)).equals("FS")){  //subtract time from float cut in minutes
+    unsigned long addedTime = atol((Com.substring(2, Com.length())).c_str());
+    logCommand(Com, "subtracted time to floattimer");
+    sendXBee("subtracted Time: "+ String(addedTime)+ " Minutes");
+    floatTimer -= (addedTime*60*1000);  //Converts minutes to milliseconds
+    sendXBee("Float Timer in seconds: " + String(floatTimer/1000));
   }
 
   else if((Com.substring(0,2)).equals("WF")){   //poll cutdown altitude
@@ -150,7 +201,19 @@ void xBeeCommand(){
     logCommand(Com, "beacon disabled");
     sendXBee("beacon disabled");
   }
-        
+  
+  else if(Com.substring(0,2).equals("TE")){
+    logCommand(Com, "poll temperature");
+    sendXBee("Battery Temperature: " + Temperature);
+  }
+  else if(Com.substring(0,2).equals("PF")){
+    logCommand(Com, "poll float time");
+    sendXBee("Float time in seconds: " + String(floatTimer/1000));
+    if(floating){
+      sendXBee("floating time remaining in seconds: " + String((floatTimer - (millis()-floatStart))/1000));
+    }
+  }
+  
   else {
     //If no recognizable command was received, inform ground station
     logCommand(Com, "Unknown Command");
@@ -159,3 +222,4 @@ void xBeeCommand(){
 
 
 }
+*/

@@ -1,46 +1,34 @@
+//functions to manage the GPS
 
-float checkAlt;
-long lastGPS = -1000000;  //for testing purposes
+//time in seconds of last GPS update
+unsigned long lastGPS = 0;
+unsigned long GPSstartTime = 0;    //when the GPS starts
+uint8_t days = 0;                  //if we're flying overnight (Ryan Bowers thinks of everying)
 
-//function to handle both retrieval of data from GPS module and sensors, as well as recording it on the SD card
 void updateGPS() {
-  
+  static bool firstFix = false;
+
   while (Serial1.available() > 0) {
-    GPS.read();
+    GPS.encode(Serial1.read());
   }
-  if (GPS.newNMEAreceived()) {
-    GPS.parse(GPS.lastNMEA());
-    newData= true;
-    if (!firstFix && GPS.fix) {
-      GPSstartTime = GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
+  if (GPS.altitude.isUpdated() || GPS.location.isUpdated()) {
+    if (!firstFix && GPS.Fix) {     //gps.fix
+      GPSstartTime = GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second();
       firstFix = true;
-
-    }
-    if (getGPStime() > lastGPS && newData) {
-      openGPSlog();
-      String data = "";
-      data += (flightTimeStr() + "," + String(GPS.latitudeDegrees, 6) + "," + String(GPS.longitudeDegrees, 6) + ",");
-      data += (String(GPS.altitude * 3.28048) + ",");    //convert meters to feet for datalogging
-      data += (String(GPS.month) + "/" + String(GPS.day) + "/" + String(GPS.year) + ",");
-      data += (String(GPS.hour) + ":" + String(GPS.minute) + ":" + String(GPS.seconds) + ",");   
-      if (GPS.fix) {
-        data += "fix,";
-        lastGPS = GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
       }
-      else{
-        data += ("No fix,");
-        lastGPS = GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
-      }
-      GPSlog.println(data);
-      closeGPSlog();
     }
-  }
-}
+    if (getGPStime() > lastGPS) {    //if it's been more than a second
+        lastGPS = GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second();
+      }
+   }
+   
 int getGPStime() {
-  return GPS.hour * 3600 + GPS.minute * 60 + GPS.seconds;
+  return (GPS.time.hour() * 3600 + GPS.time.minute() * 60 + GPS.time.second());
 }
 
-int getLastGPS() {    //returns time in seconds between last successful fix and initial fix. Used to match with altitude data
+int getLastGPS() { 
+  //returns time in seconds between last successful fix and initial fix. Used to match with altitude data
+  static bool newDay  = false;           //variable in case we're flying late at night (clock rollover)
   if (!newDay && lastGPS < GPSstartTime) {
     days++;
     newDay = true;
@@ -49,4 +37,3 @@ int getLastGPS() {    //returns time in seconds between last successful fix and 
     newDay = false;
   return days * 86400 + lastGPS;
 }
-

@@ -1,179 +1,217 @@
-
-//Libraries
 #include <SD.h>
-#include <Adafruit_GPS.h>
-#include <Relay_XBee.h>
-//==============================================================
-//               Code For Tungsten Cutter
-//                 Danny Toth Summer 2017 - tothx051 and Simon Peterson- pet00291
-//==============================================================
+#include <Vector.h>
+#include <MuriSensors.h>
 
-//Version Description: Working xBee with limited commands (add/sub time, request time/cutdown). SD logging with poor formatting.
+/*   
+ Tungsten cut v 1.1.0
+ 
+ Arduino Program for Tungsten Cut Flight Termination system
+ written by Simon Peterson for the Minnesota Space Grant Consortium Eclipse originally
+ for use during Eclipse ballooning missions. Later edited for use during
+ the MURI stratospheric research characterization project under the direction
+ of dr. Graham Candler.
 
-// Use: When payload is powered (i.e. batteries plugged in and switch in "on" position), it will be in flight mode.
-//
-//     Flight Mode:
-//                 Payload will count up in milliseconds from zero until a specified time. One blink equals 5 minutes remaining. Once specified time has passed, payload will then
-//                 fire the burner continuously until the burner breaks. Payload will then enter Recovery Mode.
-//    Recovery Mode:
-//                 Payload will continuously flash LED's to indicate its status until it is recovered or powered off. If it decides that
-//                 the burn was unsuccessful, it will attempt to re-try burning until it decides it worked.
+ OVERVIEW: This code can terminate flights at high altitudes
+ ******IMPORTANT PLEASE READ******
+ LIBRARIES- the TinyGPS++ library is not the original TinyGPS++ library, it 
+ was edited by Simon Peterson for specific use in this program and can be found at:
+ https://github.com/simonpeterson/TinyGPS
+  */
+//sensor initiation
+#include <SparkFun_ADXL345.h>
+#include <DallasTemperature.h>
+#include <OneWire.h>
+#include <TinyGPS++.h>
 
-//=============================================================================================================================================
-//=============================================================================================================================================
-//      ____                      ____       __               ______            _____                        __  _
-//     / __ )__  ___________     / __ \___  / /___ ___  __   / ____/___  ____  / __(_)___ ___  ___________ _/ /_(_)___  ____
-//    / __  / / / / ___/ __ \   / / / / _ \/ / __ `/ / / /  / /   / __ \/ __ \/ /_/ / __ `/ / / / ___/ __ `/ __/ / __ \/ __ \
-//   / /_/ / /_/ / /  / / / /  / /_/ /  __/ / /_/ / /_/ /  / /___/ /_/ / / / / __/ / /_/ / /_/ / /  / /_/ / /_/ / /_/ / / / /
-//  /_____/\__,_/_/  /_/ /_/  /_____/\___/_/\__,_/\__, /   \____/\____/_/ /_/_/ /_/\__, /\__,_/_/   \__,_/\__/_/\____/_/ /_/
-//                                               /____/                           /____/
 
-int burn_Delay = 3600; //Countdown timer in seconds! Changeable via xBee.
-bool timeBurn = false;   //set to true to activate delay burns. can be changed through Xbee
-const String xBeeID = "WA"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
-long cutAlt = 75000; //Default cutdown altitude in feet! Changeable via xBee.
-boolean altCut = false;  //set to true to perfom an altitude cutdown. can be toggled through Xbee.
-//=============================================================================================================================================
-//=============================================================================================================================================
-
-/*  Mega ADK pin connections:
-     -------------------------------------------------------------------------------------------------------------------------
+/*
      Component                    | Pins used             | Notes
 
-     xBee serial                  | D0-1                  | IMPORTANT- is hardware serial (controls xBee and hard serial line), cannot upload with xBee plugged in
-     Fireburner                   | D2                    |
-     Data LED (BLUE)              | D3                    |  "action" LED (Blue), tells us what the payload is doing
-     SD                           | D4, D11-13            |  11-13 not not have wires but they are used!
+     xBee serial(Rx, Tx)          | D0-1                  | IMPORTANT- is hardware serial (controls xBee and hard serial line), cannot upload with xBee plugged in
+     Data LED (BLUE)              | D3                    | "action" LED (Blue), tells us what the payload is doing
+     SD                           | D4, D50-52            | 50-52 do not not have wires but they are used!
      SD LED (RED)                 | D5                    | "SD" LED (Red). Only on when the file is open in SD card
-     Continutity Check OUTPUT     | D6                    | Outputs a voltatge for the continuity check
-     Continuity check INPUT       | D7                    | Reads the voltage for the continuity check
-     GPS serial                   | serial 1              | serial for GPS
-     -------------------------------------------------------------------------------------------------------------------------
+     fix led                      | D6                    | whether or not we have a GPS fix, must be used with copernicus GPS unit
+     razorcutter pin              | D7                    | High to this pin spins razor blade
+     Fireburner                   | D8                    | High to this pin fires tungsten burner
+     Tempread                     | D9                    | temperature sensor reading (power from other sources)
+     Accel I2C                    | SDA,SCL               | I2C communication for accelerometer (pins 20 and 21)
 */
+//pin defines
+#define DATA_LED 3
+#define SD_LED 5
+#define FIX_LED 6
+#define RAZOR 7
+#define BURNER 8
+#define TEMP_PIN 9
+#define CHIPSELECT 4
 
-//~~~~~~~~~~~~~~~Pin Variables~~~~~~~~~~~~~~~
-#define fireBurner 2       // Pin which opens the relay to fire. High = Fire!
-#define razorCutter 7      // Pin which turns a servo with a razor blade. High = Cut!
-#define ledPin 3          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
-#define chipSelect 4      //SD Card pin
-#define ledSD 5               //Pin which controls the SD LED
-#define CONTOUT 6          //Outputs voltage for continuity test
-#define CONTIN 7         // reads continuity check voltage
-//~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
-//variables for the altitude cutting command
-boolean bacon = true;  //true for beacon updates
-//~~~~~~~~~~~~~~~Timing Variables~~~~~~~~~~~~~~~
-unsigned long beaconTimer= 0;
-boolean burnerON = false;
-unsigned long burnDelay = long(burn_Delay) * 1000;
-boolean recovery = false;
-int altDelay = 5;
-boolean delayBurn = false;
-//blinnking variables
-boolean LEDon = false;
+//CONTROL VARIABLES AND DEFINES
+long masterTimer = 7200000;       //master timer in milliseconds, time until cutdown
+#define FLOATTIME 1200000        //20 minutes of floattime is the default
+//sensor update delay times in ms
+#define ACCEL_UPDATE_DELAY 1000
+#define TEMP_UPDATE_DELAY 1000
 
-class action {
-  protected:
-    unsigned long Time;
-    String nam;
-  public:
-    String getName();
-};
-class Blink: public action {
-  protected:
-    int ondelay;
-    int offdelay;
-    int ontimes;
-  public:
-    friend void blinkMode();
-    void BLINK();
-    Blink();
-    Blink(int on, int off, int times, String NAM, unsigned long tim);
-    int getOnTimes();
-};
-class burnAction: public action {
-  private:
-    int ondelay;
-    int offdelay;
-    int ontimes;
-    int stagger;
-  public:
-    void Burn();
-    burnAction(int on, int off, int ont, int stag, unsigned long tim);
-    int getOnTimes();
-};
+//baud rate for copernicus, changes depending on GPS used
+#define GPS_BAUD 4800
 
+//global reading variables for easy access to sensor data (not having to go through functions
+int accelerations[3] = {};
+String temperature = "";
 
-
-Blink recoveryBlink = Blink(200, 2000, -1, "recoveryBlink", 0);
-Blink countdownBlink = Blink(200, 850, -1, "countdownBlink", 0);
-Blink* currentBlink = &countdownBlink;
-burnAction idleBurn = burnAction(0, 0, -1, 200, 0);
-burnAction* currentBurn = &idleBurn;
-
-//GPS Stuff
-Adafruit_GPS GPS(&Serial1); //Constructor for GPS object
-int GPSstartTime;
-boolean newDay = false;
-boolean firstFix = false;
-int days = 0;          //used to store previous altitude values to check for burst
-boolean bursted = false;
-boolean checkingburst = false;
-boolean newData = false;
-int checkTime;
-//SD Stuff
+//SD card filenames
+#define GPS_FILENAME "GPS"
+#define EVENTLOG_FILENAME "ELOG"
+String Ename = " ";
+String GPSname = " ";
 File eventLog;
 File GPSlog;
-String Ename = "";
-String GPSname = "";
-boolean SDcard = true;
+//SETUP FOR SENSORS AND THEIR CLASSES
+class Sensor{
+  unsigned int Delay;
+  unsigned long Timer;
+  virtual void init();
+  virtual void update();
+}
+//ACCELEROMETER
+class Accelerometer: public Sensor{
+  public:
+    Accelerometer(int Delay, int * accelerations);
+    ADXL345 adxl;
+    int accelerations [3];
+    void init();
+    void update();
+}
+Accelerometer accel = Accelerometer(10000, accelerations[3]);
 
-//XBee Stuff
-XBee xBee = XBee(&Serial, xBeeID);
 
-void setup() {
-  // initialize pins
-  pinMode(ledPin, OUTPUT);
-  pinMode(fireBurner, OUTPUT);
-  pinMode(razorCutter, OUTPUT);
-  pinMode(ledSD, OUTPUT);
-  pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
-  pinMode(CONTOUT, OUTPUT);       //continuity check pins
-  pinMode(CONTIN, INPUT);
+//TEMP SENSOR
+class TemperatureSensor: public Sensor{
+  public:
+    DallasTemper
+    TemperatureSensor(uint8_t Pin, int Delay, String *temperature);
+    
+}
+temperatureSensor TEMPSENSOR = temperatureSensor("temp_sensor_1", TEMP_PIN, TEMP_UPDATE_DELAY, &temperature );
+AbstractSensor * TempSensor = &TEMPSENSOR;
+TinyGPSPlus GPS;
+GPS_sensor GpS = GPS_sensor("GPS", &Serial1, GPS_BAUD, &GPS);
+AbstractSensor * gps = &GpS;
+#define TEMP_1_PIN 9 
+//sensor array
+Vector<AbstractSensor*> sensors;
 
-  // initiate xbee
-  xBee.begin(9600);
-  xBee.send("xBee begin");
+//XBEE setup
+//"W" stands for tungsten. Change the second character to correspond with the
+//comms relay being used- A, B, or C. remnant of the 2017 eclipse ballooning project
+const String xBeeID = "WA";
+// LED SETUP
+class LED {
+  public:
+      LED(uint8_t pin);
+      LED(uint8_t pin, unsigned int onTime, unsigned int offTime);
+      void turn_on();
+      void turn_off();
+      void blink();
+      void change_blink(unsigned int onTime, unsigned int offTime, uint8_t onTimes);
+      
+  private:
+    uint8_t state; //if the LED is on or off
+    uint8_t pin;
+    uint8_t onTimes;
+    unsigned int onTime;
+    unsigned int offTime;
+    unsigned int holderOnTime;
+    unsigned int holderOffTime;
+    unsigned long timer;
+};
 
-  //Initiate GPS Data lines
-  GPS.begin(9600);
-  xBee.send("GPS begin");
+//create all of the LEDS 
+LED sd_led = LED(SD_LED);
+LED data_led = LED(DATA_LED);
+LED fix_led = LED(FIX_LED);
 
-  //GPS setup and config
-  GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
-  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
-  xBee.send("GPS configured");
+//CREATE CUTTER CLASS TO MANAGE BURNERS AND RAZORS
+// **NOTE**
+//It is called a cutter when it is really a razor and a burner rolled into one.
+class Cutter {
+  public:
+     Cutter(uint8_t razor, uint8_t burner);
+     void runCut();
+     void runCut(unsigned int onTime, uint8_t times);
+     void checkAction();
+  private:
+     uint8_t burner;       //burner pin
+     uint8_t razor;        //razor pin
+     unsigned int onTime;  //time burner is on
+     unsigned int offTime; //time burner is off in cycles
+     uint8_t times;        //0 when no burns, > 0 when burns in queue
+     unsigned long timer;  //keeps track of time for burns
+     uint8_t state;        //whether the burner is on
+};
 
-  //initialize SD card
-  if (!SD.begin(chipSelect)) {            //power LED will blink if no card is inserted
-    xBee.send("No SD");
-    digitalWrite(ledSD, HIGH);
+//DECLARE THE CUTTERS
+
+Cutter cutter1 = Cutter(RAZOR, BURNER);
+
+
+/****FLOAT WATCHING CLASS***
+ * class to watch and manage the floating of the balloon. built in with 
+ * actions to make sure that faulty GPS hits don't mess up the functionality of the system
+ * 
+ */
+class FloatWatch {
+  public:
+     FloatWatch(unsigned int floatTime);
+     void updateStatus();
+
+  private:
+     unsigned long Timer;
+     unsigned long floatTime;
+     uint8_t floatState;             //the current state of the floatwatch
+     unsigned long prevAlt;
+     uint8_t checkFloat;        //how many times we've had decreasing hits
+     unsigned long floatStartTime;
+};
+
+
+//START OF SETUP CODE
+//WHERE EVERYTHING ACTUALLY HAPPENS
+
+
+void setup(){
+  
+//add the sensors to the vector
+sensors.push_back(Accel);
+sensors.push_back(gps);
+sensors.push_back(TempSensor);
+
+//initialize all of the sensors
+for (int i = 0; i < sensors.size(); i++){
+   sensors[i] -> init();
+}
+
+
+//create the SD files. Blink if something goes wrong
+  while (!SD.begin(CHIPSELECT)) {            //power LED will blink if no card is inserted
+    Serial.println("No SD");
+    sd_led.turn_on();
     delay(500);
-    digitalWrite(ledSD, LOW);
+    sd_led.turn_off();
     delay(500);
-    SDcard = false;
   }
-  sendXBee("Checking for existing file");
+  //sendXBee("Checking for existing file");
   //Check for existing event logs and creates a new one
   for (int i = 0; i < 100; i++) {
-    if (!SD.exists("Elog" + String(i / 10) + String(i % 10))) {
-      Ename = "Elog" + String(i / 10) + String(i % 10);
+    if (!SD.exists(EVENTLOG_FILENAME + String(i / 10) + String(i % 10))) {
+      Ename = EVENTLOG_FILENAME + String(i / 10) + String(i % 10);
       openEventlog();
       break;
     }
   }
 
-  sendXBee("event log created: " + Ename);
+  //sendXBee("event log created: " + Ename);
 
   //Same but for GPS
   for (int i = 0; i < 100; i++) {
@@ -184,45 +222,12 @@ void setup() {
     }
   }
 
-  sendXBee("GPS log created: " + GPSname);
-
-  /*  while (!eventLog) {                   //both power and data LEDs will blink together if card is inserted but file fails to be created                 /
-        sendXBee("Eventlog file creation failed");
-        digitalWrite(ledSD, HIGH);
-        digitalWrite(ledPin, HIGH);
-        delay(500);
-        digitalWrite(ledSD, LOW);
-        digitalWrite(ledPin, LOW);
-        delay(500);
-    }
-    while(!GPSlog){
-        sendXBee("GPS file creation failed");
-        digitalWrite(ledSD, HIGH);
-        digitalWrite(ledPin, HIGH);
-        delay(1500);
-        digitalWrite(ledSD, LOW);
-        digitalWrite(ledPin, LOW);
-        delay(1500);
-    }*/
-  digitalWrite(fireBurner, LOW); //sets burner to off just in case
-  digitalWrite(CONTOUT, HIGH);   //
-  String GPSHeader = "Flight Time, Lat, Long, Altitude (ft), Date, Hour:Min:Sec, Fix,";
-  GPSlog.println(GPSHeader);//set up GPS log format
-  sendXBee("GPS header added");
-
-  String eventLogHeader = "Time, Sent/Received, Command";
-  eventLog.println(eventLogHeader);
-  sendXBee("Eventlog header added");
-
-  closeEventlog();
-  closeGPSlog();
-  sendXBee("Setup Complete");
+  //sendXBee("GPS log created: " + GPSname);
 
 }
+void loop(){
+  UpdateSensors();
+  cutter1.checkAction();
+  
+  }
 
-void loop() {
-
-  xBeeCommand(); //Checks for xBee commands
-  updateGPS();   //updates the GPS
-  autopilot();   //autopilot function that checks status and runs actions
-}
