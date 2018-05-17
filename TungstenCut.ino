@@ -68,9 +68,22 @@ String GPSname = " ";
 File eventLog;
 File GPSlog;
 //SETUP FOR SENSORS AND THEIR CLASSES
-//accelerometer
-Accelerometer ACCEL = Accelerometer("Accel", ACCEL_UPDATE_DELAY, &accelerations[0]);
-AbstractSensor * Accel = &ACCEL;
+class Sensor{
+  unsigned int Delay;
+  unsigned long Timer;
+  virtual void init();
+  virtual void update();
+}
+//ACCELEROMETER
+class Accelerometer: public Sensor{
+  public:
+    Accelerometer(int Delay, int * accelerations);
+    ADXL345 adxl;
+    int accelerations [3];
+    void init();
+    void update();
+}
+
 //temp sensor
 temperatureSensor TEMPSENSOR = temperatureSensor("temp_sensor_1", TEMP_PIN, TEMP_UPDATE_DELAY, &temperature );
 AbstractSensor * TempSensor = &TEMPSENSOR;
