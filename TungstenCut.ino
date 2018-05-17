@@ -83,8 +83,15 @@ class Accelerometer: public Sensor{
     void init();
     void update();
 }
+Accelerometer accel = Accelerometer(10000, accelerations[3]);
 
-//temp sensor
+//TEMP SENSOR
+class TemperatureSensor: public Sensor{
+  public:
+    DallasTemper
+    TemperatureSensor(uint8_t Pin, int Delay, String *temperature);
+    
+}
 temperatureSensor TEMPSENSOR = temperatureSensor("temp_sensor_1", TEMP_PIN, TEMP_UPDATE_DELAY, &temperature );
 AbstractSensor * TempSensor = &TEMPSENSOR;
 TinyGPSPlus GPS;
