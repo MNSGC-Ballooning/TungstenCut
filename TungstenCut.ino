@@ -1,6 +1,9 @@
 #include <SD.h>
 #include <Vector.h>
-#include <MuriSensors.h>
+#include <SparkFun_ADXL345.h>
+#include <DallasTemperature.h>
+#include <OneWire.h>
+#include <TinyGPS++.h>
 
 /*   
  Tungsten cut v 1.1.0
@@ -88,8 +91,11 @@ Accelerometer accel = Accelerometer(10000, accelerations[3]);
 //TEMP SENSOR
 class TemperatureSensor: public Sensor{
   public:
-    DallasTemper
     TemperatureSensor(uint8_t Pin, int Delay, String *temperature);
+    String* temperature;
+    DallasTemperature sensor;
+    void init();
+    void update();
     
 }
 temperatureSensor TEMPSENSOR = temperatureSensor("temp_sensor_1", TEMP_PIN, TEMP_UPDATE_DELAY, &temperature );
