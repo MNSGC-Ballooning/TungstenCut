@@ -129,17 +129,17 @@ commandTime = millis();
     logCommand(Com, "altitude cut disabled");
     sendXBee("Altitude cutdown is now disabled");
    }
-   else if ((Com.substring(0,2)).equals("WU")) {   //sets new cutdown Altitude
+   else if ((Com.substring(0,2)).equals("WU")) {   //sets new min cutdown Altitude
     //Set Cutdown Altitude
     long newAlt = atol((Com.substring(2, Com.length())).c_str());
-    logCommand(Com, "New Cutdown Altitude: "+ String(newAlt)+ " Feet");
-    sendXBee("New Cutdown Altitude: "+ String(newAlt)+ " Feet");
-    cutAlt = newAlt;                                              
+    logCommand(Com, "New min Cutdown Altitude: "+ String(newAlt)+ " Feet");
+    sendXBee("New min Cutdown Altitude: "+ String(newAlt)+ " Feet");
+    minAlt = newAlt;                                              
   }
   else if((Com.substring(0,2)).equals("WE")){   //enable altitude cut
     altCut = true;
     logCommand(Com, "altitude cut enabled");
-    sendXBee("Altitude cutdown is now enabled, will cut at: " + String(cutAlt) + "feet");
+    sendXBee("Altitude cutdown is now enabled, will cut at: " + String(minAlt) + "feet");
    }
   else if((Com.substring(0,2)).equals("WC")){   //enable time burn     
     judgementDay = true;
@@ -182,9 +182,9 @@ commandTime = millis();
     sendXBee("Float Timer in seconds: " + String(floatTimer/1000));
   }
 
-  else if((Com.substring(0,2)).equals("WF")){   //poll cutdown altitude
+  else if((Com.substring(0,2)).equals("WF")){   //poll min cutdown altitude
     logCommand(Com, "poll cutdown altitude");
-    String toSend = "Cutdown altitude: " + String(cutAlt);
+    String toSend = "Cutdown altitude: " + String(minAlt);
     if(altCut){
       toSend += ",  altitude cut is enabled";
     }

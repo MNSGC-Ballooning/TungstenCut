@@ -37,12 +37,13 @@
 //  /_____/\__,_/_/  /_/ /_/  /_____/\___/_/\__,_/\__, /   \____/\____/_/ /_/_/ /_/\__, /\__,_/_/   \__,_/\__/_/\____/_/ /_/
 //                                               /____/                           /____/
 
-int Master_Timer = 7200; //Flight master timer that terminates flight when the timer runs out! Changeable via xBee.
+int Master_Timer = 14400; //Flight master timer that terminates flight when the timer runs out! Changeable via xBee.
 bool judgementDay = true;   //set to true to activate master timer. can be changed through Xbee
 int float_Time = 1200; //Float Duration in seconds
 bool marryPoppins = true;
 const String xBeeID = "WA"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
-long cutAlt = 80000; //Default cutdown altitude in feet! Changeable via xBee.
+long minAlt = 80000; //Default cutdown altitude in feet! Changeable via xBee.
+long maxAlt = 100000; //Default max cutdown altitude in feet! Changeable via xBee
 boolean altCut = true;  //set to true to perfom an altitude cutdown. can be toggled through Xbee.
 
 
@@ -70,14 +71,15 @@ boolean altCut = true;  //set to true to perfom an altitude cutdown. can be togg
 */
 
 //~~~~~~~~~~~~~~~Pin Variables~~~~~~~~~~~~~~~
-#define fireBurner 8      // Pin which opens the relay to fire. High = Fire!
-#define razorCutter 7     // Pin which turns servo with razor blade. High = Fire! 
+#define fireBurner2 8      // Pin which opens the relay to fire. High = Fire!
+#define razorCutter2 7     // Pin which turns servo with razor blade. High = Fire! 
 #define ledPin 3          //Pin which controls the DATA LED, which blinks differently depending on what payload is doing
 #define chipSelect 4      //SD Card pin
 #define ledSD 5           //Pin which controls the SD LED
 #define fix_led 6         //led  which blinks for fix
 #define TempPin    9      //temperature reading pin
-
+#define razorCutter 23    //Second razorcutter
+#define fireBurner 2
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 //variables for the altitude cutting command
 boolean bacon = true;  //true for beacon updates
@@ -169,6 +171,8 @@ void setup() {
   pinMode(ledPin, OUTPUT);
   pinMode(fireBurner, OUTPUT);
   pinMode(razorCutter, OUTPUT);
+  pinMode(fireBurner2, OUTPUT);
+  pinMode(razorCutter2, OUTPUT);
   pinMode(ledSD, OUTPUT);
   pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
   pinMode(fix_led, OUTPUT);
