@@ -61,9 +61,9 @@ WP		WA?WP!		disables bacon
 
 TP              WA?TE!          polls for temperature
 
-FA              WA?FA3!         add 3 minutes to floatTimer 
+FA               WA?WU!         Follow WU with number to set new min altitude                WA?WM!           Follow WM with a number to set new max altitude            WA?FA3!         add 3 minutes to floatTimer 
 
-FS              WA?FS5!         subtract 5 minutes from foattimer
+FS              WA?FS5!         subtract 5 minutes from floattimer
 
 PF              WA?PF!          poll for float time
 ==============================================================================================================================================

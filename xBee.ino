@@ -102,7 +102,7 @@ commandTime = millis();
   
  
   else if (Com.equals("WT")) {
-    //Poll for cutdown timer remaining, returns minutes:seconds
+    //Poll for master timer remaining, returns minutes:seconds
     logCommand(Com, "Poll Remaining Time");
     if(judgementDay){
       sendXBee(timeLeft());
@@ -135,6 +135,13 @@ commandTime = millis();
     logCommand(Com, "New min Cutdown Altitude: "+ String(newAlt)+ " Feet");
     sendXBee("New min Cutdown Altitude: "+ String(newAlt)+ " Feet");
     minAlt = newAlt;                                              
+  }
+  else if ((Com.substring(0,2)).equals("WM")) {   //sets new max cutdown Altitude
+    //Set Cutdown Altitude
+    long newAlt = atol((Com.substring(2, Com.length())).c_str());
+    logCommand(Com, "New max Cutdown Altitude: "+ String(newAlt)+ " Feet");
+    sendXBee("New max Cutdown Altitude: "+ String(newAlt)+ " Feet");
+    maxAlt = newAlt;                                              
   }
   else if((Com.substring(0,2)).equals("WE")){   //enable altitude cut
     altCut = true;
