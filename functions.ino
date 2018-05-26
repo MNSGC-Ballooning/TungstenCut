@@ -71,7 +71,7 @@ void autopilot(){
    if(altCut){
     altTheSingleLadies();
    }
-   if(floating){
+   if(floating && !scythed){
     deathScythe();
    }
 
@@ -85,7 +85,28 @@ void autopilot(){
     digitalWrite(razorCutter, LOW);
     digitalWrite(razorCutter2, LOW);
     digitalWrite(fireBurner2, LOW);                                        
-    GPSaction("You are TERMINATED!");
+    logAction("You are TERMINATED!");
+
+   }
+   if((millis()>=maxBackUpTimer) && !delayBurn && max_BackUp && !floating){
+    digitalWrite(fireBurner, HIGH);
+    digitalWrite(razorCutter, HIGH);
+    delay(10000);
+    digitalWrite(fireBurner, LOW);
+    digitalWrite(razorCutter, LOW);
+    max_BackUp = false;
+    sendXBee("Max altitude back up timer fired");
+   
+    
+   }
+   if((millis()>=minBackUpTimer) && !delayBurn && min_BackUp){
+    digitalWrite(fireBurner2, HIGH);
+    digitalWrite(razorCutter2, HIGH);
+    delay(10000);
+    digitalWrite(fireBurner2, LOW);
+    digitalWrite(razorCutter2, LOW);
+    min_BackUp = false;
+    sendXBee("Min altitude back up timer fired");
    }
 }
 
@@ -96,40 +117,50 @@ void altTheSingleLadies(){
   static byte checkTimes = 0;
   static byte checkFloat = 0;
   static byte skyLimit = 0;
+  static bool skyHigh = false;
   static unsigned long prevAlt = 200000;
   static unsigned long altTimer = 0;
   static bool sent = false;
   if(GPS.Fix&&GPS.altitude.feet()!= 0 ){    //GPS.fix
-    if((getLastGPS()-altTimer> 2) && !floating){
-      if(GPS.altitude.feet()>maxAlt){
+    if((getLastGPS()-altTimer > 2) && !floating){
+      if(GPS.altitude.feet()>maxAlt && !skyHigh){
         sendXBee("checking for sky limit: " + String(skyLimit));
         skyLimit++;
         if(skyLimit>15){
           runBurn();
+          sendXBee("running altitude burn");
+          skyLimit=0;
+          skyHigh = true;
         }
       }
       if(GPS.altitude.feet()< prevAlt){
         sendXBee("checking for float: " + String(checkFloat));
         checkFloat++;
-      if(checkFloat>15){
-        floating=true;
-        floatStart=millis();
-        sendXBee("Burst detected, float timer started");
-      }
+        if(checkFloat>15){
+          digitalWrite(fireBurner, LOW);
+          digitalWrite(razorCutter, LOW);
+          digitalWrite(fireBurner2, LOW);
+          digitalWrite(razorCutter2, LOW);
+          delete currentBurn;
+          currentBurn = &idleBurn;
+          floating=true;
+          floatStart=millis();
+          sendXBee("Burst detected, float timer started");
+        }
       }
       else if (checkFloat > 0){
         checkFloat = 0;
         sendXBee("checkfloat reset");
       }
-    altTimer = getLastGPS();
-    prevAlt=GPS.altitude.feet();
-     }
+      altTimer = getLastGPS();
+      prevAlt=GPS.altitude.feet();
+   }
     if(floating==true){
-        if(!altset && GPS.altitude.feet() != 0 && GPS.Fix && GPS.altitude.feet()<minAlt){
-          sendXBee("Burst occured early, setting altCut to 1000 feet below current altitude");
-          minAlt=GPS.altitude.feet()-1000;
-          altset = true;
-        }
+      if(!altset && GPS.altitude.feet() != 0 && GPS.Fix && GPS.altitude.feet() < minAlt){
+        sendXBee("Burst occured early, setting altCut to 1000 feet below current altitude");
+        minAlt=GPS.altitude.feet()-10000;
+        altset = true;
+      }
       if(!cutCheck){
         prevAlt = GPS.altitude.feet();
         cutCheck = true;
@@ -147,7 +178,7 @@ void altTheSingleLadies(){
         prevAlt = GPS.altitude.feet(); 
         altTimer = getLastGPS();
       }
-      else if (checkTimes < 15 && getLastGPS()-altTimer > 2&& GPS.altitude.feet()<minAlt){
+      else if (checkTimes < 15 && getLastGPS()-altTimer > 2 && GPS.altitude.feet() < minAlt){
         String toSend = "veryifying proximity to cutdown. will cut in " + String(14-checkTimes) + " GPS hits above cut altitude";
         sendXBee(toSend);
         checkTimes++;
@@ -160,10 +191,9 @@ void altTheSingleLadies(){
         
         
       }
-      else if(checkTimes == 15){
+      else if(checkTimes > 15){
         sendXBee("running altitude burn");
         runBurn();
-        floating=false;
         altCut = false;
         cutCheck = false;
       }
@@ -174,18 +204,18 @@ void altTheSingleLadies(){
     }
    }
    
-}
-else if(checkFloat > 1){
-  checkFloat = 0;
-  sendXBee("no fix, cutfloat reset");
-}
+  }
+  else if(checkFloat > 1){
+    checkFloat = 0;
+    sendXBee("no fix, cutfloat reset");
+  }
 }
 
 void deathScythe(){
   if((millis()-floatStart)>floatTimer){
     runBurn();
     altCut=false;
-    floating=false;
+    scythed = true;
   }
 }
 
@@ -207,6 +237,7 @@ void detectShift(int x, int y, int z){
 }
 
 void burnAction::Burn(){
+  
   if(ontimes>0){
    if(!floating){ 
     if((millis()-Time>=offdelay)&&!burnerON){
@@ -224,6 +255,7 @@ void burnAction::Burn(){
     }
    }
    else{
+     
      if((millis()-Time>=offdelay)&&!burnerON){
       digitalWrite(fireBurner2, HIGH);
       digitalWrite(razorCutter2, HIGH);
@@ -281,9 +313,9 @@ void burnMode(){
     delete currentBurn;
     currentBurn = &idleBurn;
    
-  
+  }
   currentBurn->Burn();
-} 
+  
 }
 void beacon(){
   if(millis()-beaconTimer>10000){ //if 10 seconds have passed

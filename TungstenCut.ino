@@ -39,11 +39,15 @@
 
 int Master_Timer = 14400; //Flight master timer that terminates flight when the timer runs out! Changeable via xBee.
 bool judgementDay = true;   //set to true to activate master timer. can be changed through Xbee
-int float_Time = 1200; //Float Duration in seconds
+int float_Time = 300; //Float Duration in seconds
 bool marryPoppins = true;
 const String xBeeID = "WA"; //xBee ID, change second letter to "B" and "C" for their respective stacks, see Readme for more
 long minAlt = 80000; //Default cutdown altitude in feet! Changeable via xBee.
+int minBackUp_Timer = 9900; //Min alt cut backup timer in seconds!
+bool min_BackUp = true;
 long maxAlt = 100000; //Default max cutdown altitude in feet! Changeable via xBee
+int maxBackUp_Timer = 7800; //Max alt cut backup timer in seconds!
+bool max_BackUp = true;
 boolean altCut = true;  //set to true to perfom an altitude cutdown. can be toggled through Xbee.
 
 
@@ -80,6 +84,8 @@ boolean altCut = true;  //set to true to perfom an altitude cutdown. can be togg
 #define TempPin    9      //temperature reading pin
 #define razorCutter 23    //Second razorcutter
 #define fireBurner 2
+#define ONE_WIRE_BUS 24   //Active heating temp sensor
+#define heatBlanket 22    //Heat blanket relay
 //~~~~~~~~~~~~~~~Command Variables~~~~~~~~~~~~~~~
 //variables for the altitude cutting command
 boolean bacon = true;  //true for beacon updates
@@ -88,8 +94,10 @@ unsigned long beaconTimer= 0;
 boolean burnerON = false;
 long masterTimer = long(Master_Timer) * 1000;
 long floatTimer = long(float_Time)* 1000;
+long minBackUpTimer = long(minBackUp_Timer) * 1000;
+long maxBackUpTimer = long(maxBackUp_Timer) * 1000;
 unsigned long floatStart = 0;
-boolean floating = false;
+extern boolean floating = false;
 boolean recovery = false;
 int altDelay = 5;
 boolean delayBurn = false;
@@ -100,9 +108,25 @@ boolean LEDon = false;
 #define noFixDelay 15000
 //temperature sensor setup
 OneWire oneWire(TempPin);                  //setup onewire bus for temp sensor
-DallasTemperature TempSensors(&oneWire);   //declare the sensor
+DallasTemperature TempSensors(&oneWire);//declare the sensor
 String Temperature = " ";              //the temperature
 #define TEMPTIME 5000                      //how often the temperature should be read
+
+/////////////Active Heating//////////////////
+OneWire oneWire2(ONE_WIRE_BUS);
+DallasTemperature TempSensors2(&oneWire2);
+int tPin2 = 2;
+int hold;
+float t2;
+float samp_freq=3000;
+float t_low = 283;
+float t_high = 289;
+String data;
+String heaterStatus;
+String temp_filename = "";
+File tempLog;
+unsigned long t;
+
 class action {
   protected:
     unsigned long Time;
@@ -152,6 +176,7 @@ boolean firstFix = false;
 int days = 0;          //used to store previous altitude values to check for burst
 boolean sliced = false;
 boolean checkingCut = false;
+boolean scythed = false;
 boolean newData = false;
 int checkTime;
 //SD Stuff
@@ -176,11 +201,15 @@ void setup() {
   pinMode(ledSD, OUTPUT);
   pinMode(chipSelect, OUTPUT);    // this needs to be be declared as output for data logging to work
   pinMode(fix_led, OUTPUT);
+  pinMode(heatBlanket, OUTPUT);
+  pinMode(tPin2, INPUT);
   TempSensors.begin();               //set up temperature sensors
   
   //initiate GPS serial
    Serial1.begin(4800);    //
 
+  //Initiate active heating temp sensors
+  TempSensors2.begin();
   
 
   // initiate xbee
@@ -247,6 +276,17 @@ void setup() {
         digitalWrite(ledPin, LOW);
         delay(1500);
     }*/
+  
+   for (int i = 0; i < 100; i++) {
+    if (!SD.exists("tempLog" + String(i / 10) + String(i % 10) + ".csv")) {
+      temp_filename = "tempLog" + String(i / 10) + String(i % 10) + ".csv";
+      openTemplog();
+      break;
+    }
+  }
+  
+  sendXBee("Temp log created: " + temp_filename);
+  
   digitalWrite(fireBurner, LOW); //sets burner to off just in case
   String GPSHeader = "Flight Time, Lat, Long, Altitude (ft), Date, Hour:Min:Sec, Fix, Temperature";
   GPSlog.println(GPSHeader);//set up GPS log format
@@ -269,4 +309,5 @@ void loop() {
   xBeeCommand(); //Checks for xBee commands
   updateGPS();   //updates the GPS
   autopilot();   //autopilot function that checks status and runs actions
+  actHeat();
 }
